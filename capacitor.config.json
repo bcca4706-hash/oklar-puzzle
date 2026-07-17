@@ -1,0 +1,8 @@
+{
+  "appId": "com.bbm.oklar",
+  "appName": "OKLAR",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}
