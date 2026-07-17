@@ -66,7 +66,7 @@
 <body>
 <div id="wrap">
   <div id="hud">
-    <div id="lvl">SEVİYE<b id="lvlNum">1</b></div>
+    <div id="lvl"><span id="lvlLbl">SEVİYE</span><b id="lvlNum">1</b></div>
     <div id="hearts"><div class="heart"></div><div class="heart"></div><div class="heart"></div><div class="heart"></div><div class="heart"></div></div>
     <div style="display:flex;gap:8px">
       <button id="thmBtn">◐</button>
@@ -84,21 +84,21 @@
 
 <div class="ov" id="startOv">
   <div class="logo"><span class="c1">O</span><span class="c2">K</span><span class="c3">L</span><span class="c4">A</span><span class="c5">R</span></div>
-  <div class="sub">DÜĞÜMÜ ÇÖZ</div>
+  <div class="sub" id="subT">DÜĞÜMÜ ÇÖZ</div>
   <button class="big" id="playBtn">OYNA</button>
   <div class="ovSmall" id="contInfo"></div>
 </div>
 
 <div class="ov hide" id="failOv">
-  <div class="ovMsg" style="color:var(--red)">KALPLER BİTTİ</div>
-  <div class="ovSmall">Kafası açık yolda olan oku bul, sırayla çöz</div>
+  <div class="ovMsg" id="failT" style="color:var(--red)">KALPLER BİTTİ</div>
+  <div class="ovSmall" id="failS">Kafası açık yolda olan oku bul, sırayla çöz</div>
   <button class="big alt" id="reviveBtn">📺 İZLE, +2 KALP</button>
   <button class="big ghost" id="retryBtn">TEKRAR DENE</button>
 </div>
 
 <div class="ov hide" id="winOv">
   <div class="stars"><span id="st1">★</span><span id="st2">★</span><span id="st3">★</span></div>
-  <div class="ovMsg" style="color:var(--amber)">SEVİYE TAMAM</div>
+  <div class="ovMsg" id="winT" style="color:var(--amber)">SEVİYE TAMAM</div>
   <div class="ovSmall" id="winStats"></div>
   <button class="big" id="nextBtn">DEVAM →</button>
 </div>
@@ -106,6 +106,20 @@
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
+const LANG=((navigator.language||"tr").toLowerCase().startsWith("tr"))?"tr":"en";
+const TXD={
+ tr:{level:"SEVİYE",sub:"DÜĞÜMÜ ÇÖZ",play:"OYNA",failT:"KALPLER BİTTİ",
+  failS:"Kafası açık yolda olan oku bul, sırayla çöz",revive:"📺 İZLE, +2 KALP",
+  retry:"TEKRAR DENE",winT:"SEVİYE TAMAM",next:"DEVAM →",hint:"💡 İPUCU",
+  hintAd:"📺 İPUCU +3",reset:"↺ BAŞTAN",perfect:"MÜKEMMEL! +100 • ",
+  score:"SKOR",time:"SÜRE",total:"TOPLAM",sn:"sn",contL:"Seviye",contS:"Toplam Skor"},
+ en:{level:"LEVEL",sub:"UNTANGLE THE KNOT",play:"PLAY",failT:"OUT OF HEARTS",
+  failS:"Find an arrow with a clear path, solve in order",revive:"📺 WATCH, +2 HEARTS",
+  retry:"TRY AGAIN",winT:"LEVEL COMPLETE",next:"NEXT →",hint:"💡 HINT",
+  hintAd:"📺 HINT +3",reset:"↺ RESTART",perfect:"PERFECT! +100 • ",
+  score:"SCORE",time:"TIME",total:"TOTAL",sn:"s",contL:"Level",contS:"Total Score"}
+};
+const TX=TXD[LANG];
 const DIRS=[[0,-1],[1,0],[0,1],[-1,0]];
 const PALETTE=["#FF6B6B","#F4A261","#E9C46A","#8AC926","#2A9D8F","#4CC9F0","#4895EF","#7B7FEE","#B388EB","#F72585","#FF8FA3","#70E4C7"];
 function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;
@@ -429,7 +443,7 @@ let L=null,hearts=5,anims=[],particles=[],hintId=-1,hintUsed=false,locked=false;
 let combo=0,lastClear=0,levelScore=0,levelStart=0,reviveUsed=false,floaters=[],maxH=5;
 let shakeT=0,lvlT=0,levelRemain=0,musicInt=null,nextCache=null;
 let view={s:1,tx:0,ty:0};
-function updateHintBtn(){$("hintBtn").textContent=mem.hints>0?"💡 İPUCU ("+mem.hints+")":"📺 İPUCU +3";}
+function updateHintBtn(){$("hintBtn").textContent=mem.hints>0?TX.hint+" ("+mem.hints+")":TX.hintAd;}
 const cv=$("cv");let ctx=cv.getContext("2d");
 let DPR=1,cell=0,ox=0,oy=0,bgCv=null,stCv=null,stDirty=true;
 
@@ -470,7 +484,7 @@ function startLevel(n){
   $("winOv").classList.add("hide");
   $("reviveBtn").style.display="";
   updateHearts();updateProg();layout();
-  floaters.push({x:cv.width/2,y:cv.height/2.3,txt:"SEVİYE "+n,c:T.text,t:-.35,big:true});
+  floaters.push({x:cv.width/2,y:cv.height/2.3,txt:TX.level+" "+n,c:T.text,t:-.35,big:true});
 }
 function updateProg(){
   if(!L)return;
@@ -561,7 +575,7 @@ function winLevel(){
   if(lost===0)levelScore+=100;
   mem.total=(mem.total||0)+levelScore;save();
   const sec=Math.round((Date.now()-levelStart)/1000);
-  $("winStats").textContent=(lost===0?"MÜKEMMEL! +100 • ":"")+"SKOR "+levelScore+" • SÜRE "+sec+"sn • TOPLAM "+mem.total;
+  $("winStats").textContent=(lost===0?TX.perfect:"")+TX.score+" "+levelScore+" • "+TX.time+" "+sec+TX.sn+" • "+TX.total+" "+mem.total;
   ["st1","st2","st3"].forEach(id=>$(id).classList.remove("on"));
   setTimeout(()=>{
     $("winOv").classList.remove("hide");
@@ -673,7 +687,7 @@ $("sndBtn").onclick=()=>{mem.sound=mem.sound?0:1;save();
   if(mem.sound){startMusic();sfx.tick();}else stopMusic();};
 $("playBtn").onclick=()=>{sfx.tick();$("startOv").classList.add("hide");startLevel(mem.level);startMusic();};
 $("retryBtn").onclick=()=>{sfx.tick();$("failOv").classList.add("hide");startLevel(mem.level);};
-$("contInfo").textContent=mem.level>1?"Seviye "+mem.level+" • Toplam Skor "+(mem.total||0):"";
+$("contInfo").textContent=mem.level>1?TX.contL+" "+mem.level+" • "+TX.contS+" "+(mem.total||0):"";
 $("sndBtn").textContent=mem.sound?"♪":"✕";
 $("thmBtn").onclick=()=>{
   mem.theme=mem.theme==="klasik"?"renk":"klasik";save();
@@ -682,6 +696,14 @@ $("thmBtn").onclick=()=>{
   layout();stDirty=true;sfx.tick();
 };
 updateHintBtn();
+if(LANG!=="tr"){
+  document.title="ARROWS — Knot Puzzle";
+  $("lvlLbl").textContent=TX.level;$("subT").textContent=TX.sub;
+  $("playBtn").textContent=TX.play;$("failT").textContent=TX.failT;
+  $("failS").textContent=TX.failS;$("reviveBtn").textContent=TX.revive;
+  $("retryBtn").textContent=TX.retry;$("winT").textContent=TX.winT;
+  $("nextBtn").textContent=TX.next;$("resetBtn").textContent=TX.reset;
+}
 
 /* ---- çizim ---- */
 function trackPoint(track,f){
