@@ -578,8 +578,8 @@ $("nextBtn").onclick=()=>{
 };
 /* Ödüllü reklam kancası: Capacitor'da window.showRewarded(cb) gerçek
    reklama bağlanır; tarayıcı testinde 0.6sn sonra ödül verilir. */
-function tryRewarded(onOk){
-  if(window.showRewarded){try{window.showRewarded(onOk);}catch(e){}}
+function tryRewarded(onOk,type){
+  if(window.showRewarded){try{window.showRewarded(onOk,type);}catch(e){}}
   else setTimeout(onOk,600);
 }
 $("reviveBtn").onclick=()=>{
@@ -588,13 +588,13 @@ $("reviveBtn").onclick=()=>{
     reviveUsed=true;hearts=Math.min(maxH,hearts+2);updateHearts();
     $("failOv").classList.add("hide");locked=false;sfx.win();
     $("reviveBtn").style.display="none";
-  });
+  },'can');
 };
 function useHint(){
   if(locked||!L||hintId>=0)return;
   if(mem.hints<=0){
     // stok bitti: ödüllü reklamla +3 doldur
-    tryRewarded(()=>{mem.hints+=3;save();updateHintBtn();sfx.win();});
+    tryRewarded(()=>{mem.hints+=3;save();updateHintBtn();sfx.win();},'ipucu');
     return;
   }
   const free=L.snakes.filter(s=>s.alive&&!blockerOf(s));
@@ -832,6 +832,37 @@ function frame(ts){
 }
 layout();
 requestAnimationFrame(frame);
+</script>
+<script>
+/* AdMob koprusu - yalniz Capacitor icinde etkinlesir */
+(function(){
+  const C=window.Capacitor;
+  if(!C||!C.isNativePlatform||!C.isNativePlatform())return;
+  const A=C.Plugins&&C.Plugins.AdMob;
+  if(!A)return;
+  const IDS={
+    int:"ca-app-pub-2288995098594728/3108241578",
+    can:"ca-app-pub-2288995098594728/7981982665",
+    ipucu:"ca-app-pub-2288995098594728/1412016529"
+  };
+  let rewardOk=null,rewardGiven=false;
+  A.initialize({}).then(()=>{A.prepareInterstitial({adId:IDS.int}).catch(()=>{});}).catch(()=>{});
+  A.addListener("onRewardedVideoAdReward",()=>{rewardGiven=true;});
+  A.addListener("onRewardedVideoAdDismissed",()=>{
+    if(rewardGiven&&rewardOk){const f=rewardOk;rewardOk=null;rewardGiven=false;f();}
+    else{rewardOk=null;rewardGiven=false;}
+  });
+  window.showInterstitial=function(){
+    A.showInterstitial().catch(()=>{}).finally(()=>{A.prepareInterstitial({adId:IDS.int}).catch(()=>{});});
+  };
+  window.showRewarded=async function(cb,type){
+    rewardOk=cb;rewardGiven=false;
+    try{
+      await A.prepareRewardVideoAd({adId:type==="can"?IDS.can:IDS.ipucu});
+      await A.showRewardVideoAd();
+    }catch(e){rewardOk=null;}
+  };
+})();
 </script>
 </body>
 </html>
