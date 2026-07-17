@@ -106,7 +106,7 @@
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
-const LANG=((navigator.language||"tr").toLowerCase().startsWith("tr"))?"tr":"en";
+const LANG=(new URLSearchParams(location.search).get("lang"))||(((navigator.language||"tr").toLowerCase().startsWith("tr"))?"tr":"en");
 const TXD={
  tr:{level:"SEVİYE",sub:"DÜĞÜMÜ ÇÖZ",play:"OYNA",failT:"KALPLER BİTTİ",
   failS:"Kafası açık yolda olan oku bul, sırayla çöz",revive:"📺 İZLE, +2 KALP",
