@@ -16,6 +16,9 @@
     padding:calc(env(safe-area-inset-top,0px) + 14px) 18px 10px}
   #lvl{font-size:13px;font-weight:800;letter-spacing:.28em;color:var(--dim)}
   #lvl b{color:var(--line);font-size:16px;letter-spacing:.1em;margin-left:6px}
+  #timer{font-size:15px;font-weight:800;letter-spacing:.05em;color:var(--amber);min-width:34px;text-align:center;font-variant-numeric:tabular-nums}
+  #timer.low{color:var(--red);animation:tPulse .5s ease infinite}
+  @keyframes tPulse{0%,100%{opacity:1}50%{opacity:.45}}
   #hearts{display:flex;gap:6px}
   .heart{width:11px;height:11px;border-radius:50% 50% 0 0/60% 60% 0 0;position:relative;
     background:var(--amber);transform:rotate(-45deg);transition:opacity .3s,transform .3s}
@@ -67,6 +70,7 @@
 <div id="wrap">
   <div id="hud">
     <div id="lvl"><span id="lvlLbl">SEVİYE</span><b id="lvlNum">1</b></div>
+    <div id="timer"><span id="timerVal">60</span></div>
     <div id="hearts"><div class="heart"></div><div class="heart"></div><div class="heart"></div><div class="heart"></div><div class="heart"></div></div>
     <div style="display:flex;gap:8px">
       <button id="thmBtn">◐</button>
@@ -223,8 +227,21 @@ const sfx={
    elenir (küçük delikler) -> doluluk %90+ kalır. */
 /* Orijinaldeki gibi organik tahta şekilleri: seviyeler dikdörtgen,
    elips, kalp, elmas ve blob arasında döner. */
+// Ilk bolumler tek renk (ogretici), sonrasi rengarenk
+const SOLO_COLORS=["#FFD93D","#FF5252","#4EC3F5","#5FD98A","#FF9E47","#C77DFF"]; // sari,kirmizi,mavi,yesil,turuncu,mor
+function colorSnakes(snakes,n,rnd){
+  if(mem.theme==="renk" && n<=SOLO_COLORS.length){
+    // Bu bolumde tum oklar ayni renk
+    const c=SOLO_COLORS[(n-1)%SOLO_COLORS.length];
+    snakes.forEach((s,i)=>{s.color=c;s.delay=(i/snakes.length)*600+rnd()*40;});
+  }else{
+    // Rengarenk - her acilista rastgele karisim
+    const cshuf=[...(T.pal||PALETTE)].sort(()=>Math.random()-.5);
+    snakes.forEach((s,i)=>{s.color=cshuf[i%cshuf.length];s.delay=(i/snakes.length)*600+rnd()*40;});
+  }
+}
 function maskFor(n,cols,rows,rnd){
-  const type=(n-7)%9;
+  const type=(n-7)%13;
   const f1=rnd()*6.28,f2=rnd()*6.28,rot=rnd()*6.28;
   return (x,y)=>{
     const u=(x+.5-cols/2)/(cols/2),v=(y+.5-rows/2)/(rows/2);
@@ -251,8 +268,25 @@ function maskFor(n,cols,rows,rnd){
     if(type===7){                                              // artı / haç
       return (Math.abs(u)<=0.42)||(Math.abs(v)<=0.42);
     }
-    // type===8 üçgen
-    return (v<=0.82)&&(v>=-0.72)&&(Math.abs(u)<=(0.82-v)*0.62);
+    if(type===8){                                              // üçgen
+      return (v<=0.82)&&(v>=-0.72)&&(Math.abs(u)<=(0.82-v)*0.62);
+    }
+    if(type===9){                                              // çiçek (6 yaprak)
+      const r=Math.hypot(u,v),th=Math.atan2(v,u)+rot;
+      return r<=.62+.34*Math.abs(Math.sin(3*th));
+    }
+    if(type===10){                                             // dişli / çark
+      const r=Math.hypot(u,v),th=Math.atan2(v,u)+rot;
+      return r<=.88+.12*Math.sign(Math.sin(8*th));
+    }
+    if(type===11){                                             // yıldız (6 uçlu)
+      const r=Math.hypot(u,v),th=Math.atan2(v,u)+rot;
+      const k=0.70+0.36*Math.abs(Math.cos(3*th));
+      return r<=1.0/k*0.80;
+    }
+    // type===12 halka + orta (yuvarlak köşeli kare)
+    const p=4;
+    return Math.pow(Math.abs(u),p)+Math.pow(Math.abs(v),p)<=Math.pow(0.95,p);
   };
 }
 function packWorms(cols,rows,rnd,mask){
@@ -380,8 +414,7 @@ function genLevel(n){
       if(f>=.93)break;
     }
     const snakes=bestS.map((w,i)=>({id:i,cells:w.cells,head:w.head,dir:w.dir,alive:true}));
-    const cshuf=[...(T.pal||PALETTE)].sort(()=>rnd()-.5);
-    snakes.forEach((s,i)=>{s.color=cshuf[i%cshuf.length];s.delay=(i/snakes.length)*600+rnd()*40;});
+    colorSnakes(snakes,n,rnd);
     return {cols,rows,snakes,mask};
   }
   // karışık uzunluk: çoğunluk kısa (2-3), orta (4-6), az sayıda uzun (7-10)
@@ -457,8 +490,7 @@ function genLevel(n){
       color:PALETTE[idx%PALETTE.length],alive:true});
   }
   // renkleri karıştır
-  const cshuf=[...(T.pal||PALETTE)].sort(()=>rnd()-.5);
-  snakes.forEach((s,i)=>{s.color=cshuf[i%cshuf.length];s.delay=(i/snakes.length)*600+rnd()*40;});
+  colorSnakes(snakes,n,rnd);
   return {cols,rows,snakes};
 }
 
@@ -466,6 +498,38 @@ function genLevel(n){
 let L=null,hearts=5,anims=[],particles=[],hintId=-1,hintUsed=false,locked=false;
 let combo=0,lastClear=0,levelScore=0,levelStart=0,reviveUsed=false,floaters=[],maxH=5;
 let shakeT=0,lvlT=0,levelRemain=0,musicInt=null,nextCache=null;
+let timeLeft=60,timeLimit=60,timeUp=false;
+// Her bolume gore sure: 60 baz, ~her 5-6 bolumde bir 45'e iner sonra tekrar cikar (dalgali)
+function levelTime(n){return Math.round(52+8*Math.cos(n*Math.PI/5.5));}
+// Bolum renk cesitliligi - sadece varsayilan "renk" temasinda arka plan tonunu degistirir
+const LVLTINT=[
+  {bg:"#141426",bg2:"#1D1D36"},   // varsayilan mor-lacivert
+  {bg:"#2E2A12",bg2:"#3D3818"},   // sari ton
+  {bg:"#0E2634",bg2:"#143445"},   // mavi ton
+  {bg:"#12301D",bg2:"#183D27"},   // yesil ton
+  {bg:"#301220",bg2:"#3D1830"},   // pembe ton
+  {bg:"#26123A",bg2:"#33184D"},   // mor ton
+  {bg:"#302012",bg2:"#3D2C18"},   // turuncu ton
+  {bg:"#0E302B",bg2:"#143D38"},   // turkuaz ton
+  {bg:"#2E1218",bg2:"#3D1823"}    // kirmizi ton
+];
+function applyTheme(n){
+  // Kullanici kendi temasini secmisse (renk disinda) ona dokunma
+  if(mem.theme!=="renk")return;
+  const r=document.documentElement;
+  const mt=document.querySelector('meta[name="theme-color"]');
+  // Ozel renkli zemin sadece her 5 bolumde bir; digerleri varsayilan
+  if(n%5===0){
+    const t=LVLTINT[1+Math.floor(Math.random()*(LVLTINT.length-1))];
+    r.style.setProperty("--bg",t.bg);
+    r.style.setProperty("--bg2",t.bg2);
+    if(mt)mt.setAttribute("content",t.bg);
+  }else{
+    r.style.setProperty("--bg",LVLTINT[0].bg);
+    r.style.setProperty("--bg2",LVLTINT[0].bg2);
+    if(mt)mt.setAttribute("content",LVLTINT[0].bg);
+  }
+}
 let view={s:1,tx:0,ty:0},ambient=[];
 function updateHintBtn(){$("hintBtn").textContent=mem.hints>0?TX.hint+" ("+mem.hints+")":TX.hintAd;}
 const cv=$("cv");let ctx=cv.getContext("2d");
@@ -498,15 +562,18 @@ function startLevel(n){
   mem.level=n;if(!mem.maxLevel||n>mem.maxLevel)mem.maxLevel=n;save();
   L=(nextCache&&nextCache.n===n)?nextCache.L:genLevel(n);
   nextCache=null;
-  maxH=Math.min(9,3+Math.floor(L.snakes.length/16));
+  maxH=3;
   $("hearts").innerHTML='<div class="heart"></div>'.repeat(maxH);
   hearts=maxH;anims=[];particles=[];hintId=-1;locked=false;
   lvlT=performance.now();levelRemain=L.snakes.length;shakeT=0;
+  applyTheme(n);
+  timeLimit=levelTime(n);timeLeft=timeLimit;timeUp=false;
+  const tEl=$("timer");if(tEl){tEl.classList.remove("low");$("timerVal").textContent=timeLimit;}
   view.s=1;view.tx=0;view.ty=0;updateZoomBtn();
   combo=0;levelScore=0;levelStart=Date.now();reviveUsed=false;floaters=[];
   $("lvlNum").textContent=n;updateHintBtn();
   $("winOv").classList.add("hide");
-  $("reviveBtn").style.display="";
+  $("reviveBtn").style.display="";$("reviveBtn").textContent=TX.revive;$("reviveBtn").dataset.mode="";
   updateHearts();updateProg();layout();
   floaters.push({x:cv.width/2,y:cv.height/2.3,txt:TX.level+" "+n,c:T.text,t:-.35,big:true});
 }
@@ -583,7 +650,7 @@ function tapSnake(s){
     const gap=Math.abs(blk.x-s.head[0])+Math.abs(blk.y-s.head[1])-1;
     anims.push({type:"bump",s,track:buildTrack(s),t:0,dur:.5,gap:gap+.35});
     hearts--;updateHearts();
-    if(hearts<=0){locked=true;setTimeout(()=>{sfx.fail();$("failOv").classList.remove("hide");
+    if(hearts<=0){locked=true;setTimeout(()=>{sfx.fail();$("failT").textContent=TX.failT;$("reviveBtn").textContent=TX.revive;$("reviveBtn").dataset.mode="";$("reviveBtn").style.display="";$("failOv").classList.remove("hide");
       setTimeout(()=>{if(!nextCache)nextCache={n:mem.level,L:genLevel(mem.level)};},700);},550);}
   }
 }
@@ -621,12 +688,18 @@ function tryRewarded(onOk,type){
   else setTimeout(onOk,600);
 }
 $("reviveBtn").onclick=()=>{
-  if(reviveUsed)return;
+  const isTime=$("reviveBtn").dataset.mode==="time";
   tryRewarded(()=>{
-    reviveUsed=true;hearts=Math.min(maxH,hearts+2);updateHearts();
+    if(isTime){
+      // Sure doldu: sureyi yenile, kaldigin yerden devam et
+      timeLeft=timeLimit;timeUp=false;
+      const tEl=$("timer");if(tEl){tEl.classList.remove("low");$("timerVal").textContent=Math.ceil(timeLimit);}
+    }else{
+      hearts=Math.min(maxH,hearts+2);updateHearts();
+    }
     $("failOv").classList.add("hide");locked=false;sfx.win();
-    $("reviveBtn").style.display="none";
-  },'can');
+    $("reviveBtn").dataset.mode="";
+  },isTime?'sure':'can');
 };
 function useHint(){
   if(locked||!L||hintId>=0)return;
@@ -739,6 +812,9 @@ $("thmBtn").onclick=()=>{
   while(!themeUnlocked(THEME_ORDER[ni])&&tries<10);
   mem.theme=THEME_ORDER[ni];save();
   T=THEMES[mem.theme];
+  // Bolum tinti temizle - secilen temanin kendi rengi gelsin
+  document.documentElement.style.removeProperty("--bg");
+  document.documentElement.style.removeProperty("--bg2");
   document.documentElement.classList.toggle("light",mem.theme==="klasik");
   const nxt=THEME_ORDER.find(t=>!themeUnlocked(t)&&THEME_UNLOCK[t]>(mem.maxLevel||1));
   if(nxt)floaters.push({x:cv.width/2,y:cv.height/2.3,
@@ -807,6 +883,28 @@ function frame(ts){
   const dt=Math.min((ts-last)/1000,.05);last=ts;
   ctx.clearRect(0,0,cv.width,cv.height);
   if(!L)return;
+  // Geri sayim: sadece oyun oynanirken (kilitli/bitmis degilken)
+  if(!locked&&!timeUp&&hearts>0){
+    timeLeft-=dt;
+    const secs=Math.max(0,Math.ceil(timeLeft));
+    const tv=$("timerVal");
+    if(tv&&tv.textContent!=secs)tv.textContent=secs;
+    const tEl=$("timer");
+    if(tEl)tEl.classList.toggle("low",secs<=10);
+    if(timeLeft<=0){
+      timeUp=true;locked=true;
+      setTimeout(()=>{
+        sfx.fail();
+        $("failT").textContent=(LANG==="en"?"TIME'S UP":"SÜRE DOLDU");
+        // Reklam izle -> sure yenile, kaldigin yerden devam (sinirsiz)
+        $("reviveBtn").textContent=(LANG==="en"?"📺 WATCH, +TIME":"📺 İZLE, +SÜRE");
+        $("reviveBtn").style.display="";
+        $("reviveBtn").dataset.mode="time";
+        $("failOv").classList.remove("hide");
+        if(!nextCache)nextCache={n:mem.level,L:genLevel(mem.level)};
+      },400);
+    }
+  }
   // ambient: cok hafif suzulen isik zerreleri (gorsel derinlik)
   if(ambient.length===0){
     for(let i=0;i<18;i++)ambient.push({x:Math.random()*cv.width,y:Math.random()*cv.height,
