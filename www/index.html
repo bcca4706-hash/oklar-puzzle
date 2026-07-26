@@ -230,8 +230,8 @@ const sfx={
 // Ilk bolumler tek renk (ogretici), sonrasi rengarenk
 const SOLO_COLORS=["#FFD93D","#FF5252","#4EC3F5","#5FD98A","#FF9E47","#C77DFF"]; // sari,kirmizi,mavi,yesil,turuncu,mor
 function colorSnakes(snakes,n,rnd){
-  if(mem.theme==="renk" && n<=SOLO_COLORS.length){
-    // Bu bolumde tum oklar ayni renk
+  if(n<=SOLO_COLORS.length){
+    // Ilk bolumler: tum oklar tek renk (her temada calisir)
     const c=SOLO_COLORS[(n-1)%SOLO_COLORS.length];
     snakes.forEach((s,i)=>{s.color=c;s.delay=(i/snakes.length)*600+rnd()*40;});
   }else{
@@ -514,8 +514,8 @@ const LVLTINT=[
   {bg:"#2E1218",bg2:"#3D1823"}    // kirmizi ton
 ];
 function applyTheme(n){
-  // Kullanici kendi temasini secmisse (renk disinda) ona dokunma
-  if(mem.theme!=="renk")return;
+  // Acik tema (klasik) disinda calisir; kullanicinin ok paletine dokunmaz
+  if(document.documentElement.classList.contains("light"))return;
   const r=document.documentElement;
   const mt=document.querySelector('meta[name="theme-color"]');
   // Ozel renkli zemin sadece her 5 bolumde bir; digerleri varsayilan
