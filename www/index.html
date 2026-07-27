@@ -228,14 +228,22 @@ const sfx={
 /* Orijinaldeki gibi organik tahta şekilleri: seviyeler dikdörtgen,
    elips, kalp, elmas ve blob arasında döner. */
 // Ilk bolumler tek renk (ogretici), sonrasi rengarenk
-const SOLO_COLORS=["#FFD93D","#FF5252","#4EC3F5","#5FD98A","#FF9E47","#C77DFF"]; // sari,kirmizi,mavi,yesil,turuncu,mor
+const SOLO_COLORS=["#FFD93D","#FF5252","#4EC3F5","#5FD98A","#FF9E47","#C77DFF","#3DFFD9","#FF6B9D","#B8FF3B","#FF8A5C"]; // sari,kirmizi,mavi,yesil,turuncu,mor,turkuaz,pembe,yesilimsi,somon
 function colorSnakes(snakes,n,rnd){
-  if(n<=SOLO_COLORS.length){
-    // Ilk bolumler: tum oklar tek renk (her temada calisir)
-    const c=SOLO_COLORS[(n-1)%SOLO_COLORS.length];
-    snakes.forEach((s,i)=>{s.color=c;s.delay=(i/snakes.length)*600+rnd()*40;});
+  // Renk ritmi (16 bolumluk dongu):
+  //  1-6  : tek renk (her bolum farkli)
+  //  7-10 : karisik (rengarenk)
+  //  11-16: 2serli tek renk (11-12 ayni, 13-14 ayni, 15-16 ayni)
+  //  sonra dongu bassa doner
+  const c=((n-1)%16)+1; // 1..16 arası konum
+  let mode,soloColor=null;
+  if(c<=6){ mode="solo"; soloColor=SOLO_COLORS[(c-1)%SOLO_COLORS.length]; }
+  else if(c<=10){ mode="mix"; }
+  else { mode="solo"; soloColor=SOLO_COLORS[Math.floor((c-11)/2)%SOLO_COLORS.length]; }
+
+  if(mode==="solo"){
+    snakes.forEach((s,i)=>{s.color=soloColor;s.delay=(i/snakes.length)*600+rnd()*40;});
   }else{
-    // Rengarenk - her acilista rastgele karisim
     const cshuf=[...(T.pal||PALETTE)].sort(()=>Math.random()-.5);
     snakes.forEach((s,i)=>{s.color=cshuf[i%cshuf.length];s.delay=(i/snakes.length)*600+rnd()*40;});
   }
@@ -243,9 +251,18 @@ function colorSnakes(snakes,n,rnd){
 function maskFor(n,cols,rows,rnd){
   const type=(n-7)%13;
   const f1=rnd()*6.28,f2=rnd()*6.28,rot=rnd()*6.28;
+  // Parametrik varyasyon: her bolumde donme + hafif olcek/gerilme
+  // Boylece 13 temel sekil yuzlerce farkli gorunume donusur
+  const gRot=rnd()*6.28;                 // sekil dondurme acisi
+  const sx=0.86+rnd()*0.28;              // yatay olcek (0.86-1.14)
+  const sy=0.86+rnd()*0.28;              // dikey olcek
+  const cosG=Math.cos(gRot),sinG=Math.sin(gRot);
   return (x,y)=>{
-    const u=(x+.5-cols/2)/(cols/2),v=(y+.5-rows/2)/(rows/2);
-    if(type===0)return true;                                   // dikdörtgen
+    let u0=(x+.5-cols/2)/(cols/2),v0=(y+.5-rows/2)/(rows/2);
+    // olcekle + dondur
+    u0/=sx; v0/=sy;
+    const u=u0*cosG-v0*sinG, v=u0*sinG+v0*cosG;
+    if(type===0)return Math.abs(u)<=1&&Math.abs(v)<=1; // dikdörtgen (dondurulur)
     if(type===1)return u*u+v*v<=1.02;                          // elips
     if(type===2){                                              // kalp
       const X=u*1.25,Y=-v*1.25+.25,q=X*X+Y*Y-1;
@@ -500,7 +517,7 @@ let combo=0,lastClear=0,levelScore=0,levelStart=0,reviveUsed=false,floaters=[],m
 let shakeT=0,lvlT=0,levelRemain=0,musicInt=null,nextCache=null;
 let timeLeft=60,timeLimit=60,timeUp=false;
 // Her bolume gore sure: 60 baz, ~her 5-6 bolumde bir 45'e iner sonra tekrar cikar (dalgali)
-function levelTime(n){return Math.round(52+8*Math.cos(n*Math.PI/5.5));}
+function levelTime(n){return Math.round(70+6*Math.cos(n*Math.PI/5.5));}
 // Bolum renk cesitliligi - sadece varsayilan "renk" temasinda arka plan tonunu degistirir
 const LVLTINT=[
   {bg:"#141426",bg2:"#1D1D36"},   // varsayilan mor-lacivert
@@ -562,7 +579,7 @@ function startLevel(n){
   mem.level=n;if(!mem.maxLevel||n>mem.maxLevel)mem.maxLevel=n;save();
   L=(nextCache&&nextCache.n===n)?nextCache.L:genLevel(n);
   nextCache=null;
-  maxH=3;
+  maxH=4;
   $("hearts").innerHTML='<div class="heart"></div>'.repeat(maxH);
   hearts=maxH;anims=[];particles=[];hintId=-1;locked=false;
   lvlT=performance.now();levelRemain=L.snakes.length;shakeT=0;
