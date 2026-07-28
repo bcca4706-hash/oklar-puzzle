@@ -16,7 +16,7 @@
     padding:calc(env(safe-area-inset-top,0px) + 14px) 18px 10px}
   #lvl{font-size:13px;font-weight:800;letter-spacing:.28em;color:var(--dim)}
   #lvl b{color:var(--line);font-size:16px;letter-spacing:.1em;margin-left:6px}
-  #timer{font-size:15px;font-weight:800;letter-spacing:.05em;color:var(--amber);min-width:34px;text-align:center;font-variant-numeric:tabular-nums}
+  #timer{font-size:15px;font-weight:800;letter-spacing:.05em;color:var(--amber);min-width:48px;text-align:center;font-variant-numeric:tabular-nums}
   #timer.low{color:var(--red);animation:tPulse .5s ease infinite}
   @keyframes tPulse{0%,100%{opacity:1}50%{opacity:.45}}
   #hearts{display:flex;gap:6px}
@@ -70,7 +70,7 @@
 <div id="wrap">
   <div id="hud">
     <div id="lvl"><span id="lvlLbl">SEVİYE</span><b id="lvlNum">1</b></div>
-    <div id="timer"><span id="timerVal">60</span></div>
+    <div id="timer"><span id="timerVal">1:10</span></div>
     <div id="hearts"><div class="heart"></div><div class="heart"></div><div class="heart"></div><div class="heart"></div><div class="heart"></div></div>
     <div style="display:flex;gap:8px">
       <button id="thmBtn">◐</button>
@@ -133,6 +133,8 @@ function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;
 const easeOut=t=>1-Math.pow(1-t,3);
 const easeInQ=t=>t*t;
 const key=(x,y)=>x+","+y;
+// Sureyi 1:05 gibi dakika:saniye formatinda goster
+function fmtTime(s){s=Math.max(0,Math.ceil(s));const m=Math.floor(s/60),ss=s%60;return m+":"+(ss<10?"0"+ss:ss);}
 
 /* ---- kayıt ---- */
 let mem={level:1,sound:1,total:0,hints:3};
@@ -579,13 +581,14 @@ function startLevel(n){
   mem.level=n;if(!mem.maxLevel||n>mem.maxLevel)mem.maxLevel=n;save();
   L=(nextCache&&nextCache.n===n)?nextCache.L:genLevel(n);
   nextCache=null;
+  assignTimeBonuses();
   maxH=4;
   $("hearts").innerHTML='<div class="heart"></div>'.repeat(maxH);
   hearts=maxH;anims=[];particles=[];hintId=-1;locked=false;
   lvlT=performance.now();levelRemain=L.snakes.length;shakeT=0;
   applyTheme(n);
   timeLimit=levelTime(n);timeLeft=timeLimit;timeUp=false;
-  const tEl=$("timer");if(tEl){tEl.classList.remove("low");$("timerVal").textContent=timeLimit;}
+  const tEl=$("timer");if(tEl){tEl.classList.remove("low");$("timerVal").textContent=fmtTime(timeLimit);}
   view.s=1;view.tx=0;view.ty=0;updateZoomBtn();
   combo=0;levelScore=0;levelStart=Date.now();reviveUsed=false;floaters=[];
   $("lvlNum").textContent=n;updateHintBtn();
@@ -601,6 +604,24 @@ function updateProg(){
 }
 function updateHearts(){
   document.querySelectorAll(".heart").forEach((h,i)=>h.classList.toggle("off",i>=hearts));
+}
+
+/* ---- gizli sure bonuslari ----
+   Her bolumde birkac ok gizlice +sure tasir. Gorunumu normal okla
+   ayni; oyuncu o oku cozdugunde sure artar + "+3sn" floater akar. */
+function assignTimeBonuses(){
+  if(!L||!L.snakes)return;
+  L.snakes.forEach(s=>{s.timeBonus=0;});
+  const n=L.snakes.length;
+  // ok sayisina gore 1-4 adet bonus dagit (kucuk bolumde az, buyukte cok)
+  let cnt=Math.max(1,Math.min(4,Math.round(n/6)));
+  const pool=L.snakes.map((s,i)=>i);
+  // Fisher-Yates karistir
+  for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+  const AMT=[3,4,5];
+  for(let k=0;k<cnt&&k<pool.length;k++){
+    L.snakes[pool[k]].timeBonus=AMT[Math.floor(Math.random()*AMT.length)];
+  }
 }
 
 /* ---- mekanik ---- */
@@ -648,6 +669,15 @@ function tapSnake(s){
     const pts=10*combo;levelScore+=pts;
     floaters.push({x:ox+s.head[0]*cell+cell/2,y:oy+s.head[1]*cell+cell/2,
       txt:combo>1?"x"+combo:"+"+pts,c:colName(s),t:0});
+    // Gizli sure bonusu: bu ok +sure tasiyorsa sureyi artir
+    if(s.timeBonus>0&&!timeUp&&hearts>0){
+      timeLeft+=s.timeBonus;
+      floaters.push({x:ox+s.head[0]*cell+cell/2,y:oy+s.head[1]*cell+cell/2-cell*.9,
+        txt:"+"+s.timeBonus+TX.sn,c:"#5FD68A",t:-.12});
+      pluck(1046,.2);
+      if(navigator.vibrate)navigator.vibrate([15,30,15]);
+      s.timeBonus=0;
+    }
     levelRemain--;
     for(let i=0;i<6;i++){
       particles.push({x:ox+s.head[0]*cell+cell/2,y:oy+s.head[1]*cell+cell/2,
@@ -710,7 +740,7 @@ $("reviveBtn").onclick=()=>{
     if(isTime){
       // Sure doldu: sureyi yenile, kaldigin yerden devam et
       timeLeft=timeLimit;timeUp=false;
-      const tEl=$("timer");if(tEl){tEl.classList.remove("low");$("timerVal").textContent=Math.ceil(timeLimit);}
+      const tEl=$("timer");if(tEl){tEl.classList.remove("low");$("timerVal").textContent=fmtTime(timeLimit);}
     }else{
       hearts=Math.min(maxH,hearts+2);updateHearts();
     }
@@ -904,8 +934,9 @@ function frame(ts){
   if(!locked&&!timeUp&&hearts>0){
     timeLeft-=dt;
     const secs=Math.max(0,Math.ceil(timeLeft));
+    const disp=fmtTime(timeLeft);
     const tv=$("timerVal");
-    if(tv&&tv.textContent!=secs)tv.textContent=secs;
+    if(tv&&tv.textContent!=disp)tv.textContent=disp;
     const tEl=$("timer");
     if(tEl)tEl.classList.toggle("low",secs<=10);
     if(timeLeft<=0){
