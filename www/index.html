@@ -27,7 +27,7 @@
   .heart::before{content:"";position:absolute;width:11px;height:11px;border-radius:50%;
     background:var(--amber);top:0;left:5.5px}
   .heart.off{opacity:.15;transform:rotate(-45deg) scale(.75)}
-  #sndBtn,#thmBtn{background:none;border:1px solid var(--dim);color:var(--dim);border-radius:8px;
+  #sndBtn,#thmBtn,#pauseBtn{background:none;border:1px solid var(--dim);color:var(--dim);border-radius:8px;
     font-size:15px;width:34px;height:34px;line-height:1}
   html.light{--bg:#F7F5F0;--bg2:#FFFFFF;--line:#1B1B1B;--dim:#A29C8E}
   html.light .ov{background:rgba(247,245,240,.95)}
@@ -73,6 +73,7 @@
     <div id="timer"><span id="timerVal">1:10</span></div>
     <div id="hearts"><div class="heart"></div><div class="heart"></div><div class="heart"></div><div class="heart"></div><div class="heart"></div></div>
     <div style="display:flex;gap:8px">
+      <button id="pauseBtn">⏸</button>
       <button id="thmBtn">◐</button>
       <button id="sndBtn">♪</button>
     </div>
@@ -108,6 +109,11 @@
   <button class="big" id="nextBtn">DEVAM →</button>
 </div>
 
+<div class="ov hide" id="pauseOv">
+  <div class="ovMsg" id="pauseT" style="color:var(--amber)">DURAKLATILDI</div>
+  <button class="big" id="resumeBtn">DEVAM ET</button>
+</div>
+
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
@@ -117,12 +123,14 @@ const TXD={
   failS:"Kafası açık yolda olan oku bul, sırayla çöz",revive:"📺 İZLE, +2 KALP",
   retry:"TEKRAR DENE",winT:"SEVİYE TAMAM",next:"DEVAM →",hint:"💡 İPUCU",
   hintAd:"📺 İPUCU +3",reset:"↺ BAŞTAN",perfect:"MÜKEMMEL! +100 • ",
-  score:"SKOR",time:"SÜRE",total:"TOPLAM",sn:"sn",contL:"Seviye",contS:"Toplam Skor",streak:"gün seri 🔥",dailyBonus:"Günlük bonus: +2 ipucu! 🎁"},
+  score:"SKOR",time:"SÜRE",total:"TOPLAM",sn:"sn",contL:"Seviye",contS:"Toplam Skor",streak:"gün seri 🔥",dailyBonus:"Günlük bonus: +2 ipucu! 🎁",
+  pauseT:"DURAKLATILDI",resume:"DEVAM ET"},
  en:{level:"LEVEL",sub:"UNTANGLE THE KNOT",play:"PLAY",failT:"OUT OF HEARTS",
   failS:"Find an arrow with a clear path, solve in order",revive:"📺 WATCH, +2 HEARTS",
   retry:"TRY AGAIN",winT:"LEVEL COMPLETE",next:"NEXT →",hint:"💡 HINT",
   hintAd:"📺 HINT +3",reset:"↺ RESTART",perfect:"PERFECT! +100 • ",
-  score:"SCORE",time:"TIME",total:"TOTAL",sn:"s",contL:"Level",contS:"Total Score",streak:"day streak 🔥",dailyBonus:"Daily bonus: +2 hints! 🎁"}
+  score:"SCORE",time:"TIME",total:"TOTAL",sn:"s",contL:"Level",contS:"Total Score",streak:"day streak 🔥",dailyBonus:"Daily bonus: +2 hints! 🎁",
+  pauseT:"PAUSED",resume:"RESUME"}
 };
 const TX=TXD[LANG];
 const DIRS=[[0,-1],[1,0],[0,1],[-1,0]];
@@ -517,7 +525,7 @@ function genLevel(n){
 let L=null,hearts=5,anims=[],particles=[],hintId=-1,hintUsed=false,locked=false;
 let combo=0,lastClear=0,levelScore=0,levelStart=0,reviveUsed=false,floaters=[],maxH=5;
 let shakeT=0,lvlT=0,levelRemain=0,musicInt=null,nextCache=null;
-let timeLeft=60,timeLimit=60,timeUp=false;
+let timeLeft=60,timeLimit=60,timeUp=false,paused=false;
 // Her bolume gore sure: 60 baz, ~her 5-6 bolumde bir 45'e iner sonra tekrar cikar (dalgali)
 function levelTime(n){return Math.round(70+6*Math.cos(n*Math.PI/5.5));}
 // Bolum renk cesitliligi - sadece varsayilan "renk" temasinda arka plan tonunu degistirir
@@ -588,6 +596,7 @@ function startLevel(n){
   lvlT=performance.now();levelRemain=L.snakes.length;shakeT=0;
   applyTheme(n);
   timeLimit=levelTime(n);timeLeft=timeLimit;timeUp=false;
+  paused=false;$("pauseOv").classList.add("hide");
   const tEl=$("timer");if(tEl){tEl.classList.remove("low");$("timerVal").textContent=fmtTime(timeLimit);}
   view.s=1;view.tx=0;view.ty=0;updateZoomBtn();
   combo=0;levelScore=0;levelStart=Date.now();reviveUsed=false;floaters=[];
@@ -657,7 +666,7 @@ function snakeNear(px,py){
   return bd<=(cell*1.25)*(cell*1.25)?best:null;
 }
 function tapSnake(s){
-  if(locked||!L||!s)return;
+  if(locked||paused||!L||!s)return;
   hintId=-1;
   const blk=blockerOf(s);
   if(!blk){
@@ -825,6 +834,26 @@ $("zoomBtn").onclick=()=>{
   updateZoomBtn();sfx.tick();
 };
 $("hintBtn").onclick=useHint;
+/* ---- duraklat / devam ---- */
+function pauseGame(){
+  // Sadece aktif oyunda calis: bitmis/kilitli/zaten duraklamis degilken
+  if(paused||locked||timeUp||!L||hearts<=0)return;
+  paused=true;
+  $("pauseOv").classList.remove("hide");
+  stopMusic();
+  sfx.tick();
+}
+function resumeGame(){
+  if(!paused)return;
+  paused=false;
+  $("pauseOv").classList.add("hide");
+  if(mem.sound)startMusic();
+  sfx.tick();
+}
+$("pauseBtn").onclick=pauseGame;
+$("resumeBtn").onclick=resumeGame;
+// Uygulama arka plana atilinca otomatik duraklat (sure kacmasin)
+document.addEventListener("visibilitychange",()=>{if(document.hidden)pauseGame();});
 $("resetBtn").onclick=()=>{sfx.tick();startLevel(mem.level);};
 $("sndBtn").onclick=()=>{mem.sound=mem.sound?0:1;save();
   $("sndBtn").textContent=mem.sound?"♪":"✕";
@@ -877,6 +906,7 @@ if(LANG!=="tr"){
   $("failS").textContent=TX.failS;$("reviveBtn").textContent=TX.revive;
   $("retryBtn").textContent=TX.retry;$("winT").textContent=TX.winT;
   $("nextBtn").textContent=TX.next;$("resetBtn").textContent=TX.reset;
+  $("pauseT").textContent=TX.pauseT;$("resumeBtn").textContent=TX.resume;
 }
 
 /* ---- çizim ---- */
@@ -930,8 +960,8 @@ function frame(ts){
   const dt=Math.min((ts-last)/1000,.05);last=ts;
   ctx.clearRect(0,0,cv.width,cv.height);
   if(!L)return;
-  // Geri sayim: sadece oyun oynanirken (kilitli/bitmis degilken)
-  if(!locked&&!timeUp&&hearts>0){
+  // Geri sayim: sadece oyun oynanirken (kilitli/bitmis/duraklatilmis degilken)
+  if(!locked&&!timeUp&&!paused&&hearts>0){
     timeLeft-=dt;
     const secs=Math.max(0,Math.ceil(timeLeft));
     const disp=fmtTime(timeLeft);
