@@ -1126,5 +1126,37 @@ requestAnimationFrame(frame);
   };
 })();
 </script>
+<script>
+/* Gunluk hatirlatma bildirimleri - yalniz Capacitor icinde etkinlesir.
+   Belirlenen saatlerde her gun tekrar eder; uygulama kapali olsa bile calisir. */
+(function(){
+  const C=window.Capacitor;
+  if(!C||!C.isNativePlatform||!C.isNativePlatform())return;
+  const LN=C.Plugins&&C.Plugins.LocalNotifications;
+  if(!LN)return;
+  const tr=(navigator.language||"tr").toLowerCase().startsWith("tr");
+  // id, saat(0-23), dakika, baslik, metin
+  const MSG=tr?[
+    {id:2001,hour:13,minute:0,title:"OKLAR seni bekliyor 🎯",body:"Bir düğüm çöz, zihnini tazele."},
+    {id:2002,hour:20,minute:0,title:"Günlük serini kaçırma! 🔥",body:"Bugünkü bölümü çöz, serin devam etsin."}
+  ]:[
+    {id:2001,hour:13,minute:0,title:"ARROWS is waiting 🎯",body:"Untangle a knot, refresh your mind."},
+    {id:2002,hour:20,minute:0,title:"Keep your streak alive! 🔥",body:"Solve today's level before the day ends."}
+  ];
+  (async()=>{
+    try{
+      const perm=await LN.requestPermissions();
+      if(perm&&perm.display&&perm.display!=="granted")return; // izin yoksa sessizce cik
+      if(LN.createChannel){
+        try{await LN.createChannel({id:"oklar_daily",name:(tr?"Günlük hatırlatma":"Daily reminder"),importance:4});}catch(e){}
+      }
+      await LN.schedule({notifications:MSG.map(m=>({
+        id:m.id,title:m.title,body:m.body,channelId:"oklar_daily",
+        schedule:{on:{hour:m.hour,minute:m.minute},allowWhileIdle:true} // her gun ayni saatte tekrar
+      }))});
+    }catch(e){}
+  })();
+})();
+</script>
 </body>
 </html>
