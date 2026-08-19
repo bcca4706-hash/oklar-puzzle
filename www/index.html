@@ -36,19 +36,38 @@
     background:#FF4D5E;top:0;left:5.5px}
   .heart.off{opacity:.16;transform:rotate(-45deg) scale(.75);filter:none}
   /* --- yuvarlak neon ikon butonlar (gorseldeki daire butonlar) --- */
-  .rnd{position:relative;width:42px;height:42px;border-radius:50%;font-size:18px;line-height:1;
-    background:radial-gradient(circle at 50% 32%,rgba(60,90,150,.95),rgba(14,18,38,.95));
-    border:1px solid rgba(120,190,255,.42);color:#EAF4FF;
-    box-shadow:0 0 12px rgba(60,140,255,.28),inset 0 1px 0 rgba(180,220,255,.22);
-    display:flex;align-items:center;justify-content:center;transition:transform .12s}
-  .rnd:active{transform:scale(.9)}
+  .rnd{position:relative;width:54px;height:54px;border-radius:50%;font-size:21px;line-height:1;
+    display:flex;align-items:center;justify-content:center;
+    background:
+      radial-gradient(circle at 50% 30%,rgba(255,255,255,.28),rgba(255,255,255,0) 55%),
+      radial-gradient(circle at 50% 115%,var(--c2),var(--c1) 62%);
+    border:2px solid var(--cr);
+    color:#fff;
+    box-shadow:
+      0 0 14px var(--cg),
+      0 4px 0 rgba(6,10,26,.9),
+      0 7px 16px rgba(0,0,0,.5),
+      inset 0 2px 4px rgba(255,255,255,.35),
+      inset 0 -4px 10px rgba(0,0,0,.45);
+    text-shadow:0 2px 4px rgba(0,0,0,.6);
+    transition:transform .1s,box-shadow .1s;
+    /* varsayilan mavi */
+    --c1:#1B3E86;--c2:#3E7BE0;--cr:rgba(140,205,255,.75);--cg:rgba(60,150,255,.45)}
+  .rnd.cGold{--c1:#7A4A05;--c2:#F5B723;--cr:rgba(255,225,150,.8);--cg:rgba(245,180,40,.5)}
+  .rnd.cGreen{--c1:#0E5C2E;--c2:#3ACC72;--cr:rgba(170,255,205,.8);--cg:rgba(50,205,110,.5)}
+  .rnd.cPurple{--c1:#3E1C7A;--c2:#9B5CE8;--cr:rgba(215,180,255,.8);--cg:rgba(150,90,235,.5)}
+  .rnd.cRed{--c1:#7A1520;--c2:#E8455C;--cr:rgba(255,180,190,.8);--cg:rgba(230,70,95,.5)}
+  .rnd.cCyan{--c1:#0B5566;--c2:#2ECFE8;--cr:rgba(170,240,255,.8);--cg:rgba(45,205,230,.5)}
+  .rnd:active{transform:translateY(4px);
+    box-shadow:0 0 10px var(--cg),0 1px 0 rgba(6,10,26,.9),
+      inset 0 2px 4px rgba(255,255,255,.25),inset 0 -3px 8px rgba(0,0,0,.4)}
   .rnd .bdg{position:absolute;top:-4px;right:-4px;min-width:19px;height:19px;padding:0 4px;
     border-radius:999px;background:#2FBF5B;color:#fff;font-size:11px;font-weight:900;
     display:flex;align-items:center;justify-content:center;border:1.5px solid rgba(255,255,255,.5);
     box-shadow:0 0 8px rgba(50,220,120,.6)}
   .rnd .bdg.amb{background:#F5A623;box-shadow:0 0 8px rgba(245,166,35,.6)}
-  .rnd .lbl{position:absolute;bottom:-15px;left:50%;transform:translateX(-50%);
-    font-size:9px;font-weight:800;letter-spacing:.08em;color:#9FC4E8;white-space:nowrap}
+  .rnd .lbl{position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);
+    font-size:8.5px;font-weight:800;letter-spacing:.08em;color:#9FC4E8;white-space:nowrap}
   #coin{display:flex;align-items:center;gap:5px;font-size:14px;font-weight:900;color:#FFD34D;
     text-shadow:0 0 8px rgba(255,200,60,.55)}
   html.light{--bg:#F7F5F0;--bg2:#FFFFFF;--line:#1B1B1B;--dim:#A29C8E}
@@ -62,8 +81,8 @@
   html.light #timer{color:#1B1B1B;text-shadow:none}
   html.light .rnd .lbl{color:#8A8477}
   #cv{flex:1;width:100%;touch-action:none}
-  #foot{display:flex;justify-content:center;align-items:center;gap:26px;
-    padding:10px 18px calc(env(safe-area-inset-bottom,0px) + 22px)}
+  #foot{display:flex;justify-content:center;align-items:center;gap:16px;
+    padding:12px 10px calc(env(safe-area-inset-bottom,0px) + 26px)}
   .btn{background:var(--bg2);border:1px solid var(--dim);color:var(--line);
     border-radius:12px;padding:12px 22px;font-size:14px;font-weight:700;letter-spacing:.08em}
   .btn:active{transform:scale(.96)}
@@ -92,6 +111,150 @@
   @keyframes hFlash{0%{filter:none}30%{filter:drop-shadow(0 0 8px #E2554F) brightness(1.6)}100%{filter:none}}
   #hearts.flash .heart{animation:hFlash .4s ease}
   .ovSmall{margin-top:8px;color:var(--dim);font-size:13px;font-weight:700;letter-spacing:.12em}
+
+  /* ===== FAZ2: level complete / pause / market / basarimlar ===== */
+  .card{background:linear-gradient(180deg,rgba(30,40,72,.96),rgba(14,18,38,.97));
+    border:1px solid rgba(120,190,255,.35);border-radius:22px;padding:24px 22px;
+    box-shadow:0 10px 40px rgba(0,0,0,.55),inset 0 1px 0 rgba(180,220,255,.18);
+    width:min(92vw,400px);max-height:82vh;overflow-y:auto}
+  .cardT{font-size:20px;font-weight:900;letter-spacing:.16em;color:#FFD34D;
+    text-shadow:0 0 14px rgba(255,200,60,.5);margin-bottom:4px}
+  .rowStat{display:flex;justify-content:space-between;align-items:center;
+    padding:9px 4px;border-bottom:1px solid rgba(120,190,255,.12);
+    font-size:13px;font-weight:700;letter-spacing:.06em;color:#C7DBF0}
+  .rowStat b{color:#EAF4FF;font-size:15px}
+  .rowStat:last-child{border-bottom:none}
+  .rewardRow{display:flex;justify-content:center;gap:18px;margin:14px 0 6px}
+  .rw{display:flex;align-items:center;gap:6px;font-size:17px;font-weight:900;color:#FFD34D;
+    opacity:0;transform:translateY(8px);transition:opacity .35s,transform .35s}
+  .rw.on{opacity:1;transform:none}
+  .mbtn{width:100%;margin-top:10px;padding:15px;border:none;border-radius:14px;
+    font-size:15px;font-weight:900;letter-spacing:.1em;font-family:inherit;
+    background:linear-gradient(135deg,#3E7BFA,#2E5FE0);color:#fff;
+    box-shadow:0 6px 18px rgba(50,110,240,.4)}
+  .mbtn.g{background:linear-gradient(135deg,#2FBF5B,#1E9A46);box-shadow:0 6px 18px rgba(45,190,90,.35)}
+  .mbtn.o{background:linear-gradient(135deg,#F5A623,#E08600);box-shadow:0 6px 18px rgba(245,166,35,.35)}
+  .mbtn.ghost{background:transparent;border:1px solid rgba(120,190,255,.4);
+    color:#C7DBF0;box-shadow:none}
+  .mbtn:active{transform:scale(.97)}
+  .mbtn[disabled]{opacity:.4}
+  .shopItem{display:flex;align-items:center;gap:12px;padding:12px 10px;
+    border-radius:14px;background:rgba(255,255,255,.04);margin-bottom:9px;
+    border:1px solid rgba(120,190,255,.14)}
+  .shopItem .ic{font-size:24px;width:34px;text-align:center}
+  .shopItem .tx{flex:1;text-align:left}
+  .shopItem .tx b{display:block;font-size:14px;color:#EAF4FF;font-weight:800}
+  .shopItem .tx span{font-size:11px;color:#9FC4E8}
+  .buy{padding:9px 14px;border:none;border-radius:10px;font-weight:900;font-size:13px;
+    background:linear-gradient(135deg,#F5A623,#E08600);color:#3A2400;font-family:inherit}
+  .buy:disabled{opacity:.35}
+  .buy.done{background:#2FBF5B;color:#fff}
+  .achItem{display:flex;align-items:center;gap:11px;padding:10px;border-radius:12px;
+    background:rgba(255,255,255,.035);margin-bottom:8px;opacity:.45}
+  .achItem.got{opacity:1;background:rgba(47,191,91,.14);border:1px solid rgba(47,191,91,.35)}
+  .achItem .ic{font-size:22px}
+  .achItem .tx b{display:block;font-size:13px;color:#EAF4FF}
+  .achItem .tx span{font-size:11px;color:#9FC4E8}
+  .menuBtns{display:flex;flex-direction:column;gap:0;width:min(88vw,340px);margin-top:22px}
+
+
+  /* ===== PREMIUM BUTON GORUNUMU (saf CSS, asset yok) ===== */
+  .mbtn{
+    position:relative;overflow:hidden;
+    background:linear-gradient(180deg,#4B7BE8 0%,#2E56C4 48%,#1E3E9E 100%);
+    border:1px solid rgba(150,200,255,.55);
+    box-shadow:0 5px 0 #14265E, 0 8px 18px rgba(0,0,0,.5),
+               inset 0 1px 0 rgba(255,255,255,.45), inset 0 -3px 8px rgba(0,0,0,.35);
+    text-shadow:0 2px 3px rgba(0,0,0,.55)}
+  .mbtn::after{content:"";position:absolute;left:0;right:0;top:0;height:45%;
+    background:linear-gradient(180deg,rgba(255,255,255,.30),rgba(255,255,255,0));
+    pointer-events:none}
+  .mbtn:active{transform:translateY(3px);
+    box-shadow:0 2px 0 #14265E, 0 4px 10px rgba(0,0,0,.45),
+               inset 0 1px 0 rgba(255,255,255,.35)}
+  .mbtn.g{background:linear-gradient(180deg,#48D97C 0%,#22B45A 48%,#158240 100%);
+    border-color:rgba(160,255,200,.55);
+    box-shadow:0 5px 0 #0C5228, 0 8px 18px rgba(0,0,0,.5),
+               inset 0 1px 0 rgba(255,255,255,.45), inset 0 -3px 8px rgba(0,0,0,.3)}
+  .mbtn.g:active{box-shadow:0 2px 0 #0C5228, 0 4px 10px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.35)}
+  .mbtn.o{background:linear-gradient(180deg,#FFD35C 0%,#F0A017 48%,#C87A08 100%);
+    border-color:rgba(255,225,160,.6);
+    box-shadow:0 5px 0 #7A4A05, 0 8px 18px rgba(0,0,0,.5),
+               inset 0 1px 0 rgba(255,255,255,.5), inset 0 -3px 8px rgba(0,0,0,.3);
+    color:#3A2400;text-shadow:0 1px 1px rgba(255,255,255,.35)}
+  .mbtn.o:active{box-shadow:0 2px 0 #7A4A05, 0 4px 10px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.4)}
+  .mbtn.ghost{background:linear-gradient(180deg,rgba(70,95,150,.5),rgba(24,32,64,.6));
+    border:1px solid rgba(130,185,255,.42);color:#CFE2F7;
+    box-shadow:0 4px 0 rgba(10,16,40,.7), 0 6px 14px rgba(0,0,0,.4),
+               inset 0 1px 0 rgba(255,255,255,.18)}
+  .mbtn.ghost:active{box-shadow:0 1px 0 rgba(10,16,40,.7),inset 0 1px 0 rgba(255,255,255,.15)}
+  /* ana menu OYNA butonu */
+  .big{
+    position:relative;overflow:hidden;
+    background:linear-gradient(180deg,#FFD35C 0%,#F5A623 48%,#C87A08 100%);
+    color:#3A2400;border:1px solid rgba(255,230,170,.6);
+    box-shadow:0 6px 0 #7A4A05, 0 10px 22px rgba(0,0,0,.5),
+               inset 0 1px 0 rgba(255,255,255,.55), inset 0 -3px 8px rgba(0,0,0,.28);
+    text-shadow:0 1px 1px rgba(255,255,255,.4)}
+  .big::after{content:"";position:absolute;left:0;right:0;top:0;height:45%;
+    background:linear-gradient(180deg,rgba(255,255,255,.35),rgba(255,255,255,0));
+    pointer-events:none}
+  .big:active{transform:translateY(3px);
+    box-shadow:0 3px 0 #7A4A05, 0 5px 12px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.45)}
+  .big.alt{background:linear-gradient(180deg,#48D97C,#22B45A 48%,#158240);
+    color:#062E15;box-shadow:0 6px 0 #0C5228, 0 10px 22px rgba(0,0,0,.5),
+    inset 0 1px 0 rgba(255,255,255,.5)}
+  .big.ghost{background:linear-gradient(180deg,rgba(70,95,150,.5),rgba(24,32,64,.65));
+    color:#CFE2F7;border:1px solid rgba(130,185,255,.4);
+    box-shadow:0 4px 0 rgba(10,16,40,.7),0 6px 14px rgba(0,0,0,.4)}
+
+
+  .rnd .em{position:relative;z-index:2}
+  .rnd .ico{display:none;position:absolute;inset:8px;border-radius:50%;
+    background-size:cover;background-position:center;
+    mix-blend-mode:screen;pointer-events:none;z-index:2}
+
+  .rnd .em{position:relative;z-index:2;display:flex;align-items:center;justify-content:center;
+    width:26px;height:26px;color:#fff;
+    filter:drop-shadow(0 2px 3px rgba(0,0,0,.6))}
+  .rnd .em svg{width:100%;height:100%;display:block}
+  .rnd .ico{display:none}
+
+  /* Ana menu sinematik arka plan (gorsel yoksa duz zemin kalir) */
+  #startOv{background-size:cover;background-position:center}
+  #startOv.hasBg::before{content:"";position:absolute;inset:0;
+    background:linear-gradient(180deg,rgba(8,10,24,.55),rgba(8,10,24,.88));pointer-events:none}
+  #startOv>*{position:relative;z-index:1}
+  /* Basarim rozetleri (buyuk gosterim) */
+  .achItem .ic{width:34px;height:34px;display:flex;align-items:center;justify-content:center;
+    background-size:cover;background-position:center;border-radius:8px;flex:0 0 34px}
+
+  .achItem .ic .fb{font-size:20px;line-height:1}
+  .achItem .ic[style*="background-image"] .fb{display:none}
+
+  .wthumb{display:block;width:34px;height:34px;border-radius:8px;
+    background-size:cover;background-position:center;
+    border:1px solid rgba(120,190,255,.35)}
+
+  /* --- hazine sandigi --- */
+  #chestOv{background:rgba(10,14,30,.92)}
+  .chest{width:150px;height:150px;margin:14px auto 6px;display:flex;
+    align-items:center;justify-content:center;position:relative;
+    background-size:contain;background-repeat:no-repeat;background-position:center;
+    animation:chestIdle 1.6s ease-in-out infinite}
+  .chest .cbox{font-size:96px;filter:drop-shadow(0 0 22px rgba(255,200,60,.7))}
+  .chest.open{animation:chestPop .5s cubic-bezier(.2,1.6,.4,1) forwards}
+  @keyframes chestIdle{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-7px) scale(1.03)}}
+  @keyframes chestPop{0%{transform:scale(1)}45%{transform:scale(1.28) rotate(-4deg)}100%{transform:scale(1.1)}}
+  /* --- dunya sinemasi --- */
+  #worldOv{background-size:cover;background-position:center;background-color:#080b18}
+  .wcard{display:flex;flex-direction:column;align-items:center;gap:6px;
+    padding:26px 30px;border-radius:22px;
+    background:linear-gradient(180deg,rgba(10,14,32,.30),rgba(10,14,32,.86));
+    backdrop-filter:blur(2px);width:min(92vw,420px)}
+  .wsub{font-size:11px;font-weight:800;letter-spacing:.24em;color:#9FC4E8}
+  .wname{font-size:30px;font-weight:900;letter-spacing:.10em;color:#FFD34D;
+    text-shadow:0 0 22px rgba(255,200,60,.65);margin-bottom:14px;text-align:center}
 </style>
 </head>
 <body>
@@ -105,12 +268,12 @@
   <div id="progWrap"><div id="progFill"></div></div>
   <canvas id="cv"></canvas>
   <div id="foot">
-    <button class="rnd" id="hintBtn">💡<span class="bdg" id="hintBdg">3</span><span class="lbl">İPUCU</span></button>
-    <button class="rnd" id="zoomBtn">🔍<span class="bdg amb" id="zoomBdg">2×</span><span class="lbl">YAKINLAŞTIR</span></button>
-    <button class="rnd" id="resetBtn">↺<span class="lbl">BAŞTAN</span></button>
-    <button class="rnd" id="pauseBtn">⏸<span class="lbl">DURAKLAT</span></button>
-    <button class="rnd" id="thmBtn">◐<span class="lbl">TEMA</span></button>
-    <button class="rnd" id="sndBtn">♪<span class="lbl">SES</span></button>
+    <button class="rnd cGold" id="hintBtn"><span class="em"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg></span><span class="bdg" id="hintBdg">3</span><span class="lbl">İPUCU</span></button>
+    <button class="rnd cCyan" id="zoomBtn"><span class="em"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/><path d="M8 11h6M11 8v6"/></svg></span><span class="bdg amb" id="zoomBdg">2×</span><span class="lbl">YAKINLAŞTIR</span></button>
+    <button class="rnd cGreen" id="resetBtn"><span class="em"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg></span><span class="lbl">BAŞTAN</span></button>
+    <button class="rnd cRed" id="pauseBtn"><span class="em"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4.2" height="16" rx="1.6"/><rect x="13.8" y="4" width="4.2" height="16" rx="1.6"/></svg></span><span class="lbl">DURAKLAT</span></button>
+    <button class="rnd cPurple" id="thmBtn"><span class="em"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor" stroke="none"/></svg></span><span class="lbl">TEMA</span></button>
+    <button class="rnd" id="sndBtn"><span class="em"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M17 8.5a5 5 0 0 1 0 7"/><path d="M20 6a9 9 0 0 1 0 12"/></svg></span><span class="lbl">SES</span></button>
   </div>
 </div>
 
@@ -120,6 +283,10 @@
   <button class="big" id="playBtn">OYNA</button>
   <div class="ovSmall" id="contInfo"></div>
   <div class="ovSmall" id="streakInfo" style="color:#FFB347;margin-top:4px"></div>
+  <div class="menuBtns">
+    <button class="mbtn o" id="mShopBtn">🛒 MARKET</button>
+    <button class="mbtn ghost" id="mAchBtn">🏆 BAŞARIMLAR</button>
+  </div>
 </div>
 
 <div class="ov hide" id="failOv">
@@ -130,15 +297,63 @@
 </div>
 
 <div class="ov hide" id="winOv">
-  <div class="stars"><span id="st1">★</span><span id="st2">★</span><span id="st3">★</span></div>
-  <div class="ovMsg" id="winT" style="color:var(--amber)">SEVİYE TAMAM</div>
-  <div class="ovSmall" id="winStats"></div>
-  <button class="big" id="nextBtn">DEVAM →</button>
+  <div class="card" style="text-align:center">
+    <div class="stars"><span id="st1">★</span><span id="st2">★</span><span id="st3">★</span></div>
+    <div class="cardT" id="winT">SEVİYE TAMAM</div>
+    <div class="rewardRow">
+      <div class="rw" id="rwCoin">🪙 <span id="rwCoinV">+0</span></div>
+      <div class="rw" id="rwHint">💡 <span id="rwHintV">+0</span></div>
+    </div>
+    <div class="rowStat"><span id="lbScore">SKOR</span><b id="vScore">0</b></div>
+    <div class="rowStat"><span id="lbTime">SÜRE</span><b id="vTime">0s</b></div>
+    <div class="rowStat"><span id="lbBest">EN İYİ</span><b id="vBest">—</b></div>
+    <button class="mbtn g" id="nextBtn">DEVAM →</button>
+    <button class="mbtn ghost" id="replayBtn">TEKRAR OYNA</button>
+  </div>
 </div>
 
 <div class="ov hide" id="pauseOv">
-  <div class="ovMsg" id="pauseT" style="color:var(--amber)">DURAKLATILDI</div>
-  <button class="big" id="resumeBtn">DEVAM ET</button>
+  <div class="card" style="text-align:center">
+    <div class="cardT" id="pauseT">DURAKLATILDI</div>
+    <button class="mbtn g" id="resumeBtn">DEVAM ET</button>
+    <button class="mbtn" id="pRestartBtn">YENİDEN BAŞLAT</button>
+    <button class="mbtn o" id="pShopBtn">🛒 MARKET</button>
+    <button class="mbtn ghost" id="pHomeBtn">ANA MENÜ</button>
+  </div>
+</div>
+
+<div class="ov hide" id="shopOv">
+  <div class="card">
+    <div class="cardT" style="text-align:center" id="shopT">MARKET</div>
+    <div class="rowStat"><span id="shopCoinLbl">ALTININ</span><b>🪙 <span id="shopCoin">0</span></b></div>
+    <div id="shopList" style="margin-top:12px"></div>
+    <button class="mbtn ghost" id="shopClose">KAPAT</button>
+  </div>
+</div>
+
+
+<div class="ov hide" id="chestOv">
+  <div class="card" style="text-align:center;background:none;border:none;box-shadow:none">
+    <div class="cardT" id="chestT">HAZİNE SANDIĞI</div>
+    <div id="chestImg" class="chest"><span class="cbox">🎁</span></div>
+    <div class="rewardRow" id="chestReward"></div>
+    <button class="mbtn o" id="chestBtn">SANDIĞI AÇ</button>
+  </div>
+</div>
+
+<div class="ov hide" id="worldOv">
+  <div class="wcard">
+    <div class="wsub" id="worldSub">YENİ DÜNYA AÇILDI</div>
+    <div class="wname" id="worldName">—</div>
+    <button class="mbtn g" id="worldBtn" style="max-width:260px">KEŞFET</button>
+  </div>
+</div>
+<div class="ov hide" id="achOv">
+  <div class="card">
+    <div class="cardT" style="text-align:center" id="achT">BAŞARIMLAR</div>
+    <div id="achList" style="margin-top:12px"></div>
+    <button class="mbtn ghost" id="achClose">KAPAT</button>
+  </div>
 </div>
 
 <script>
@@ -178,6 +393,10 @@ if(mem.hints===undefined)mem.hints=3;
 if(mem.theme===undefined)mem.theme="ancient";
 if(mem.coins===undefined)mem.coins=0;
 if(mem.haptic===undefined)mem.haptic=1;
+if(!mem.ach)mem.ach={};          // basarimlar {id:1}
+if(!mem.best)mem.best={};        // seviye bazli en iyi {lvl:{s:yildiz,sc:skor,t:sure}}
+if(!mem.owned)mem.owned={};      // coin ile acilan temalar {tema:1}
+if(mem.noHintRun===undefined)mem.noHintRun=0;  // ust uste ipucusuz seviye
 const THEMES={
   ancient:{name:"ANCIENT CORE",bg:"#1A1206",bg2:"#2B1E0A",dot:"#2E2411",outline:"#1A1206",text:"#FFE9B8",mono:null,
     pal:["#FFC64D","#FFB020","#E8A317","#FFD97A","#D98E1F","#FFE29B","#C8871A","#FFCE60","#EAB040","#B8791A"]},
@@ -800,8 +1019,9 @@ function startLevel(n){
   paused=false;$("pauseOv").classList.add("hide");
   const tEl=$("timer");if(tEl){tEl.classList.remove("low");$("timerVal").textContent=fmtTime(timeLimit);}
   view.s=1;view.tx=0;view.ty=0;updateZoomBtn();
-  combo=0;levelScore=0;levelStart=Date.now();reviveUsed=false;floaters=[];
+  combo=0;levelScore=0;levelStart=Date.now();reviveUsed=false;floaters=[];hintUsed=false;
   $("lvlNum").textContent=n;updateHintBtn();updateCoin();updateNeonFx();
+  try{checkAchs({});}catch(e){}
   $("winOv").classList.add("hide");
   $("reviveBtn").style.display="";$("reviveBtn").textContent=TX.revive;$("reviveBtn").dataset.mode="";
   updateHearts();updateProg();layout();
@@ -926,26 +1146,51 @@ function winLevel(){
   const stars=lost===0?3:(lost<=Math.ceil(maxH*.4)?2:1);
   if(lost===0)levelScore+=100;
   mem.total=(mem.total||0)+levelScore;
-  // Coin odulu: yildiz basina (madde 18 - ekonomi temeli)
   const reward=10+stars*5;
   mem.coins=(mem.coins|0)+reward;
+  const sec=Math.round((Date.now()-levelStart)/1000);
+  // ipucusuz seri
+  if(hintUsed)mem.noHintRun=0; else mem.noHintRun=(mem.noHintRun|0)+1;
+  // en iyi skor kaydi
+  const bk=String(mem.level), prev=mem.best[bk];
+  const isBest=!prev||levelScore>prev.sc;
+  if(isBest)mem.best[bk]={s:stars,sc:levelScore,t:sec};
+  // her 3 seviyede 1 ipucu hediyesi
+  const hintGift=(mem.level%3===0)?1:0;
+  if(hintGift){mem.hints=(mem.hints|0)+hintGift;updateHintBtn();}
   save();updateCoin();
   haptic("win");
-  const sec=Math.round((Date.now()-levelStart)/1000);
-  $("winStats").textContent=(lost===0?TX.perfect:"")+TX.score+" "+levelScore+" • "+TX.time+" "+sec+TX.sn+" • 🪙 +"+reward;
+  // ekrani doldur
+  $("vScore").textContent=levelScore;
+  $("vTime").textContent=sec+TX.sn;
+  $("vBest").textContent=prev?(prev.sc+(isBest?" ✨":"")):(LANG==="tr"?"YENİ!":"NEW!");
+  $("rwCoinV").textContent="+"+reward;
+  $("rwHintV").textContent="+"+hintGift;
+  $("rwHint").style.display=hintGift?"":"none";
+  $("rwCoin").classList.remove("on");$("rwHint").classList.remove("on");
+  checkAchs({stars,sec,combo});
   ["st1","st2","st3"].forEach(id=>$(id).classList.remove("on"));
   setTimeout(()=>{
     $("winOv").classList.remove("hide");
     for(let i=0;i<stars;i++)
       setTimeout(()=>{$("st"+(i+1)).classList.add("on");sfx.tick();},250+i*280);
+    setTimeout(()=>{$("rwCoin").classList.add("on");sfx.tick();},250+stars*280);
+    setTimeout(()=>{$("rwHint").classList.add("on");},420+stars*280);
     setTimeout(()=>{const nn=mem.level+1;
       if(!nextCache)nextCache={n:nn,L:genLevel(nn)};},1200);
   },850);
 }
-$("nextBtn").onclick=()=>{
+/* Sonraki seviyeye gecis (sandik/dunya ekranlari bittikten sonra cagrilir) */
+function nextLevel(){
   const next=mem.level+1;
   if(next%3===1&&window.showInterstitial){try{window.showInterstitial();}catch(e){}}
-  sfx.tick();startLevel(next);
+  startLevel(next);
+}
+$("nextBtn").onclick=()=>{
+  sfx.tick();
+  $("winOv").classList.add("hide");
+  // once sandik / dunya sinemasi; yoksa dogrudan sonraki seviye
+  if(!afterWin())nextLevel();
 };
 /* Ödüllü reklam kancası: Capacitor'da window.showRewarded(cb) gerçek
    reklama bağlanır; tarayıcı testinde 0.6sn sonra ödül verilir. */
@@ -976,7 +1221,7 @@ function useHint(){
   }
   const free=L.snakes.filter(s=>s.alive&&!blockerOf(s));
   if(!free.length)return;
-  mem.hints--;save();updateHintBtn();
+  mem.hints--;hintUsed=true;save();updateHintBtn();
   hintId=free[Math.floor(Math.random()*free.length)].id;
   sfx.tick();
   setTimeout(()=>{hintId=-1;},2600);
@@ -994,16 +1239,19 @@ function zoomAt(mx,my,f){
   const wx=(mx-view.tx)/view.s,wy=(my-view.ty)/view.s;
   view.s=ns;view.tx=mx-wx*ns;view.ty=my-wy*ns;clampView();
 }
-function setIcon(id,ch){
-  const b=$(id);
-  if(b&&b.firstChild&&b.firstChild.nodeType===3)b.firstChild.nodeValue=ch;
+const ICON_SVG={sound:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M17 8.5a5 5 0 0 1 0 7"/><path d="M20 6a9 9 0 0 1 0 12"/></svg>',soundOff:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M17 9l5 6M22 9l-5 6"/></svg>',
+  zoom:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/><path d="M8 11h6M11 8v6"/></svg>',zoomOut:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/><path d="M8 11h6"/></svg>'};
+function setIcon(id,key){
+  const b=$(id);if(!b)return;
+  const e=b.querySelector(".em");
+  if(e&&ICON_SVG[key])e.innerHTML=ICON_SVG[key];
 }
 function updateZoomBtn(){
   const b=$("zoomBtn"),bd=$("zoomBdg");
   if(!b)return;
   // ikon: butonun ilk metin dugumu (rozet/etiket span'lerine dokunma)
   const zoomed=view.s>1;
-  if(b.firstChild&&b.firstChild.nodeType===3)b.firstChild.nodeValue=zoomed?"↩":"🔍";
+  setIcon("zoomBtn",zoomed?"zoomOut":"zoom");
   if(bd)bd.textContent=zoomed?"1×":"2×";
 }
 const ptrs=new Map();
@@ -1092,7 +1340,7 @@ $("resumeBtn").onclick=resumeGame;
 document.addEventListener("visibilitychange",()=>{if(document.hidden)pauseGame();});
 $("resetBtn").onclick=()=>{sfx.tick();startLevel(mem.level);};
 $("sndBtn").onclick=()=>{mem.sound=mem.sound?0:1;save();
-  setIcon("sndBtn",mem.sound?"♪":"✕");
+  setIcon("sndBtn",mem.sound?"sound":"soundOff");
   if(mem.sound){startMusic();sfx.tick();}else stopMusic();};
 function checkDailyStreak(){
   const today=new Date().toISOString().slice(0,10);
@@ -1114,9 +1362,9 @@ $("playBtn").onclick=()=>{
 $("retryBtn").onclick=()=>{sfx.tick();$("failOv").classList.add("hide");startLevel(mem.level);};
 $("contInfo").textContent=mem.level>1?TX.contL+" "+mem.level+" • "+TX.contS+" "+(mem.total||0):"";
 if((mem.streak||0)>1){const se=document.getElementById("streakInfo");if(se)se.textContent=mem.streak+" "+TX.streak;}
-setIcon("sndBtn",mem.sound?"♪":"✕");
+setIcon("sndBtn",mem.sound?"sound":"soundOff");
 const THEME_UNLOCK={ancient:1,void_:1,frozen:1,magma:6,bio:10,cyber:15,thunder:20,temple:26,abyss:32,cosmic:38,steam:45,dark:52,crystal:60,metro:70,solar:80};
-function themeUnlocked(t){return (mem.maxLevel||mem.level||1)>=THEME_UNLOCK[t];}
+function themeUnlocked(t){return (mem.owned&&mem.owned[t])||((mem.maxLevel||mem.level||1)>=THEME_UNLOCK[t]);}
 $("thmBtn").onclick=()=>{
   const i=THEME_ORDER.indexOf(mem.theme);
   let ni=i,tries=0;
@@ -1149,6 +1397,14 @@ if(LANG!=="tr"){
   const LBL={hintBtn:"HINT",zoomBtn:"ZOOM",resetBtn:"RESTART",pauseBtn:"PAUSE",thmBtn:"THEME",sndBtn:"SOUND"};
   for(const id in LBL){const e=$(id);const s2=e&&e.querySelector(".lbl");if(s2)s2.textContent=LBL[id];}
   $("pauseT").textContent=TX.pauseT;$("resumeBtn").textContent=TX.resume;
+  $("winT").textContent=TX.winT;
+  $("replayBtn").textContent="REPLAY";$("pRestartBtn").textContent="RESTART";
+  $("pHomeBtn").textContent="MAIN MENU";$("pShopBtn").textContent="🛒 SHOP";
+  $("mShopBtn").textContent="🛒 SHOP";$("mAchBtn").textContent="🏆 ACHIEVEMENTS";
+  $("shopT").textContent="SHOP";$("achT").textContent="ACHIEVEMENTS";
+  $("shopClose").textContent="CLOSE";$("achClose").textContent="CLOSE";
+  $("shopCoinLbl").textContent="YOUR COINS";
+  $("lbScore").textContent="SCORE";$("lbTime").textContent="TIME";$("lbBest").textContent="BEST";
 }
 
 /* ---- çizim ---- */
@@ -1156,6 +1412,16 @@ function trackPoint(track,f){
   const i=Math.floor(f),r=f-i;
   const a=track[Math.min(i,track.length-1)],b=track[Math.min(i+1,track.length-1)];
   return [a[0]+(b[0]-a[0])*r,a[1]+(b[1]-a[1])*r];
+}
+/* Renk tonlama: 3B tup gorunumu icin acik/koyu varyantlar */
+function shade(hex,amt){
+  const h=hex.replace("#","");
+  if(h.length<6)return hex;
+  let r=parseInt(h.substr(0,2),16),g=parseInt(h.substr(2,2),16),b=parseInt(h.substr(4,2),16);
+  if(amt>0){r+=(255-r)*amt;g+=(255-g)*amt;b+=(255-b)*amt;}
+  else{r*=(1+amt);g*=(1+amt);b*=(1+amt);}
+  const c=v=>("0"+Math.max(0,Math.min(255,Math.round(v))).toString(16)).slice(-2);
+  return "#"+c(r)+c(g)+c(b);
 }
 function drawSnakePts(pts,color,alpha,glow,ws=1){
   if(pts.length<2)return;
@@ -1180,13 +1446,25 @@ function drawSnakePts(pts,color,alpha,glow,ws=1){
     ctx.globalAlpha=alpha*.22; ctx.lineWidth=cell*.52*ws; path();ctx.stroke();
     ctx.restore();
   }
-  ctx.strokeStyle=color;ctx.lineWidth=cell*.32*ws;
-  path();ctx.stroke();
+  /* --- 3B TUP GOVDE: koyu taban -> ana renk -> ust isik -> parlama cizgisi --- */
   if(NEONFX){
-    // ic cekirdek: ince acik cizgi -> tup/enerji goruntusu
-    ctx.save();ctx.globalAlpha=alpha*.7;
-    ctx.strokeStyle="#FFFFFF";ctx.lineWidth=cell*.10*ws;
+    // 1) koyu taban (hacim/govde alt kismi)
+    ctx.strokeStyle=shade(color,-0.45);ctx.lineWidth=cell*.34*ws;
+    path();ctx.stroke();
+    // 2) ana renk, biraz daha ince -> alt kenarda koyu serit kalir
+    ctx.strokeStyle=color;ctx.lineWidth=cell*.27*ws;
+    path();ctx.stroke();
+    // 3) ust yari: acik ton (silindir isigi)
+    ctx.save();ctx.globalAlpha=alpha*.85;
+    ctx.strokeStyle=shade(color,0.42);ctx.lineWidth=cell*.16*ws;
     path();ctx.stroke();ctx.restore();
+    // 4) en ustte ince beyaz parlama (cam yansimasi)
+    ctx.save();ctx.globalAlpha=alpha*.75;
+    ctx.strokeStyle=shade(color,0.85);ctx.lineWidth=cell*.07*ws;
+    path();ctx.stroke();ctx.restore();
+  }else{
+    ctx.strokeStyle=color;ctx.lineWidth=cell*.32*ws;
+    path();ctx.stroke();
   }
   ctx.shadowBlur=0;
   // kuyruk noktası
@@ -1196,12 +1474,24 @@ function drawSnakePts(pts,color,alpha,glow,ws=1){
   const n=pts.length,h=pts[n-1],p2=pts[n-2];
   const ang=Math.atan2(h[1]-p2[1],h[0]-p2[0]);
   ctx.translate(h[0],h[1]);ctx.rotate(ang);
-  ctx.fillStyle=color;
-  ctx.beginPath();
-  ctx.moveTo(cell*.38*ws,0);
-  ctx.lineTo(-cell*.05*ws,-cell*.23*ws);
-  ctx.lineTo(-cell*.05*ws,cell*.23*ws);
-  ctx.closePath();ctx.fill();
+  // ok ucu: koyu taban + ana renk + ust isik (govdeyle ayni hacim dili)
+  const tri=(k,col)=>{
+    ctx.fillStyle=col;ctx.beginPath();
+    ctx.moveTo(cell*.38*ws*k,0);
+    ctx.lineTo(-cell*.05*ws*k,-cell*.23*ws*k);
+    ctx.lineTo(-cell*.05*ws*k,cell*.23*ws*k);
+    ctx.closePath();ctx.fill();
+  };
+  if(NEONFX){
+    tri(1.0,shade(color,-0.45));
+    tri(0.86,color);
+    ctx.save();ctx.globalAlpha=alpha*.8;
+    ctx.translate(0,-cell*.045*ws);
+    tri(0.52,shade(color,0.5));
+    ctx.restore();
+  }else{
+    tri(1.0,color);
+  }
   ctx.restore();
 }
 let last=0;
@@ -1247,6 +1537,7 @@ function frame(ts){
     ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,7);ctx.fill();
   }
   ctx.globalAlpha=1;ctx.restore();
+  drawFw(dt);   // havai fisek katmani
   ctx.save();
   if(shakeT>0){
     shakeT=Math.max(0,shakeT-dt);
@@ -1345,6 +1636,210 @@ function frame(ts){
 }
 layout();
 requestAnimationFrame(frame);
+
+
+/* ============ FAZ 3: HAVAI FISEK + HAZINE SANDIGI + DUNYA SINEMASI ============ */
+let fw=[];            // havai fisek parcaciklari
+const FW_COL=["#FFD34D","#FF5E7A","#5FD8FF","#8AFF9E","#C77DFF","#FFA13D"];
+function fireworkAt(x,y,n,pow){
+  const c=FW_COL[Math.floor(Math.random()*FW_COL.length)];
+  for(let i=0;i<n;i++){
+    const a=(i/n)*6.283+Math.random()*.3, sp=(1+Math.random())*pow;
+    fw.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,t:1,c:Math.random()<.25?"#FFFFFF":c,
+      s:(1.4+Math.random()*2.2)*DPR});
+  }
+}
+function fireworkShow(count){
+  let i=0;
+  const shoot=()=>{
+    if(i++>=count)return;
+    fireworkAt(cv.width*(.18+Math.random()*.64), cv.height*(.16+Math.random()*.34),
+               26+Math.floor(Math.random()*16), (5+Math.random()*3)*DPR);
+    sfx.tick();
+    setTimeout(shoot, 260+Math.random()*260);
+  };
+  shoot();
+}
+function drawFw(dt){
+  if(!fw.length)return;
+  ctx.save();
+  for(let i=fw.length-1;i>=0;i--){
+    const p=fw[i];
+    p.x+=p.vx; p.y+=p.vy; p.vy+=0.16*DPR; p.vx*=0.985; p.vy*=0.985;
+    p.t-=dt*0.65;
+    if(p.t<=0){fw.splice(i,1);continue;}
+    ctx.globalAlpha=Math.max(0,p.t);
+    ctx.fillStyle=p.c;
+    ctx.beginPath();ctx.arc(p.x,p.y,p.s*p.t,0,7);ctx.fill();
+  }
+  ctx.globalAlpha=1;ctx.restore();
+}
+
+/* ---- HAZINE SANDIGI: her CHEST_EVERY bolumde bir ---- */
+const CHEST_EVERY=5;
+function chestReward(lvl){
+  // seviye ilerledikce odul buyur
+  const coins=40+Math.floor(lvl/5)*10;
+  const hints=1+(lvl>=25?1:0);
+  return {coins,hints};
+}
+function openChest(){
+  const r=chestReward(mem.level);
+  mem.coins=(mem.coins|0)+r.coins;
+  mem.hints=(mem.hints|0)+r.hints;
+  save();updateCoin();updateHintBtn();
+  const img=$("chestImg");
+  if(img)img.classList.add("open");
+  $("chestReward").innerHTML='<div class="rw on">🪙 +'+r.coins+'</div>'+
+                             '<div class="rw on">💡 +'+r.hints+'</div>';
+  $("chestBtn").textContent=LANG==="tr"?"HARİKA!":"AWESOME!";
+  $("chestBtn").onclick=()=>{$("chestOv").classList.add("hide");nextLevel();};
+  sfx.win();haptic("win");
+  fireworkShow(5);
+}
+function showChest(){
+  $("chestReward").innerHTML="";
+  const img=$("chestImg");if(img)img.classList.remove("open");
+  $("chestBtn").textContent=LANG==="tr"?"SANDIĞI AÇ":"OPEN CHEST";
+  $("chestBtn").onclick=openChest;
+  $("chestOv").classList.remove("hide");
+  sfx.tick();
+}
+
+/* ---- DUNYA SINEMASI: yeni dunya acilinca ---- */
+function showWorldIntro(key){
+  const th=THEMES[key];if(!th)return;
+  const ov=$("worldOv");
+  ov.style.backgroundImage='url("assets/bg/'+key+'.jpg")';
+  $("worldName").textContent=th.name;
+  $("worldSub").textContent=LANG==="tr"?"YENİ DÜNYA AÇILDI":"NEW WORLD UNLOCKED";
+  $("worldBtn").textContent=LANG==="tr"?"KEŞFET":"EXPLORE";
+  $("worldBtn").onclick=()=>{
+    ov.classList.add("hide");
+    mem.theme=key;save();
+    T=THEMES[key];applyTheme(mem.level);updateNeonFx();
+    if(L)colorSnakes(L.snakes,mem.level,Math.random);
+    layout();stDirty=true;ambient=[];
+    nextLevel();
+  };
+  ov.classList.remove("hide");
+  sfx.win();haptic("win");
+  fireworkShow(7);
+}
+/* Seviye gecisinde hangi ekran gosterilecek? */
+function afterWin(){
+  // 1) yeni dunya acildi mi
+  if(!mem.seenWorld)mem.seenWorld={};
+  const justUnlocked=THEME_ORDER.find(function(k){return THEME_UNLOCK[k]===mem.level+1&&!mem.seenWorld[k];});
+  if(justUnlocked){
+    mem.seenWorld[justUnlocked]=1;save();
+    showWorldIntro(justUnlocked);return true;
+  }
+  // 2) hazine sandigi zamani mi
+  if(mem.level%CHEST_EVERY===0){showChest();return true;}
+  return false;
+}
+
+/* ================= FAZ 2: BASARIMLAR / MARKET / MENULER ================= */
+const ACHS=[
+  {id:"first", ic:"👣", tr:["İLK ADIM","İlk seviyeyi tamamla"],            en:["FIRST STEP","Complete level 1"]},
+  {id:"perfect",ic:"⭐", tr:["MÜKEMMEL","Bir seviyeyi 3 yıldızla bitir"],   en:["PERFECT","Finish a level with 3 stars"]},
+  {id:"speed",  ic:"⚡", tr:["HIZLI","Bir seviyeyi 20 saniyede bitir"],     en:["SPEED RUNNER","Finish a level under 20s"]},
+  {id:"nohint", ic:"🧠", tr:["USTA ZİHİN","İpucusuz 10 seviye tamamla"],    en:["NO HINT","10 levels without hints"]},
+  {id:"lv25",   ic:"🎯", tr:["YOLUN BAŞI","25. seviyeye ulaş"],             en:["GETTING THERE","Reach level 25"]},
+  {id:"lv50",   ic:"🔥", tr:["KARARLI","50. seviyeye ulaş"],                en:["DEDICATED","Reach level 50"]},
+  {id:"lv100",  ic:"👑", tr:["EFSANE","100. seviyeye ulaş"],                en:["MASTER","Reach level 100"]},
+  {id:"combo",  ic:"💥", tr:["ZİNCİR","5'li kombo yap"],                    en:["CHAIN","Reach a 5x combo"]},
+  {id:"rich",   ic:"💰", tr:["ZENGİN","500 altın biriktir"],                en:["RICH","Collect 500 coins"]},
+  {id:"worlds", ic:"🌍", tr:["KAŞİF","5 farklı dünya aç"],                  en:["EXPLORER","Unlock 5 worlds"]}
+];
+function achName(a){return (LANG==="tr"?a.tr:a.en)[0];}
+function achDesc(a){return (LANG==="tr"?a.tr:a.en)[1];}
+function grantAch(id){
+  if(mem.ach[id])return;
+  mem.ach[id]=1; mem.coins=(mem.coins|0)+25; save(); updateCoin();
+  const a=ACHS.find(x=>x.id===id); if(!a)return;
+  floaters.push({x:cv.width/2,y:cv.height*.28,txt:"🏆 "+achName(a)+"  +25🪙",c:"#FFD34D",t:-.1,big:true});
+  sfx.tick(); haptic("win");
+}
+function checkAchs(ctx2){
+  const c=ctx2||{};
+  if(mem.maxLevel>=2)grantAch("first");
+  if(c.stars===3)grantAch("perfect");
+  if(c.sec!==undefined&&c.sec<=20)grantAch("speed");
+  if(mem.noHintRun>=10)grantAch("nohint");
+  if(mem.maxLevel>=25)grantAch("lv25");
+  if(mem.maxLevel>=50)grantAch("lv50");
+  if(mem.maxLevel>=100)grantAch("lv100");
+  if(c.combo>=5)grantAch("combo");
+  if((mem.coins|0)>=500)grantAch("rich");
+  if(THEME_ORDER.filter(t=>themeUnlocked(t)).length>=5)grantAch("worlds");
+}
+function renderAch(){
+  const w=$("achList"); if(!w)return;
+  w.innerHTML="";
+  ACHS.forEach(a=>{
+    const d=document.createElement("div");
+    d.className="achItem"+(mem.ach[a.id]?" got":"");
+    const got=!!mem.ach[a.id];
+    // rozet gorseli varsa kullan (assets/badge/<id>.jpg), yoksa emoji
+    const icHtml=got
+      ? '<div class="ic" style="background-image:url(\'assets/badge/'+a.id+'.jpg\')">'+
+        '<span class="fb">'+a.ic+'</span></div>'
+      : '<div class="ic"><span class="fb">🔒</span></div>';
+    d.innerHTML=icHtml+'<div class="tx"><b>'+achName(a)+'</b><span>'+achDesc(a)+'</span></div>';
+    w.appendChild(d);
+  });
+}
+/* ---- MARKET ---- */
+const PRICE={hint:60, hint5:250, theme:400};
+function renderShop(){
+  const w=$("shopList"); if(!w)return;
+  $("shopCoin").textContent=(mem.coins|0);
+  w.innerHTML="";
+  const item=(ic,title,desc,cost,onBuy,owned)=>{
+    const d=document.createElement("div");d.className="shopItem";
+    d.innerHTML='<div class="ic">'+ic+'</div><div class="tx"><b>'+title+'</b><span>'+desc+'</span></div>';
+    const b=document.createElement("button");
+    b.className="buy"+(owned?" done":"");
+    b.textContent=owned?"✓":("🪙 "+cost);
+    b.disabled=owned||(mem.coins|0)<cost;
+    b.onclick=()=>{
+      if((mem.coins|0)<cost)return;
+      mem.coins-=cost;save();updateCoin();onBuy();renderShop();sfx.tick();haptic("ok");
+    };
+    d.appendChild(b);w.appendChild(d);
+  };
+  const T2=LANG==="tr";
+  item("💡",T2?"1 İPUCU":"1 HINT",T2?"Takıldığında yol gösterir":"Shows the right arrow",
+    PRICE.hint,()=>{mem.hints=(mem.hints|0)+1;updateHintBtn();});
+  item("💡",T2?"5 İPUCU":"5 HINTS",T2?"Paket indirimi":"Bundle discount",
+    PRICE.hint5,()=>{mem.hints=(mem.hints|0)+5;updateHintBtn();});
+  // Kilitli dunyalari altinla ac
+  THEME_ORDER.forEach(k=>{
+    if(themeUnlocked(k))return;
+    const th=THEMES[k];if(!th)return;
+    const owned=!!mem.owned[k];
+    const thumb='<span class="wthumb" style="background-image:url(\'assets/bg/'+k+'.jpg\')"></span>';
+    item(thumb,th.name,(T2?"Seviye ":"Level ")+THEME_UNLOCK[k]+(T2?"'de açılır":" unlock"),
+      PRICE.theme,()=>{mem.owned[k]=1;},owned);
+  });
+}
+function openShop(){renderShop();$("shopOv").classList.remove("hide");}
+function closeShop(){$("shopOv").classList.add("hide");}
+function openAch(){renderAch();$("achOv").classList.remove("hide");}
+function closeAch(){$("achOv").classList.add("hide");}
+$("shopClose").onclick=()=>{closeShop();sfx.tick();};
+$("achClose").onclick=()=>{closeAch();sfx.tick();};
+$("mShopBtn").onclick=()=>{openShop();sfx.tick();};
+$("mAchBtn").onclick=()=>{openAch();sfx.tick();};
+$("pShopBtn").onclick=()=>{openShop();sfx.tick();};
+$("pRestartBtn").onclick=()=>{resumeGame();startLevel(mem.level);sfx.tick();};
+$("pHomeBtn").onclick=()=>{
+  paused=false;$("pauseOv").classList.add("hide");
+  $("startOv").classList.remove("hide");sfx.tick();
+};
+$("replayBtn").onclick=()=>{$("winOv").classList.add("hide");startLevel(mem.level);sfx.tick();};
 </script>
 <script>
 /* AdMob koprusu - yalniz Capacitor icinde etkinlesir */
@@ -1407,6 +1902,28 @@ requestAnimationFrame(frame);
       }))});
     }catch(e){}
   })();
+})();
+
+
+
+
+
+
+/* Ana menu arka plani: assets/ui/menu.jpg varsa uygula */
+(function(){
+  const im=new Image();
+  im.onload=()=>{const o=$("startOv");if(o){o.style.backgroundImage='url("assets/ui/menu.jpg")';o.classList.add("hasBg");}};
+  im.onerror=()=>{};
+  im.src="assets/ui/menu.jpg";
+})();
+
+/* Hazine sandigi gorseli (assets/ui/chest.jpg) varsa emoji yerine gecer */
+(function(){
+  const im=new Image();
+  im.onload=()=>{const c=$("chestImg");if(c){c.style.backgroundImage='url("assets/ui/chest.jpg")';
+    const e=c.querySelector(".cbox");if(e)e.style.display="none";}};
+  im.onerror=()=>{};
+  im.src="assets/ui/chest.jpg";
 })();
 </script>
 </body>
