@@ -9,10 +9,11 @@
 <style>
   :root{--bg:#141426;--bg2:#1D1D36;--line:#F5F1E6;--dim:#565678;--amber:#FFB347;--red:#E2554F}
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
-  html,body{height:100%;overflow:hidden;background:radial-gradient(ellipse at 50% 35%,var(--bg2) 0%,var(--bg) 62%) fixed,var(--bg);
+  html,body{height:100%;overflow:hidden;background:radial-gradient(ellipse at 50% 35%,var(--bg2) 0%,var(--bg) 62%),var(--bg);
+    background-attachment:scroll;
     font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--line)}
   #wrap{position:fixed;inset:0;display:flex;flex-direction:column}
-  #hud{display:flex;align-items:center;justify-content:space-between;gap:8px;
+  #hud{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:8px;
     padding:calc(env(safe-area-inset-top,0px) + 12px) 12px 8px}
   /* --- neon panel (gorseldeki cerceveli kapsuller) --- */
   .pan{display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;
@@ -80,8 +81,8 @@
   html.light #lvl{color:#8A8477}html.light #lvl b{color:#1B1B1B;text-shadow:none}
   html.light #timer{color:#1B1B1B;text-shadow:none}
   html.light .rnd .lbl{color:#8A8477}
-  #cv{flex:1;width:100%;touch-action:none}
-  #foot{display:flex;justify-content:center;align-items:center;gap:16px;
+  #cv{flex:1 1 0;min-height:0;width:100%;touch-action:none;display:block}
+  #foot{flex:0 0 auto;display:flex;justify-content:center;align-items:center;gap:16px;
     padding:12px 10px calc(env(safe-area-inset-bottom,0px) + 26px)}
   .btn{background:var(--bg2);border:1px solid var(--dim);color:var(--line);
     border-radius:12px;padding:12px 22px;font-size:14px;font-weight:700;letter-spacing:.08em}
@@ -251,10 +252,120 @@
   .wcard{display:flex;flex-direction:column;align-items:center;gap:6px;
     padding:26px 30px;border-radius:22px;
     background:linear-gradient(180deg,rgba(10,14,32,.30),rgba(10,14,32,.86));
-    backdrop-filter:blur(2px);width:min(92vw,420px)}
+    -webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);width:min(92vw,420px)}
   .wsub{font-size:11px;font-weight:800;letter-spacing:.24em;color:#9FC4E8}
   .wname{font-size:30px;font-weight:900;letter-spacing:.10em;color:#FFD34D;
     text-shadow:0 0 22px rgba(255,200,60,.65);margin-bottom:14px;text-align:center}
+
+  .shopItem.free{background:linear-gradient(90deg,rgba(47,191,91,.18),rgba(47,191,91,.06));
+    border-color:rgba(47,191,91,.45)}
+  .buy.freeBtn{background:linear-gradient(135deg,#2FBF5B,#1E9A46);color:#fff}
+
+  .shopItem.prem{background:linear-gradient(90deg,rgba(255,190,60,.16),rgba(255,190,60,.04));
+    border-color:rgba(255,200,80,.45)}
+  .shopItem.prem .tx span{color:#FFD98A}
+
+  /* --- seviye haritasi --- */
+  .wgrp{margin-bottom:16px}
+  .wgrpT{font-size:11px;font-weight:800;letter-spacing:.16em;color:#9FC4E8;
+    margin:0 0 8px 2px;display:flex;align-items:center;gap:8px}
+  .wgrpT i{flex:1;height:1px;background:rgba(120,190,255,.22);display:block}
+  .lgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+  .lcell{height:62px;border-radius:12px;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:2px;position:relative;
+    background:linear-gradient(180deg,rgba(60,85,145,.55),rgba(20,28,58,.75));
+    border:1px solid rgba(120,190,255,.25);
+    font-size:15px;font-weight:900;color:#EAF4FF;cursor:pointer;
+    box-shadow:0 3px 0 rgba(8,14,34,.7),inset 0 1px 0 rgba(190,225,255,.2)}
+  .lcell:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(8,14,34,.7)}
+  .lcell.done{background:linear-gradient(180deg,rgba(47,160,90,.6),rgba(14,70,40,.8));
+    border-color:rgba(120,255,180,.4)}
+  .lcell.cur{background:linear-gradient(180deg,#F5B723,#C87A08);color:#3A2400;
+    border-color:rgba(255,230,160,.75);
+    box-shadow:0 0 16px rgba(245,180,40,.6),0 3px 0 #7A4A05;
+    animation:curPulse 1.5s ease-in-out infinite}
+  @keyframes curPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+  .lcell.lock{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.10);
+    color:#5C6B85;box-shadow:none;cursor:default}
+  .lstars{font-size:8px;letter-spacing:1px;line-height:1;color:#FFD34D}
+  .lcell.lock .lstars{display:none}
+
+  /* ===== CANDY CRUSH TARZI SEVIYE PATIKASI ===== */
+  #lvlOv{background:#080b18}
+  #lvlTop{position:fixed;top:0;left:0;right:0;z-index:5;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:calc(env(safe-area-inset-top,0px) + 10px) 14px 10px;
+    background:linear-gradient(180deg,rgba(8,11,24,.96),rgba(8,11,24,.0))}
+  #lvlScroll{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;
+    -webkit-overflow-scrolling:touch}
+  #lvlPath{position:relative;width:100%}
+  .wband{position:absolute;left:0;right:0;background-size:cover;background-position:center}
+  .wband::after{content:"";position:absolute;inset:0;
+    background:linear-gradient(180deg,rgba(8,11,24,.62),rgba(8,11,24,.78))}
+  .wlabel{position:absolute;left:0;right:0;text-align:center;z-index:3;
+    font-size:12px;font-weight:900;letter-spacing:.22em;color:#FFD34D;
+    text-shadow:0 0 14px rgba(255,200,60,.7),0 2px 6px rgba(0,0,0,.9)}
+  .lnode{position:absolute;width:56px;height:56px;margin:-28px 0 0 -28px;
+    border-radius:50%;z-index:4;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:1px;
+    font-size:17px;font-weight:900;color:#fff;
+    background:radial-gradient(circle at 50% 30%,rgba(255,255,255,.25),rgba(255,255,255,0) 55%),
+      radial-gradient(circle at 50% 115%,#3E7BE0,#1B3E86 62%);
+    border:2px solid rgba(140,205,255,.7);
+    box-shadow:0 0 12px rgba(60,150,255,.4),0 4px 0 rgba(6,10,26,.9),
+      inset 0 2px 4px rgba(255,255,255,.3);
+    text-shadow:0 2px 4px rgba(0,0,0,.7)}
+  .lnode:active{transform:translateY(3px) scale(.96)}
+  .lnode.done{background:radial-gradient(circle at 50% 30%,rgba(255,255,255,.25),rgba(255,255,255,0) 55%),
+      radial-gradient(circle at 50% 115%,#3ACC72,#0E5C2E 62%);
+    border-color:rgba(170,255,205,.75);box-shadow:0 0 12px rgba(50,205,110,.45),0 4px 0 rgba(6,30,16,.9)}
+  .lnode.cur{background:radial-gradient(circle at 50% 30%,rgba(255,255,255,.35),rgba(255,255,255,0) 55%),
+      radial-gradient(circle at 50% 115%,#F5B723,#7A4A05 62%);
+    color:#3A2400;border-color:rgba(255,235,170,.9);
+    box-shadow:0 0 26px rgba(245,180,40,.85),0 4px 0 #5C3703;
+    animation:nodePulse 1.4s ease-in-out infinite;z-index:5}
+  @keyframes nodePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.10)}}
+  .lnode.lock{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.12);
+    color:#4E5C75;box-shadow:none;text-shadow:none}
+  .nstars{font-size:8px;line-height:1;letter-spacing:1px;color:#FFE9A8}
+  .lnode.lock .nstars{display:none}
+  .curTag{position:absolute;top:-22px;left:50%;transform:translateX(-50%);
+    font-size:9px;font-weight:900;letter-spacing:.14em;color:#FFD34D;white-space:nowrap;
+    text-shadow:0 2px 5px rgba(0,0,0,.9)}
+
+  /* ===== iOS / Safari uyumu ===== */
+  *{-webkit-tap-highlight-color:transparent}
+  body{-webkit-user-select:none;user-select:none;
+    -webkit-touch-callout:none;
+    overscroll-behavior:none;position:fixed;width:100%}
+  button{-webkit-appearance:none;appearance:none;touch-action:manipulation}
+  #lvlScroll{overscroll-behavior:contain}
+  .card{-webkit-overflow-scrolling:touch}
+
+  /* ===== DAR / YATAY EKRAN UYUMU (HUD ve butonlar tasmasin) ===== */
+  @media (max-width:420px),(max-height:520px){
+    .pan{padding:5px 9px;gap:4px}
+    #lvl{font-size:10px;letter-spacing:.12em}
+    #lvl b{font-size:15px;margin-left:4px}
+    #timer{font-size:13px;min-width:44px}
+    #coin{font-size:12px}
+    .heart{width:9px;height:9px}
+    .heart::after{width:9px;height:9px;top:-4.5px}
+    .heart::before{width:9px;height:9px;left:4.5px}
+    #hearts{gap:3px}
+    #hud{gap:5px;padding-left:8px;padding-right:8px}
+    .rnd{width:46px;height:46px;font-size:18px}
+    .rnd .em{width:22px;height:22px}
+    .rnd .lbl{font-size:7.5px;bottom:-14px}
+    #foot{gap:10px;padding-left:6px;padding-right:6px}
+  }
+  @media (max-height:480px){
+    .rnd{width:40px;height:40px}
+    .rnd .lbl{display:none}
+    #foot{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 10px)}
+  }
+
+  #offBadge{border-color:rgba(255,180,60,.5);box-shadow:0 0 10px rgba(255,180,60,.25)}
 </style>
 </head>
 <body>
@@ -263,6 +374,7 @@
     <div class="pan"><div id="lvl"><span id="lvlLbl">SEVİYE</span><b id="lvlNum">1</b></div></div>
     <div class="pan"><span style="font-size:13px">⏱</span><div id="timer"><span id="timerVal">1:10</span></div></div>
     <div class="pan"><div id="hearts"><div class="heart"></div><div class="heart"></div><div class="heart"></div><div class="heart"></div><div class="heart"></div></div></div>
+    <div class="pan" id="offBadge" style="display:none"><span style="font-size:12px">📶</span></div>
     <div class="pan"><div id="coin"><span style="font-size:13px">🪙</span><span id="coinVal">0</span></div></div>
   </div>
   <div id="progWrap"><div id="progFill"></div></div>
@@ -284,6 +396,7 @@
   <div class="ovSmall" id="contInfo"></div>
   <div class="ovSmall" id="streakInfo" style="color:#FFB347;margin-top:4px"></div>
   <div class="menuBtns">
+    <button class="mbtn" id="mLvlBtn">🗺️ SEVİYELER</button>
     <button class="mbtn o" id="mShopBtn">🛒 MARKET</button>
     <button class="mbtn ghost" id="mAchBtn">🏆 BAŞARIMLAR</button>
   </div>
@@ -293,6 +406,7 @@
   <div class="ovMsg" id="failT" style="color:var(--red)">KALPLER BİTTİ</div>
   <div class="ovSmall" id="failS">Kafası açık yolda olan oku bul, sırayla çöz</div>
   <button class="big alt" id="reviveBtn">📺 İZLE, +2 KALP</button>
+  <button class="big" id="coinReviveBtn" style="max-width:320px">🪙 80 ALTIN → +2 KALP</button>
   <button class="big ghost" id="retryBtn">TEKRAR DENE</button>
 </div>
 
@@ -325,7 +439,7 @@
 <div class="ov hide" id="shopOv">
   <div class="card">
     <div class="cardT" style="text-align:center" id="shopT">MARKET</div>
-    <div class="rowStat"><span id="shopCoinLbl">ALTININ</span><b>🪙 <span id="shopCoin">0</span></b></div>
+    <div class="rowStat"><span id="shopCoinLbl">MEVCUT ALTIN</span><b>🪙 <span id="shopCoin">0</span></b></div>
     <div id="shopList" style="margin-top:12px"></div>
     <button class="mbtn ghost" id="shopClose">KAPAT</button>
   </div>
@@ -338,6 +452,7 @@
     <div id="chestImg" class="chest"><span class="cbox">🎁</span></div>
     <div class="rewardRow" id="chestReward"></div>
     <button class="mbtn o" id="chestBtn">SANDIĞI AÇ</button>
+    <button class="mbtn g" id="chestX2" style="display:none">🎬 ÖDÜLÜ 2 KATINA ÇIKAR</button>
   </div>
 </div>
 
@@ -348,6 +463,14 @@
     <button class="mbtn g" id="worldBtn" style="max-width:260px">KEŞFET</button>
   </div>
 </div>
+<div class="ov hide" id="lvlOv" style="padding:0;justify-content:flex-start">
+  <div id="lvlTop">
+    <div class="cardT" id="lvlMapT" style="margin:0;font-size:16px">SEVİYELER</div>
+    <button class="rnd" id="lvlClose" style="width:40px;height:40px;font-size:20px"><span class="em">✕</span></button>
+  </div>
+  <div id="lvlScroll"><div id="lvlPath"></div></div>
+</div>
+
 <div class="ov hide" id="achOv">
   <div class="card">
     <div class="cardT" style="text-align:center" id="achT">BAŞARIMLAR</div>
@@ -393,10 +516,19 @@ if(mem.hints===undefined)mem.hints=3;
 if(mem.theme===undefined)mem.theme="ancient";
 if(mem.coins===undefined)mem.coins=0;
 if(mem.haptic===undefined)mem.haptic=1;
-if(!mem.ach)mem.ach={};          // basarimlar {id:1}
-if(!mem.best)mem.best={};        // seviye bazli en iyi {lvl:{s:yildiz,sc:skor,t:sure}}
-if(!mem.owned)mem.owned={};      // coin ile acilan temalar {tema:1}
-if(mem.noHintRun===undefined)mem.noHintRun=0;  // ust uste ipucusuz seviye
+/* Kayit dogrulama: yanlis tipte gelen alanlari guvenle sifirla */
+const _obj=v=>(v&&typeof v==="object"&&!Array.isArray(v))?v:{};
+const _num=(v,d)=>(typeof v==="number"&&isFinite(v)&&v>=0)?v:d;
+mem.ach=_obj(mem.ach);           // basarimlar {id:1}
+mem.best=_obj(mem.best);         // seviye bazli en iyi {lvl:{s,sc,t}}
+mem.owned=_obj(mem.owned);       // altinla acilan temalar {tema:1}
+mem.seenWorld=_obj(mem.seenWorld);
+mem.coins=Math.min(_num(mem.coins,0),9e12);
+mem.hints=Math.min(_num(mem.hints,3),9999);
+mem.total=Math.min(_num(mem.total,0),9e12);
+mem.level=Math.max(1,Math.min(Math.round(_num(mem.level,1)),999999));
+mem.maxLevel=Math.max(1,Math.min(Math.round(_num(mem.maxLevel,mem.level)),999999));
+mem.noHintRun=_num(mem.noHintRun,0);
 const THEMES={
   ancient:{name:"ANCIENT CORE",bg:"#1A1206",bg2:"#2B1E0A",dot:"#2E2411",outline:"#1A1206",text:"#FFE9B8",mono:null,
     pal:["#FFC64D","#FFB020","#E8A317","#FFD97A","#D98E1F","#FFE29B","#C8871A","#FFCE60","#EAB040","#B8791A"]},
@@ -438,9 +570,27 @@ const save=()=>{try{localStorage.setItem("oklar2",JSON.stringify(mem));}catch(e)
 
 /* ---- ses ---- */
 let AC=null;
+/* iOS/Safari: ses ancak kullanici dokununca baslar ve arka plandan donunce
+   askida ("suspended") kalir. Her seste ve ilk dokunusta uyandiriyoruz. */
+function acWake(){
+  try{
+    AC=acWake();
+    if(AC.state==="suspended"&&AC.resume)AC.resume();
+  }catch(e){}
+  return AC;
+}
+(function(){
+  const uyandir=function(){acWake();};
+  ["touchend","pointerup","click","keydown"].forEach(function(ev){
+    document.addEventListener(ev,uyandir,{passive:true});
+  });
+  document.addEventListener("visibilitychange",function(){
+    if(!document.hidden)acWake();
+  });
+})();
 function beep(f,dur,type="sine",vol=.18,slide=0){
   if(!mem.sound)return;
-  try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();
+  try{AC=acWake();
     const o=AC.createOscillator(),g=AC.createGain();
     o.type=type;o.frequency.value=f;
     if(slide)o.frequency.exponentialRampToValueAtTime(slide,AC.currentTime+dur);
@@ -453,7 +603,7 @@ const NOTES=[392,440,523,587,659,784,880,1046]; // pentatonik merdiven
 function pluck(f,vol=.16){
   if(!mem.sound)return;
   try{
-    AC=AC||new (window.AudioContext||window.webkitAudioContext)();
+    AC=acWake();
     const t=AC.currentTime;
     const o=AC.createOscillator(),o2=AC.createOscillator(),g=AC.createGain();
     o.type="triangle";o.frequency.value=f;
@@ -469,7 +619,7 @@ let chordIdx=0;
 function padChord(){
   if(!mem.sound)return;
   try{
-    AC=AC||new (window.AudioContext||window.webkitAudioContext)();
+    AC=acWake();
     const t=AC.currentTime,fr=CHORDS[chordIdx%CHORDS.length];chordIdx++;
     for(const f of fr){
       const o=AC.createOscillator(),g=AC.createGain();
@@ -520,19 +670,24 @@ function colorSnakes(snakes,n,rnd){
   // Tek renk seviyelerde de AKTIF TEMANIN paleti kullanilir -> her dunya kendi atmosferini korur
   const SC=(T&&T.pal&&T.pal.length)?T.pal:SOLO_COLORS;
   let mode,soloColor=null;
-  if(c<=6){ mode="solo"; soloColor=SC[(c-1)%SC.length]; }
-  else if(c<=10){ mode="mix"; }
-  else { mode="solo"; soloColor=SC[Math.floor((c-11)/2)%SC.length]; }
+  // Ritim: tek renk -> COK RENKLI -> tek renk ... (renkli seviye orani artirildi)
+  if(c<=4){ mode="solo"; soloColor=SC[(c-1)%SC.length]; }
+  else if(c<=8){ mode="mix"; }                       // 4 renkli seviye
+  else if(c<=12){ mode="solo"; soloColor=SC[(c-9)%SC.length]; }
+  else { mode="mix"; }                               // 4 renkli seviye daha
 
   if(mode==="solo"){
     snakes.forEach((s,i)=>{s.color=soloColor;s.delay=(i/snakes.length)*600+rnd()*40;});
   }else{
-    const cshuf=[...(T.pal||PALETTE)].sort(()=>Math.random()-.5);
+    // Cok renkli seviyeler: gokkusagi paleti + temanin imza rengi
+    const base=PALETTE.slice();
+    if(T.pal&&T.pal[0])base.push(T.pal[0],T.pal[2]||T.pal[0]);
+    const cshuf=base.sort(()=>Math.random()-.5);
     snakes.forEach((s,i)=>{s.color=cshuf[i%cshuf.length];s.delay=(i/snakes.length)*600+rnd()*40;});
   }
 }
-function maskFor(n,cols,rows,rnd){
-  const type=(n-7)%13;
+function maskFor(n,cols,rows,rnd,forceType){
+  const type=(forceType===undefined)?(n-7)%13:forceType;
   const f1=rnd()*6.28,f2=rnd()*6.28,rot=rnd()*6.28;
   // Parametrik varyasyon: her bolumde donme + hafif olcek/gerilme
   // Boylece 13 temel sekil yuzlerce farkli gorunume donusur
@@ -696,22 +851,52 @@ function packWorms(cols,rows,rnd,mask){
   }
   return solved; // soyma sırası = çözüm sırası
 }
+/* ---- ZORLUK EGRISI ----
+   Izgara ve doluluk seviyeyle KADEMELI artar; oyuncu ilerledigini hisseder.
+   1-10 ogrenme, 11-30 kolay, 31-60 orta, 61-100 zor, 100+ uzman.        */
+function diffFor(n){
+  let cols,rows,fill;
+  if(n<=30){                       // kolay: izgara 11x17 -> 15x25
+    const t=(n-10)/20;
+    cols=11+Math.round(t*4); rows=17+Math.round(t*8); fill=0.60+t*0.10;
+  }else if(n<=60){                 // orta: 15x25 -> 18x30
+    const t=(n-30)/30;
+    cols=15+Math.round(t*3); rows=25+Math.round(t*5); fill=0.70+t*0.10;
+  }else if(n<=100){                // zor: 18x30 -> 20x34
+    const t=(n-60)/40;
+    cols=18+Math.round(t*2); rows=30+Math.round(t*4); fill=0.80+t*0.08;
+  }else{                           // uzman: tam izgara, en yogun
+    cols=20; rows=34; fill=0.93;
+  }
+  return {cols,rows,fill};
+}
 function genLevel(n){
   const rnd=mulberry32(n*2654435761+1299709);
-  const RAMP=[[5,7,8],[7,10,14],[9,13,22],[11,17,35],[14,22,55],[17,28,80]];
+  const RAMP=[[5,7,6],[6,9,10],[7,11,15],[8,13,20],[9,15,26],[10,16,32]];
   let cols,rows,nSnakes;
   if(n<=6){[cols,rows,nSnakes]=RAMP[n-1];}
   else{
-    cols=20;rows=34;
-    const mask=maskFor(n,cols,rows,rnd);
-    let mcells=0;
-    for(let y=0;y<rows;y++)for(let x=0;x<cols;x++)if(mask(x,y))mcells++;
+    const D=diffFor(n);
+    cols=D.cols;rows=D.rows;
+    // HEDEF ALAN: izgaranin ne kadari dolsun (zorluk egrisini duzenli tutar)
+    const hedefAlan=cols*rows*D.fill;
+    let mask=null,mcells=0,enIyiFark=Infinity;
+    for(let ti=0;ti<5;ti++){
+      const tip=((n-7)+ti*5)%13;                    // farkli sekiller dene
+      const r2=mulberry32(n*2654435761+1299709+ti*7919);
+      const m=maskFor(n,cols,rows,r2,tip);
+      let c=0;
+      for(let y=0;y<rows;y++)for(let x=0;x<cols;x++)if(m(x,y))c++;
+      const fark=Math.abs(c-hedefAlan);
+      if(fark<enIyiFark){enIyiFark=fark;mask=m;mcells=c;}
+      if(fark<hedefAlan*0.10)break;                 // yeterince yakin
+    }
     let bestS=null,bestF=0;
     for(let t=0;t<4;t++){
       const S=packWorms(cols,rows,rnd,mask);
       const f=S.reduce((a,w)=>a+w.cells.length,0)/mcells;
       if(f>bestF){bestF=f;bestS=S;}
-      if(f>=.93)break;
+      if(f>=diffFor(n).fill)break;   // hedef doluluk seviyeye gore
     }
     const snakes=bestS.map((w,i)=>({id:i,cells:w.cells,head:w.head,dir:w.dir,alive:true}));
     colorSnakes(snakes,n,rnd);
@@ -800,7 +985,16 @@ let combo=0,lastClear=0,levelScore=0,levelStart=0,reviveUsed=false,floaters=[],m
 let shakeT=0,lvlT=0,levelRemain=0,musicInt=null,nextCache=null;
 let timeLeft=60,timeLimit=60,timeUp=false,paused=false;
 // Her bolume gore sure: 60 baz, ~her 5-6 bolumde bir 45'e iner sonra tekrar cikar (dalgali)
-function levelTime(n){return Math.round(70+6*Math.cos(n*Math.PI/5.5));}
+function levelTime(n){
+  // Baslangicta bol, ilerledikce kisalir; 100+ seviyede taban 52sn
+  let base;
+  if(n<=10)base=80;
+  else if(n<=30)base=76-(n-10)*0.5;      // 76 -> 66
+  else if(n<=60)base=66-(n-30)*0.25;     // 66 -> 58
+  else if(n<=100)base=58-(n-60)*0.15;    // 58 -> 52
+  else base=52;
+  return Math.round(base+4*Math.cos(n*Math.PI/5.5));  // hafif dalga (monotonluk kirilir)
+}
 // Bolum renk cesitliligi - sadece varsayilan "renk" temasinda arka plan tonunu degistirir
 const LVLTINT=[
   {bg:"#141426",bg2:"#1D1D36"},   // varsayilan mor-lacivert
@@ -1131,7 +1325,7 @@ function tapSnake(s){
     const gap=Math.abs(blk.x-s.head[0])+Math.abs(blk.y-s.head[1])-1;
     anims.push({type:"bump",s,track:buildTrack(s),t:0,dur:.5,gap:gap+.35});
     hearts--;updateHearts();
-    if(hearts<=0){locked=true;setTimeout(()=>{sfx.fail();$("failT").textContent=TX.failT;$("reviveBtn").textContent=TX.revive;$("reviveBtn").dataset.mode="";$("reviveBtn").style.display="";$("failOv").classList.remove("hide");
+    if(hearts<=0){locked=true;setTimeout(()=>{sfx.fail();$("failT").textContent=TX.failT;$("reviveBtn").textContent=TX.revive;$("reviveBtn").dataset.mode="";$("reviveBtn").style.display="";updateCoinRevive();guncelleReklamButonlari();$("failOv").classList.remove("hide");
       setTimeout(()=>{if(!nextCache)nextCache={n:mem.level,L:genLevel(mem.level)};},700);},550);}
   }
 }
@@ -1146,7 +1340,7 @@ function winLevel(){
   const stars=lost===0?3:(lost<=Math.ceil(maxH*.4)?2:1);
   if(lost===0)levelScore+=100;
   mem.total=(mem.total||0)+levelScore;
-  const reward=10+stars*5;
+  const reward=5+stars*3;   // dengelendi: altin artik bol degil
   mem.coins=(mem.coins|0)+reward;
   const sec=Math.round((Date.now()-levelStart)/1000);
   // ipucusuz seri
@@ -1156,8 +1350,7 @@ function winLevel(){
   const isBest=!prev||levelScore>prev.sc;
   if(isBest)mem.best[bk]={s:stars,sc:levelScore,t:sec};
   // her 3 seviyede 1 ipucu hediyesi
-  const hintGift=(mem.level%3===0)?1:0;
-  if(hintGift){mem.hints=(mem.hints|0)+hintGift;updateHintBtn();}
+  const hintGift=0;   // seviye basi bedava ipucu YOK (ipucu: reklam / altin / sandik)
   save();updateCoin();
   haptic("win");
   // ekrani doldur
@@ -1195,6 +1388,13 @@ $("nextBtn").onclick=()=>{
 /* Ödüllü reklam kancası: Capacitor'da window.showRewarded(cb) gerçek
    reklama bağlanır; tarayıcı testinde 0.6sn sonra ödül verilir. */
 function tryRewarded(onOk,type){
+  if(!ONLINE){   // internet yok -> reklam gosterilemez, odul de verilmez
+    try{floaters.push({x:cv.width/2,y:cv.height*.55,
+      txt:(LANG==="tr"?"📶 İnternet gerekli":"📶 Internet required"),
+      c:"#FFB347",t:-.1,big:false});}catch(e){}
+    try{sfx.bump();haptic("err");}catch(e){}
+    return;
+  }
   if(window.showRewarded){try{window.showRewarded(onOk,type);}catch(e){}}
   else setTimeout(onOk,600);
 }
@@ -1363,13 +1563,22 @@ $("retryBtn").onclick=()=>{sfx.tick();$("failOv").classList.add("hide");startLev
 $("contInfo").textContent=mem.level>1?TX.contL+" "+mem.level+" • "+TX.contS+" "+(mem.total||0):"";
 if((mem.streak||0)>1){const se=document.getElementById("streakInfo");if(se)se.textContent=mem.streak+" "+TX.streak;}
 setIcon("sndBtn",mem.sound?"sound":"soundOff");
-const THEME_UNLOCK={ancient:1,void_:1,frozen:1,magma:6,bio:10,cyber:15,thunder:20,temple:26,abyss:32,cosmic:38,steam:45,dark:52,crystal:60,metro:70,solar:80};
+/* Seviyeyle acilanlar (ilerleme odulu) */
+const THEME_UNLOCK={ancient:1,void_:1,frozen:1,magma:6,bio:10,cyber:15,thunder:20,temple:26,abyss:32,steam:40,
+/* PREMIUM: seviyeyle ASLA acilmaz -> sadece altinla (altinin asil hedefi) */
+  cosmic:9999,dark:9999,crystal:9999,metro:9999,solar:9999};
+const PREMIUM_THEMES=["cosmic","dark","crystal","metro","solar"];
+const isPremium=k=>PREMIUM_THEMES.indexOf(k)>=0;
 function themeUnlocked(t){return (mem.owned&&mem.owned[t])||((mem.maxLevel||mem.level||1)>=THEME_UNLOCK[t]);}
 $("thmBtn").onclick=()=>{
   const i=THEME_ORDER.indexOf(mem.theme);
-  let ni=i,tries=0;
-  do{ni=(ni+1)%THEME_ORDER.length;tries++;}
-  while(!themeUnlocked(THEME_ORDER[ni])&&tries<10);
+  // Sadece ACIK temalar arasinda gez. Hicbiri yoksa mevcut temada kal.
+  let ni=i,found=false;
+  for(let t=0;t<THEME_ORDER.length;t++){
+    ni=(ni+1)%THEME_ORDER.length;
+    if(themeUnlocked(THEME_ORDER[ni])){found=true;break;}
+  }
+  if(!found)return;   // acik baska tema yok
   mem.theme=THEME_ORDER[ni];save();
   T=THEMES[mem.theme]||THEMES.ancient;
   // Bolum tinti temizle - secilen temanin kendi rengi gelsin
@@ -1378,10 +1587,6 @@ $("thmBtn").onclick=()=>{
   
   // Dunya adini ekranda goster
   floaters.push({x:cv.width/2,y:cv.height/2.35,txt:(T.name||""),c:(T.pal&&T.pal[0])||T.text,t:-.15,big:true});
-  const nxt=THEME_ORDER.find(t=>!themeUnlocked(t)&&THEME_UNLOCK[t]>(mem.maxLevel||1));
-  if(nxt)floaters.push({x:cv.width/2,y:cv.height/1.72,
-    txt:(LANG==="tr"?"Seviye ":"Level ")+THEME_UNLOCK[nxt]+(LANG==="tr"?": yeni tema":": new theme"),
-    c:T.text,t:-1.1,big:false});
   applyTheme(mem.level);layout();stDirty=true;ambient=[];sfx.tick();updateNeonFx();haptic("tap");
   if(L){colorSnakes(L.snakes,mem.level,Math.random);}  // yeni temanin renkleri hemen uygulansin
 };
@@ -1402,6 +1607,14 @@ if(LANG!=="tr"){
   $("pHomeBtn").textContent="MAIN MENU";$("pShopBtn").textContent="🛒 SHOP";
   $("mShopBtn").textContent="🛒 SHOP";$("mAchBtn").textContent="🏆 ACHIEVEMENTS";
   $("shopT").textContent="SHOP";$("achT").textContent="ACHIEVEMENTS";
+  $("mLvlBtn").textContent="🗺️ LEVELS";$("lvlMapT").textContent="LEVELS";
+  $("chestT").textContent="TREASURE CHEST";
+  $("lbTime").textContent="TIME";$("lbBest").textContent="BEST";
+  $("worldSub").textContent="NEW WORLD UNLOCKED";$("worldBtn").textContent="EXPLORE";
+  $("chestBtn").textContent="OPEN CHEST";
+  $("chestX2").textContent="🎬 DOUBLE THE REWARD";
+  $("coinReviveBtn").textContent="🪙 80 → +2 HEARTS";
+  $("failT").textContent=TX.failT;
   $("shopClose").textContent="CLOSE";$("achClose").textContent="CLOSE";
   $("shopCoinLbl").textContent="YOUR COINS";
   $("lbScore").textContent="SCORE";$("lbTime").textContent="TIME";$("lbBest").textContent="BEST";
@@ -1446,6 +1659,23 @@ function drawSnakePts(pts,color,alpha,glow,ws=1){
     ctx.globalAlpha=alpha*.22; ctx.lineWidth=cell*.52*ws; path();ctx.stroke();
     ctx.restore();
   }
+  /* --- ZEMIN GOLGESI: ok tahtadan yukselmis gorunsun --- */
+  if(NEONFX){
+    ctx.save();
+    ctx.globalAlpha=alpha*.42;
+    ctx.strokeStyle="#000000";ctx.lineWidth=cell*.52*ws;
+    ctx.translate(cell*.045,cell*.13);
+    path();ctx.stroke();
+    ctx.restore();
+    /* --- EXTRUDE: asagi dogru kademeli koyu govde -> kalinlik hissi --- */
+    ctx.save();
+    const depth=Math.max(2,Math.round(cell*.13)), side=shade(color,-0.62);
+    ctx.strokeStyle=side;ctx.lineWidth=cell*.33*ws;
+    for(let k=depth;k>=1;k--){
+      ctx.save();ctx.translate(0,k);path();ctx.stroke();ctx.restore();
+    }
+    ctx.restore();
+  }
   /* --- 3B TUP GOVDE: koyu taban -> ana renk -> ust isik -> parlama cizgisi --- */
   if(NEONFX){
     // 1) koyu taban (hacim/govde alt kismi)
@@ -1483,6 +1713,11 @@ function drawSnakePts(pts,color,alpha,glow,ws=1){
     ctx.closePath();ctx.fill();
   };
   if(NEONFX){
+    // ok ucu extrude (govdeyle ayni derinlik)
+    const dep=Math.max(2,Math.round(cell*.13));
+    ctx.save();
+    for(let k=dep;k>=1;k--){ctx.save();ctx.translate(0,k);tri(1.0,shade(color,-0.62));ctx.restore();}
+    ctx.restore();
     tri(1.0,shade(color,-0.45));
     tri(0.86,color);
     ctx.save();ctx.globalAlpha=alpha*.8;
@@ -1518,7 +1753,7 @@ function frame(ts){
         $("reviveBtn").textContent=(LANG==="en"?"📺 WATCH, +TIME":"📺 İZLE, +SÜRE");
         $("reviveBtn").style.display="";
         $("reviveBtn").dataset.mode="time";
-        $("failOv").classList.remove("hide");
+        updateCoinRevive();guncelleReklamButonlari();$("failOv").classList.remove("hide");
         if(!nextCache)nextCache={n:mem.level,L:genLevel(mem.level)};
       },400);
     }
@@ -1617,10 +1852,18 @@ function frame(ts){
     ctx.save();
     ctx.globalAlpha=Math.min(1,(1-p2)*2.2)*(f.big?.95:1);
     ctx.fillStyle=f.c;
-    ctx.font="900 "+(f.big?38*DPR:cell*1.7)+"px system-ui";
+    let fs=f.big?38*DPR:cell*1.7;
+    ctx.font="900 "+fs+"px system-ui";
+    // Ekrandan tasmasin: genislige gore fontu kucult (dar telefonlar / uzun metin)
+    const enFazla=cv.width*0.92;
+    let gen=ctx.measureText(f.txt).width;
+    if(gen>enFazla){
+      fs=Math.max(11*DPR,fs*enFazla/gen);
+      ctx.font="900 "+fs+"px system-ui";
+    }
     ctx.textAlign="center";
     if(f.big){ctx.shadowColor=T.bg;ctx.shadowBlur=16*DPR;}
-    ctx.fillText(f.txt,f.x,f.y-p2*cell*(f.big?1.2:2));
+    ctx.fillText(f.txt,Math.max(cv.width/2,f.x*0+cv.width/2),f.y-p2*cell*(f.big?1.2:2));
     ctx.restore();
   }
   // konfeti
@@ -1679,7 +1922,7 @@ function drawFw(dt){
 const CHEST_EVERY=5;
 function chestReward(lvl){
   // seviye ilerledikce odul buyur
-  const coins=40+Math.floor(lvl/5)*10;
+  const coins=25+Math.floor(lvl/5)*6;
   const hints=1+(lvl>=25?1:0);
   return {coins,hints};
 }
@@ -1694,6 +1937,27 @@ function openChest(){
                              '<div class="rw on">💡 +'+r.hints+'</div>';
   $("chestBtn").textContent=LANG==="tr"?"HARİKA!":"AWESOME!";
   $("chestBtn").onclick=()=>{$("chestOv").classList.add("hide");nextLevel();};
+  // Odullu reklam: sandigi 2 katina cikar (tek sefer)
+  const dbl=$("chestX2");
+  if(dbl){
+    dbl.style.display="";
+    dbl.textContent=(LANG==="tr"?"🎬 ÖDÜLÜ 2 KATINA ÇIKAR":"🎬 DOUBLE THE REWARD");
+    dbl.disabled=false;
+    dbl.onclick=()=>{
+      dbl.disabled=true;dbl.textContent="...";
+      tryRewarded(()=>{
+        mem.coins=(mem.coins|0)+r.coins;
+        mem.hints=(mem.hints|0)+r.hints;
+        save();updateCoin();updateHintBtn();
+        $("chestReward").innerHTML='<div class="rw on">🪙 +'+(r.coins*2)+'</div>'+
+                                   '<div class="rw on">💡 +'+(r.hints*2)+'</div>';
+        dbl.style.display="none";
+        sfx.win();haptic("win");fireworkShow(4);
+      },"sandik");
+      setTimeout(()=>{if(dbl.disabled){dbl.disabled=false;
+        dbl.textContent=(LANG==="tr"?"🎬 ÖDÜLÜ 2 KATINA ÇIKAR":"🎬 DOUBLE THE REWARD");}},2500);
+    };
+  }
   sfx.win();haptic("win");
   fireworkShow(5);
 }
@@ -1702,6 +1966,7 @@ function showChest(){
   const img=$("chestImg");if(img)img.classList.remove("open");
   $("chestBtn").textContent=LANG==="tr"?"SANDIĞI AÇ":"OPEN CHEST";
   $("chestBtn").onclick=openChest;
+  const d2=$("chestX2");if(d2)d2.style.display="none";
   $("chestOv").classList.remove("hide");
   sfx.tick();
 }
@@ -1757,9 +2022,10 @@ function achName(a){return (LANG==="tr"?a.tr:a.en)[0];}
 function achDesc(a){return (LANG==="tr"?a.tr:a.en)[1];}
 function grantAch(id){
   if(mem.ach[id])return;
-  mem.ach[id]=1; mem.coins=(mem.coins|0)+25; save(); updateCoin();
+  const ACH_REWARD=40;
+  mem.ach[id]=1; mem.coins=(mem.coins|0)+ACH_REWARD; save(); updateCoin();
   const a=ACHS.find(x=>x.id===id); if(!a)return;
-  floaters.push({x:cv.width/2,y:cv.height*.28,txt:"🏆 "+achName(a)+"  +25🪙",c:"#FFD34D",t:-.1,big:true});
+  floaters.push({x:cv.width/2,y:cv.height*.28,txt:"🏆 "+achName(a)+"  +"+ACH_REWARD+"🪙",c:"#FFD34D",t:-.1,big:true});
   sfx.tick(); haptic("win");
 }
 function checkAchs(ctx2){
@@ -1792,13 +2058,13 @@ function renderAch(){
   });
 }
 /* ---- MARKET ---- */
-const PRICE={hint:60, hint5:250, theme:400};
+const PRICE={hint:150, hint5:600, theme:400, premium:750, life:80};
 function renderShop(){
   const w=$("shopList"); if(!w)return;
   $("shopCoin").textContent=(mem.coins|0);
   w.innerHTML="";
-  const item=(ic,title,desc,cost,onBuy,owned)=>{
-    const d=document.createElement("div");d.className="shopItem";
+  const item=(ic,title,desc,cost,onBuy,owned,prem)=>{
+    const d=document.createElement("div");d.className="shopItem"+(prem?" prem":"");
     d.innerHTML='<div class="ic">'+ic+'</div><div class="tx"><b>'+title+'</b><span>'+desc+'</span></div>';
     const b=document.createElement("button");
     b.className="buy"+(owned?" done":"");
@@ -1811,6 +2077,29 @@ function renderShop(){
     d.appendChild(b);w.appendChild(d);
   };
   const T2=LANG==="tr";
+  // ---- BEDAVA: odullu reklam (en ust sirada, dikkat cekici) ----
+  (function(){
+    const d=document.createElement("div");
+    d.className="shopItem free";
+    d.innerHTML='<div class="ic">🎬</div><div class="tx"><b>'+
+      (T2?"REKLAM İZLE → +3 İPUCU":"WATCH AD → +3 HINTS")+'</b><span>'+
+      (T2?"Ücretsiz, istediğin kadar":"Free, as often as you like")+'</span></div>';
+    const b=document.createElement("button");
+    b.className="buy freeBtn";
+    b.textContent=ONLINE?(T2?"BEDAVA":"FREE"):(T2?"📶 ÇEVRİMDIŞI":"📶 OFFLINE");
+    b.disabled=!ONLINE;
+    if(!ONLINE)d.style.opacity=".5";
+    b.onclick=()=>{
+      if(!ONLINE)return;
+      b.disabled=true;b.textContent="...";
+      tryRewarded(()=>{
+        mem.hints=(mem.hints|0)+3;save();updateHintBtn();
+        sfx.win();haptic("win");fireworkShow(2);renderShop();
+      },"ipucu");
+      setTimeout(()=>{b.disabled=false;b.textContent=T2?"BEDAVA":"FREE";},2500);
+    };
+    d.appendChild(b);w.appendChild(d);
+  })();
   item("💡",T2?"1 İPUCU":"1 HINT",T2?"Takıldığında yol gösterir":"Shows the right arrow",
     PRICE.hint,()=>{mem.hints=(mem.hints|0)+1;updateHintBtn();});
   item("💡",T2?"5 İPUCU":"5 HINTS",T2?"Paket indirimi":"Bundle discount",
@@ -1821,8 +2110,11 @@ function renderShop(){
     const th=THEMES[k];if(!th)return;
     const owned=!!mem.owned[k];
     const thumb='<span class="wthumb" style="background-image:url(\'assets/bg/'+k+'.jpg\')"></span>';
-    item(thumb,th.name,(T2?"Seviye ":"Level ")+THEME_UNLOCK[k]+(T2?"'de açılır":" unlock"),
-      PRICE.theme,()=>{mem.owned[k]=1;},owned);
+    const prem=isPremium(k);
+    const desc=prem
+      ? (T2?"⭐ ÖZEL — sadece markette":"⭐ EXCLUSIVE — shop only")
+      : (T2?"Seviye "+THEME_UNLOCK[k]+"'de açılır":"Unlocks at level "+THEME_UNLOCK[k]);
+    item(thumb,th.name,desc,prem?PRICE.premium:PRICE.theme,()=>{mem.owned[k]=1;},owned,prem);
   });
 }
 function openShop(){renderShop();$("shopOv").classList.remove("hide");}
@@ -1925,6 +2217,184 @@ $("replayBtn").onclick=()=>{$("winOv").classList.add("hide");startLevel(mem.leve
   im.onerror=()=>{};
   im.src="assets/ui/chest.jpg";
 })();
+
+/* Altinla devam: canin/surenin altin karsiligi -> altina tekrarlayan deger */
+(function(){
+  const b=$("coinReviveBtn"); if(!b)return;
+  b.onclick=()=>{
+    const isTime=$("reviveBtn").dataset.mode==="time";
+    if((mem.coins|0)<PRICE.life){
+      floaters.push({x:cv.width/2,y:cv.height*.62,
+        txt:(LANG==="tr"?"Altın yetersiz":"Not enough coins"),c:"#FF6B7A",t:-.1,big:false});
+      sfx.bump();haptic("err");return;
+    }
+    mem.coins-=PRICE.life;save();updateCoin();
+    if(isTime){
+      timeLeft=timeLimit;timeUp=false;
+      const tEl=$("timer");if(tEl){tEl.classList.remove("low");$("timerVal").textContent=fmtTime(timeLimit);}
+    }else{
+      hearts=Math.min(maxH,hearts+2);updateHearts();
+    }
+    $("failOv").classList.add("hide");locked=false;
+    $("reviveBtn").dataset.mode="";
+    sfx.win();haptic("ok");
+  };
+})();
+/* Kaybetme ekrani acilirken altin butonunun yazisini/durumunu guncelle */
+function updateCoinRevive(){
+  const b=$("coinReviveBtn"); if(!b)return;
+  const yeter=(mem.coins|0)>=PRICE.life;
+  const isTime=$("reviveBtn").dataset.mode==="time";
+  const what=isTime?(LANG==="tr"?"+SÜRE":"+TIME"):(LANG==="tr"?"+2 KALP":"+2 HEARTS");
+  b.textContent="🪙 "+PRICE.life+" → "+what;
+  b.style.opacity=yeter?"1":".45";
+}
+
+/* ================= SEVIYE PATIKASI (Candy Crush tarzi) ================= */
+function worldOfLevel(n){
+  let best=null,bestLv=-1;
+  THEME_ORDER.forEach(function(k){
+    const u=THEME_UNLOCK[k];
+    if(u<9999&&u<=n&&u>bestLv){bestLv=u;best=k;}
+  });
+  return best||"ancient";
+}
+function renderLevels(){
+  const wrap=$("lvlPath"); if(!wrap)return;
+  wrap.innerHTML="";
+  const maxL=Math.max(1,mem.maxLevel||1);
+  const son=Math.max(24,Math.ceil((maxL+8)/6)*6);
+  const W=wrap.clientWidth||window.innerWidth;
+  const GAP=104;                       // dugumler arasi dikey mesafe
+  const PADTOP=90, PADBOT=120;
+  const H=PADTOP+son*GAP+PADBOT;
+  wrap.style.height=H+"px";
+
+  // Dugum konumlari: yilan gibi kivrilan patika (sinus)
+  const pos=[];
+  for(let n=1;n<=son;n++){
+    const t=(son-n);                                   // asagidan yukari: 1 en altta
+    const y=PADTOP+t*GAP;
+    const x=W/2+Math.sin(n*0.85)*(W*0.27);
+    pos.push({n,x,y});
+  }
+
+  // --- dunya bantlari: her dunyanin y araligini bul ---
+  const bands={};
+  pos.forEach(function(p){
+    const k=worldOfLevel(p.n);
+    if(!bands[k])bands[k]={min:p.y,max:p.y};
+    else{bands[k].min=Math.min(bands[k].min,p.y);bands[k].max=Math.max(bands[k].max,p.y);}
+  });
+  Object.keys(bands).forEach(function(k){
+    const b=bands[k];
+    const top=Math.max(0,b.min-GAP*0.6), bot=Math.min(H,b.max+GAP*0.6);
+    const band=document.createElement("div");
+    band.className="wband";
+    band.style.top=top+"px";
+    band.style.height=(bot-top)+"px";
+    band.style.backgroundImage='url("assets/bg/'+k+'.jpg")';
+    wrap.appendChild(band);
+    const lab=document.createElement("div");
+    lab.className="wlabel";
+    lab.style.top=(top+10)+"px";
+    lab.textContent=THEMES[k]?THEMES[k].name:"";
+    wrap.appendChild(lab);
+  });
+
+  // --- patika cizgisi (SVG) ---
+  const ns="http://www.w3.org/2000/svg";
+  const svg=document.createElementNS(ns,"svg");
+  svg.setAttribute("width",W);svg.setAttribute("height",H);
+  svg.style.cssText="position:absolute;left:0;top:0;z-index:2;pointer-events:none";
+  let d="M "+pos[0].x+" "+pos[0].y;
+  for(let i=1;i<pos.length;i++){
+    const a=pos[i-1],b=pos[i];
+    const my=(a.y+b.y)/2;
+    d+=" C "+a.x+" "+my+", "+b.x+" "+my+", "+b.x+" "+b.y;
+  }
+  const mk=(w,col,dash)=>{
+    const q=document.createElementNS(ns,"path");
+    q.setAttribute("d",d);q.setAttribute("fill","none");
+    q.setAttribute("stroke",col);q.setAttribute("stroke-width",w);
+    q.setAttribute("stroke-linecap","round");
+    if(dash)q.setAttribute("stroke-dasharray",dash);
+    svg.appendChild(q);
+  };
+  mk(16,"rgba(0,0,0,.45)");            // golge
+  mk(11,"rgba(150,200,255,.30)");      // govde
+  mk(3,"rgba(220,240,255,.55)","2 12");// noktali orta cizgi
+  wrap.appendChild(svg);
+
+  // --- dugumler ---
+  pos.forEach(function(p){
+    const n=p.n, b=mem.best[String(n)], kilitli=n>maxL, mevcut=(n===maxL);
+    const el=document.createElement("div");
+    el.className="lnode"+(kilitli?" lock":(mevcut?" cur":(b?" done":"")));
+    el.style.left=p.x+"px";el.style.top=p.y+"px";
+    el.innerHTML=(mevcut?'<span class="curTag">'+(LANG==="tr"?"BURADASIN":"YOU ARE HERE")+'</span>':'')
+      +"<span>"+(kilitli?"🔒":n)+"</span>"
+      +(b?'<span class="nstars">'+"★".repeat(b.s)+"☆".repeat(3-b.s)+'</span>':'');
+    if(!kilitli){
+      el.onclick=function(){
+        $("lvlOv").classList.add("hide");
+        $("startOv").classList.add("hide");
+        sfx.tick();haptic("tap");startLevel(n);
+      };
+    }
+    wrap.appendChild(el);
+  });
+
+  // mevcut seviyeye kaydir
+  setTimeout(function(){
+    const sc=$("lvlScroll"),c=wrap.querySelector(".lnode.cur");
+    if(sc&&c)sc.scrollTop=Math.max(0,c.offsetTop-sc.clientHeight*0.62);
+  },30);
+}
+function openLevels(){$("lvlOv").classList.remove("hide");renderLevels();}
+$("mLvlBtn").onclick=function(){openLevels();sfx.tick();};
+$("lvlClose").onclick=function(){$("lvlOv").classList.add("hide");sfx.tick();};
+
+/* ============ CEVRIMDISI ALGILAMA ============
+   Oyun offline calisir (rakipler gibi) ama REKLAM ODULLERI verilmez:
+   internet yokken bedava ipucu/can sömürülemez.                      */
+let ONLINE=(typeof navigator.onLine==="boolean")?navigator.onLine:true;
+function agGuncelle(){
+  const yeni=(typeof navigator.onLine==="boolean")?navigator.onLine:true;
+  const degisti=(yeni!==ONLINE);
+  ONLINE=yeni;
+  const rozet=$("offBadge");
+  if(rozet)rozet.style.display=ONLINE?"none":"";
+  // acik ekranlari tazele
+  const sh=$("shopOv");
+  if(sh&&!sh.classList.contains("hide"))renderShop();
+  guncelleReklamButonlari();
+  if(degisti&&!ONLINE){
+    try{floaters.push({x:cv.width/2,y:cv.height*.3,
+      txt:(LANG==="tr"?"Çevrimdışı — ödüller kapalı":"Offline — rewards disabled"),
+      c:"#FFB347",t:-.1,big:false});}catch(e){}
+  }
+}
+function guncelleReklamButonlari(){
+  // Can/sure icin reklam butonu
+  const rb=$("reviveBtn");
+  if(rb){
+    rb.disabled=!ONLINE;
+    rb.style.opacity=ONLINE?"1":".4";
+    if(!ONLINE)rb.textContent=(LANG==="tr"?"📶 İnternet gerekli":"📶 Internet required");
+    else rb.textContent=TX.revive;
+  }
+  // Sandik 2x
+  const dx=$("chestX2");
+  if(dx&&dx.style.display!=="none"){
+    dx.disabled=!ONLINE;
+    dx.style.opacity=ONLINE?"1":".4";
+  }
+}
+window.addEventListener("online",agGuncelle);
+window.addEventListener("offline",agGuncelle);
+document.addEventListener("visibilitychange",function(){if(!document.hidden)agGuncelle();});
+setTimeout(agGuncelle,300);
 </script>
 </body>
 </html>
