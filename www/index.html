@@ -415,6 +415,15 @@
   /* dugumlere hafif canlilik */
   .lnode.done::after{content:"";position:absolute;inset:-4px;border-radius:50%;
     border:1px solid rgba(120,255,180,.25);pointer-events:none}
+
+  /* logo: ok bicimli harfler */
+  #logoArrows{display:flex;gap:2px;align-items:center;letter-spacing:0;margin-left:0}
+  #logoArrows svg{width:min(15vw,58px);height:auto;
+    filter:drop-shadow(0 0 14px rgba(140,200,255,.35)) drop-shadow(0 4px 10px rgba(0,0,0,.55));
+    animation:logoFloat 2.8s ease-in-out infinite}
+  #logoArrows .lg1{animation-delay:0s}#logoArrows .lg2{animation-delay:.12s}
+  #logoArrows .lg3{animation-delay:.24s}#logoArrows .lg4{animation-delay:.36s}
+  #logoArrows .lg5{animation-delay:.48s}
 </style>
 </head>
 <body>
@@ -445,7 +454,7 @@
     <div class="mStat"><span class="mIc">🏆</span><b id="msAch">0</b></div>
   </div>
   <div class="logoWrap">
-    <div class="logo"><span class="c1">O</span><span class="c2">K</span><span class="c3">L</span><span class="c4">A</span><span class="c5">R</span></div>
+    <div class="logo" id="logoArrows"></div>
     <div class="logoGlow"></div>
   </div>
   <div class="sub" id="subT">DÜĞÜMÜ ÇÖZ</div>
@@ -2469,6 +2478,35 @@ function menuGuncelle(){
   const t=$("mProgTxt");
   if(t)t.textContent=(THEMES[key]?THEMES[key].name:"")+" • "+(LANG==="tr"?"SEVİYE ":"LEVEL ")+lv;
 }
+
+/* ===== ANA MENU LOGOSU: harfler oyunun ok stilinde ===== */
+(function(){
+  const H={
+    O:{d:"M30 18 C17 18 11 29 11 42 C11 55 17 66 30 66 C43 66 49 55 49 42 C49 29 43 18 30 18 Z",tip:null},
+    K:{d:"M15 14 L15 70 M44 18 L19 42 L44 66",tip:[44,66,45]},
+    L:{d:"M17 14 L17 64 L45 64",tip:[45,64,0]},
+    A:{d:"M13 68 L30 18 L47 68 M21 52 L39 52",tip:[30,18,-90]},
+    R:{d:"M17 68 L17 16 L33 16 C44 16 44 39 33 39 L17 39 M31 39 L46 66",tip:[46,66,60]}
+  };
+  const C=["#FF5E7A","#FFB020","#4DFF9E","#5FD8FF","#C77DFF"];
+  const w=document.getElementById("logoArrows");
+  if(!w)return;
+  "OKLAR".split("").forEach(function(ch,i){
+    const c=C[i],h=H[ch];
+    let ucu="";
+    if(h.tip){
+      const x=h.tip[0],y=h.tip[1],a=h.tip[2];
+      ucu='<polygon points="9,0 -5,-8 -5,8" fill="'+c+'" transform="translate('+x+','+y+') rotate('+a+')"/>';
+    }
+    const g=function(wd,col,op){
+      return '<g fill="none" stroke="'+col+'" stroke-width="'+wd+'" stroke-linecap="round" stroke-linejoin="round"'+
+        (op?' opacity="'+op+'"':'')+'><path d="'+h.d+'"/></g>';
+    };
+    w.insertAdjacentHTML("beforeend",
+      '<svg class="lg'+(i+1)+'" viewBox="0 0 60 84" style="overflow:visible">'+
+      g(15,c,".22")+g(11,c)+ucu+g(3.4,"#fff",".9")+'</svg>');
+  });
+})();
 </script>
 </body>
 </html>
