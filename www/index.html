@@ -366,6 +366,55 @@
   }
 
   #offBadge{border-color:rgba(255,180,60,.5);box-shadow:0 0 10px rgba(255,180,60,.25)}
+
+  /* ===== PREMIUM ANA MENU ===== */
+  #mStats{position:absolute;top:calc(env(safe-area-inset-top,0px) + 14px);left:0;right:0;
+    display:flex;justify-content:center;gap:10px;padding:0 14px}
+  .mStat{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:999px;
+    background:linear-gradient(180deg,rgba(40,52,92,.92),rgba(16,20,42,.92));
+    border:1px solid rgba(120,190,255,.32);
+    box-shadow:0 0 12px rgba(60,140,255,.2),inset 0 1px 0 rgba(180,220,255,.18)}
+  .mStat b{font-size:14px;font-weight:900;color:#FFD34D;text-shadow:0 0 8px rgba(255,200,60,.5)}
+  .mIc{font-size:13px}
+  .logoWrap{position:relative;display:flex;align-items:center;justify-content:center}
+  .logoGlow{position:absolute;width:230px;height:230px;border-radius:50%;pointer-events:none;
+    background:radial-gradient(circle,rgba(120,180,255,.28),rgba(120,180,255,0) 68%);
+    animation:logoPulse 3.2s ease-in-out infinite}
+  @keyframes logoPulse{0%,100%{transform:scale(1);opacity:.85}50%{transform:scale(1.16);opacity:1}}
+  .logo span{display:inline-block;animation:logoFloat 2.8s ease-in-out infinite;
+    text-shadow:0 0 24px currentColor,0 4px 12px rgba(0,0,0,.6)}
+  .logo .c1{animation-delay:0s}.logo .c2{animation-delay:.12s}.logo .c3{animation-delay:.24s}
+  .logo .c4{animation-delay:.36s}.logo .c5{animation-delay:.48s}
+  @keyframes logoFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+  #mProg{position:relative;width:min(76vw,300px);height:16px;border-radius:999px;margin:12px 0 16px;
+    background:rgba(10,16,36,.75);border:1px solid rgba(120,190,255,.28);overflow:hidden;
+    box-shadow:inset 0 2px 6px rgba(0,0,0,.5)}
+  #mProgFill{position:absolute;left:0;top:0;bottom:0;width:0%;border-radius:999px;
+    background:linear-gradient(90deg,#F5A623,#FFD34D);
+    box-shadow:0 0 12px rgba(255,200,60,.65);transition:width .6s ease}
+  #mProgTxt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font-size:9.5px;font-weight:900;letter-spacing:.14em;color:#fff;
+    text-shadow:0 1px 3px rgba(0,0,0,.9)}
+
+  /* ===== DUNYA TABELASI (Candy Crush tarzi levha) ===== */
+  .wlabel{pointer-events:none}
+  .signPost{display:inline-flex;flex-direction:column;align-items:center;gap:3px;
+    padding:9px 26px;border-radius:14px;position:relative;
+    background:linear-gradient(180deg,#7A5A2A 0%,#5A4018 48%,#3E2B0E 100%);
+    border:2px solid #C89A44;
+    box-shadow:0 5px 0 #2A1D09,0 9px 20px rgba(0,0,0,.6),
+      inset 0 2px 0 rgba(255,220,150,.35),inset 0 -3px 8px rgba(0,0,0,.4)}
+  .signPost::before,.signPost::after{content:"";position:absolute;top:50%;width:9px;height:9px;
+    border-radius:50%;background:radial-gradient(circle at 35% 35%,#FFE9A8,#8A6A20);
+    transform:translateY(-50%);box-shadow:0 1px 2px rgba(0,0,0,.6)}
+  .signPost::before{left:8px}.signPost::after{right:8px}
+  .signName{font-size:13px;font-weight:900;letter-spacing:.14em;color:#FFE9A8;
+    text-shadow:0 2px 4px rgba(0,0,0,.85),0 0 12px rgba(255,200,100,.5)}
+  .signStars{font-size:9.5px;font-weight:800;letter-spacing:.06em;color:#FFD34D;
+    text-shadow:0 1px 3px rgba(0,0,0,.8)}
+  /* dugumlere hafif canlilik */
+  .lnode.done::after{content:"";position:absolute;inset:-4px;border-radius:50%;
+    border:1px solid rgba(120,255,180,.25);pointer-events:none}
 </style>
 </head>
 <body>
@@ -390,8 +439,17 @@
 </div>
 
 <div class="ov" id="startOv">
-  <div class="logo"><span class="c1">O</span><span class="c2">K</span><span class="c3">L</span><span class="c4">A</span><span class="c5">R</span></div>
+  <div id="mStats">
+    <div class="mStat"><span class="mIc">🪙</span><b id="msCoin">0</b></div>
+    <div class="mStat"><span class="mIc">⭐</span><b id="msStar">0</b></div>
+    <div class="mStat"><span class="mIc">🏆</span><b id="msAch">0</b></div>
+  </div>
+  <div class="logoWrap">
+    <div class="logo"><span class="c1">O</span><span class="c2">K</span><span class="c3">L</span><span class="c4">A</span><span class="c5">R</span></div>
+    <div class="logoGlow"></div>
+  </div>
   <div class="sub" id="subT">DÜĞÜMÜ ÇÖZ</div>
+  <div id="mProg"><div id="mProgFill"></div><span id="mProgTxt"></span></div>
   <button class="big" id="playBtn">OYNA</button>
   <div class="ovSmall" id="contInfo"></div>
   <div class="ovSmall" id="streakInfo" style="color:#FFB347;margin-top:4px"></div>
@@ -531,35 +589,35 @@ mem.maxLevel=Math.max(1,Math.min(Math.round(_num(mem.maxLevel,mem.level)),999999
 mem.noHintRun=_num(mem.noHintRun,0);
 const THEMES={
   ancient:{name:"ANCIENT CORE",bg:"#1A1206",bg2:"#2B1E0A",dot:"#2E2411",outline:"#1A1206",text:"#FFE9B8",mono:null,
-    pal:["#FFC64D","#FFB020","#E8A317","#FFD97A","#D98E1F","#FFE29B","#C8871A","#FFCE60","#EAB040","#B8791A"]},
+    pal:["#ffe22f","#ffca00","#ffbc00","#fff66a","#ffa100","#fffe95","#fa9a00","#ffea48","#ffc823","#e68900"]},
   void_:{name:"VOID",bg:"#0B0618",bg2:"#170C2B",dot:"#1D1235",outline:"#0B0618",text:"#EBDBFF",mono:null,
-    pal:["#C77DFF","#9D4EDD","#E0AAFF","#7B2CBF","#D896FF","#B15EFF","#8A3FFD","#CBA0FF","#A44DFF","#DDB4FF"]},
+    pal:["#dd70ff","#af3aff","#f9aaff","#8914ed","#f190ff","#c349ff","#9324ff","#de9fff","#b434ff","#f4b8ff"]},
   frozen:{name:"FROZEN CORE",bg:"#04141F",bg2:"#082433",dot:"#0D2C3D",outline:"#04141F",text:"#DFF6FF",mono:null,
-    pal:["#5FD8FF","#00B4E0","#8AE6FF","#2E9FD4","#B0EEFF","#48C8F5","#0E86B8","#7ADFFF","#35B6E8","#A5E9FF"]},
+    pal:["#45f8ff","#00d7ff","#7effff","#10b6ff","#b0ffff","#2ae6ff","#009ce6","#69feff","#14d2ff","#a2ffff"]},
   magma:{name:"MAGMA",bg:"#1C0704",bg2:"#2E0F07",dot:"#3A160B",outline:"#1C0704",text:"#FFDCC7",mono:null,
-    pal:["#FF6B20","#FF8B3D","#FF4E11","#FFA45C","#E03A0A","#FF7A2E","#FFB877","#D6300A","#FF9448","#FF5C18"]},
+    pal:["#ff6d00","#ff9421","#ff4700","#ffb248","#ff3100","#ff7f0f","#ffca6a","#ff2500","#ff9f2f","#ff5900"]},
   bio:{name:"BIO CORE",bg:"#04160D",bg2:"#082616",dot:"#0D2E1B",outline:"#04160D",text:"#D6FFE6",mono:null,
-    pal:["#4DFF9E","#00E07A","#8AFFC0","#22C46A","#B0FFD6","#3DEF8E","#0FA85C","#6FFFB2","#2ED97F","#9BFFCB"]},
+    pal:["#34ffac","#00ff89","#82ffd2","#08f772","#b3ffeb","#23ff9a","#00d565","#60ffc3","#13ff8b","#98ffdf"]},
   cyber:{name:"CYBER CITY",bg:"#0A0618",bg2:"#150C2B",dot:"#1C1236",outline:"#0A0618",text:"#F0E4FF",mono:null,
-    pal:["#FF2E97","#00E5FF","#C77DFF","#FF6BC5","#4DD9FF","#FF3DAF","#8A5CFF","#FFA0DC","#2EC4FF","#E05CFF"]},
+    pal:["#ff0ba6","#00ffff","#dd70ff","#ff58dd","#2dfbff","#ff1dc5","#8f4bff","#ff9df5","#06e3ff","#ff40ff"]},
   thunder:{name:"THUNDER",bg:"#060B1A",bg2:"#0C142E",dot:"#111B3A",outline:"#060B1A",text:"#E4EFFF",mono:null,
-    pal:["#6FA8FF","#3D7BFF","#A8C8FF","#2E5FE0","#C4DCFF","#5490FF","#1E48C4","#89B6FF","#3F6FF0","#B0CEFF"]},
+    pal:["#61b5ff","#237fff","#aad9ff","#165fff","#cdf1ff","#4098ff","#0745fc","#82c5ff","#2970ff","#b4e0ff"]},
   temple:{name:"LOST TEMPLE",bg:"#191204",bg2:"#2A1F09",dot:"#332710",outline:"#191204",text:"#FFEDC4",mono:null,
-    pal:["#F5C542","#E0A81E","#FFD873","#C89018","#FFE49B","#DEB43A","#A87512","#FFCE5C","#D4A32E","#FFDF8A"]},
+    pal:["#ffe322","#ffc300","#fff560","#f9a600","#ffff95","#ffd01c","#d28700","#ffeb43","#ffbc0f","#fffc7f"]},
   abyss:{name:"ABYSS",bg:"#03121A",bg2:"#062230",dot:"#0A2A3A",outline:"#03121A",text:"#D4F5F0",mono:null,
-    pal:["#2EE6C8","#00C4A8","#6FF5DE","#149E88","#A0FFEF","#3DD9BE","#0B7A6A","#5FEBD4","#22B8A0","#8AFFE8"]},
+    pal:["#08ffeb","#00f4ca","#5cffff","#00c2a1","#9affff","#20ffde","#00967e","#48fff5","#03e0bd","#7dffff"]},
   cosmic:{name:"COSMIC",bg:"#0A0620",bg2:"#150C35",dot:"#1B1242",outline:"#0A0620",text:"#EFE0FF",mono:null,
-    pal:["#B15EFF","#FF6BC5","#5FD8FF","#E0AAFF","#FF9ED8","#8A5CFF","#7AE0FF","#D68AFF","#FF7ACB","#A0C8FF"]},
+    pal:["#c349ff","#ff58dd","#45f8ff","#f9aaff","#ff9af0","#8f4bff","#69ffff","#f080ff","#ff6ce3","#9fdaff"]},
   steam:{name:"STEAM FORGE",bg:"#170F06",bg2:"#261B0C",dot:"#2F2211",outline:"#170F06",text:"#FFE6C4",mono:null,
-    pal:["#E8A05C","#C87A38","#FFC38A","#A85E24","#FFD6AB","#D68F4A","#8A4A18","#F0AE6E","#BE7030","#FFCE9B"]},
+    pal:["#ffb04b","#f88523","#ffd682","#d26510","#ffecac","#ff9d37","#ae5006","#ffbf61","#ec791b","#ffe398"]},
   dark:{name:"DARK REALM",bg:"#0C0714",bg2:"#170D26",dot:"#1E1230",outline:"#0C0714",text:"#E6D6F5",mono:null,
-    pal:["#9D6BFF","#6B3FBF","#C4A0FF","#4F2E96","#D8BFFF","#8250E8","#3D2178","#B08AFF","#6E42CC","#C9AEFF"]},
+    pal:["#a75dff","#7130ed","#d5a0ff","#5222bb","#ecc7ff","#893fff","#3f1696","#bc84ff","#7332fd","#dab2ff"]},
   crystal:{name:"CRYSTAL CAVE",bg:"#070A1C",bg2:"#0D1230",dot:"#131A3C",outline:"#070A1C",text:"#DFEAFF",mono:null,
-    pal:["#7AB8FF","#B58AFF","#5FD8FF","#8A9EFF","#D0B0FF","#4F9EF0","#9B78F5","#A8D4FF","#6E7FE8","#C4A8FF"]},
+    pal:["#6ec9ff","#c384ff","#45f8ff","#87a4ff","#e3b4ff","#39adff","#a470ff","#a8e9ff","#6881ff","#d4aaff"]},
   metro:{name:"NEON METROPOLIS",bg:"#080614",bg2:"#120C26",dot:"#191230",outline:"#080614",text:"#F0E8FF",mono:null,
-    pal:["#FF3D7F","#00E5C4","#FFD24D","#B15EFF","#3DD9FF","#FF6B4D","#8AFF5C","#FF5CC4","#5CB0FF","#FFA02E"]},
+    pal:["#ff2384","#00ffec","#fff22e","#c349ff","#17fdff","#ff673b","#8fff4b","#ff44dd","#46c2ff","#ffb20a"]},
   solar:{name:"SOLAR CORE",bg:"#1A0F02",bg2:"#2C1B05",dot:"#36230A",outline:"#1A0F02",text:"#FFEECB",mono:null,
-    pal:["#FFB020","#FF8A1F","#FFD060","#E06A0F","#FFE099","#FF9E2E","#C85408","#FFC44D","#F07E18","#FFD880"]}
+    pal:["#ffca00","#ff9700","#ffed48","#ff7100","#fffb93","#ffb00b","#ff5700","#ffdf30","#ff8900","#fff472"]}
 };
 const THEME_ORDER=["ancient","void_","frozen","magma","bio","cyber","thunder","temple","abyss","cosmic","steam","dark","crystal","metro","solar"];
 if(!THEMES[mem.theme])mem.theme="ancient";   // eski kayitlar icin guvenli gecis
@@ -1566,6 +1624,7 @@ $("playBtn").onclick=()=>{
 };
 $("retryBtn").onclick=()=>{sfx.tick();$("failOv").classList.add("hide");startLevel(mem.level);};
 $("contInfo").textContent=mem.level>1?TX.contL+" "+mem.level+" • "+TX.contS+" "+(mem.total||0):"";
+setTimeout(function(){try{menuGuncelle();}catch(e){}},60);
 if((mem.streak||0)>1){const se=document.getElementById("streakInfo");if(se)se.textContent=mem.streak+" "+TX.streak;}
 setIcon("sndBtn",mem.sound?"sound":"soundOff");
 /* Seviyeyle acilanlar (ilerleme odulu) */
@@ -2114,7 +2173,7 @@ $("pShopBtn").onclick=()=>{openShop();sfx.tick();};
 $("pRestartBtn").onclick=()=>{resumeGame();startLevel(mem.level);sfx.tick();};
 $("pHomeBtn").onclick=()=>{
   paused=false;$("pauseOv").classList.add("hide");
-  $("startOv").classList.remove("hide");sfx.tick();
+  $("startOv").classList.remove("hide");try{menuGuncelle();}catch(e){}sfx.tick();
 };
 $("replayBtn").onclick=()=>{$("winOv").classList.add("hide");startLevel(mem.level);sfx.tick();};
 </script>
@@ -2282,8 +2341,17 @@ function renderLevels(){
     wrap.appendChild(band);
     const lab=document.createElement("div");
     lab.className="wlabel";
-    lab.style.top=(top+10)+"px";
-    lab.textContent=THEMES[k]?THEMES[k].name:"";
+    lab.style.top=(top+14)+"px";
+    const th=THEMES[k];
+    // Bu dunyada kac yildiz toplandi
+    let ty=0,tm=0;
+    pos.forEach(function(q){
+      if(worldOfLevel(q.n)!==k)return;
+      tm+=3; const bb=mem.best[String(q.n)]; if(bb&&bb.s)ty+=bb.s;
+    });
+    lab.innerHTML='<span class="signPost">'+
+      '<span class="signName">'+(th?th.name:"")+'</span>'+
+      '<span class="signStars">⭐ '+ty+' / '+tm+'</span></span>';
     wrap.appendChild(lab);
   });
 
@@ -2380,6 +2448,27 @@ window.addEventListener("online",agGuncelle);
 window.addEventListener("offline",agGuncelle);
 document.addEventListener("visibilitychange",function(){if(!document.hidden)agGuncelle();});
 setTimeout(agGuncelle,300);
+
+/* Ana menu istatistikleri + dunya ilerleme cubugu */
+function menuGuncelle(){
+  const c=$("msCoin"); if(!c)return;
+  c.textContent=(mem.coins|0);
+  let yildiz=0;
+  for(const k in mem.best){const b=mem.best[k]; if(b&&b.s)yildiz+=b.s;}
+  $("msStar").textContent=yildiz;
+  $("msAch").textContent=Object.keys(mem.ach||{}).length+"/"+ACHS.length;
+  // mevcut dunyada ilerleme
+  const lv=mem.maxLevel||1, key=worldOfLevel(lv);
+  let bas=THEME_UNLOCK[key]||1, son=lv+5;
+  THEME_ORDER.forEach(function(k){
+    const u=THEME_UNLOCK[k];
+    if(u<9999&&u>bas&&u<son)son=u;
+  });
+  const p=Math.max(6,Math.min(100,Math.round((lv-bas+1)/(son-bas+1)*100)));
+  const f=$("mProgFill"); if(f)f.style.width=p+"%";
+  const t=$("mProgTxt");
+  if(t)t.textContent=(THEMES[key]?THEMES[key].name:"")+" • "+(LANG==="tr"?"SEVİYE ":"LEVEL ")+lv;
+}
 </script>
 </body>
 </html>
