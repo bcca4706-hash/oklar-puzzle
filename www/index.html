@@ -572,10 +572,15 @@ const save=()=>{try{localStorage.setItem("oklar2",JSON.stringify(mem));}catch(e)
 let AC=null;
 /* iOS/Safari: ses ancak kullanici dokununca baslar ve arka plandan donunce
    askida ("suspended") kalir. Her seste ve ilk dokunusta uyandiriyoruz. */
+let _acSon=0;
 function acWake(){
   try{
-    AC=acWake();
-    if(AC.state==="suspended"&&AC.resume)AC.resume();
+    AC=AC||new (window.AudioContext||window.webkitAudioContext)();
+    // resume() pahalidir: her seste degil, en fazla saniyede bir dene
+    if(AC.state==="suspended"&&AC.resume){
+      const t=Date.now();
+      if(t-_acSon>1000){_acSon=t;AC.resume();}
+    }
   }catch(e){}
   return AC;
 }
@@ -1019,7 +1024,7 @@ function applyTheme(n){
 let view={s:1,tx:0,ty:0},ambient=[];
 /* NEONFX: glow efekti anahtari. Acik temada kapali (beyaz zeminde kotu durur),
    cok yogun seviyelerde otomatik kapanir -> dusuk cihazlarda FPS korunur. */
-let NEONFX=true;
+let NEONFX=true,FAST=false;   // FAST: animasyon sirasinda hafif cizim
 function updateNeonFx(){
   // Glow 3 katmanli cizim -> statik cache sayesinde seviye basina 1 kez odenir.
   // Cok yogun seviyelerde (170+) yine de kapat: dusuk cihazlarda cache uretimi uzamasin.
@@ -1164,7 +1169,9 @@ function drawScene(b,W,H){
   b.restore();
 }
 function layout(){
-  DPR=Math.min(window.devicePixelRatio||1,2.5);
+  DPR=Math.min(window.devicePixelRatio||1,2);
+  // Yogun seviyelerde cozunurlugu biraz dusur -> akicilik
+  if(L&&L.snakes&&L.snakes.length>110)DPR=Math.min(DPR,1.6);
   const r=cv.getBoundingClientRect();
   cv.width=r.width*DPR;cv.height=r.height*DPR;
   if(!L)return;
@@ -1659,23 +1666,6 @@ function drawSnakePts(pts,color,alpha,glow,ws=1){
     ctx.globalAlpha=alpha*.22; ctx.lineWidth=cell*.52*ws; path();ctx.stroke();
     ctx.restore();
   }
-  /* --- ZEMIN GOLGESI: ok tahtadan yukselmis gorunsun --- */
-  if(NEONFX){
-    ctx.save();
-    ctx.globalAlpha=alpha*.42;
-    ctx.strokeStyle="#000000";ctx.lineWidth=cell*.52*ws;
-    ctx.translate(cell*.045,cell*.13);
-    path();ctx.stroke();
-    ctx.restore();
-    /* --- EXTRUDE: asagi dogru kademeli koyu govde -> kalinlik hissi --- */
-    ctx.save();
-    const depth=Math.max(2,Math.round(cell*.13)), side=shade(color,-0.62);
-    ctx.strokeStyle=side;ctx.lineWidth=cell*.33*ws;
-    for(let k=depth;k>=1;k--){
-      ctx.save();ctx.translate(0,k);path();ctx.stroke();ctx.restore();
-    }
-    ctx.restore();
-  }
   /* --- 3B TUP GOVDE: koyu taban -> ana renk -> ust isik -> parlama cizgisi --- */
   if(NEONFX){
     // 1) koyu taban (hacim/govde alt kismi)
@@ -1713,11 +1703,6 @@ function drawSnakePts(pts,color,alpha,glow,ws=1){
     ctx.closePath();ctx.fill();
   };
   if(NEONFX){
-    // ok ucu extrude (govdeyle ayni derinlik)
-    const dep=Math.max(2,Math.round(cell*.13));
-    ctx.save();
-    for(let k=dep;k>=1;k--){ctx.save();ctx.translate(0,k);tri(1.0,shade(color,-0.62));ctx.restore();}
-    ctx.restore();
     tri(1.0,shade(color,-0.45));
     tri(0.86,color);
     ctx.save();ctx.globalAlpha=alpha*.8;
@@ -1789,9 +1774,25 @@ function frame(ts){
       const sc=stCv.getContext("2d");
       sc.clearRect(0,0,stCv.width,stCv.height);
       if(bgCv)sc.drawImage(bgCv,0,0);
-      const keep=ctx;ctx=sc;
+      const keep=ctx;ctx=sc;FAST=false;   // cache tam detayla cizilir
       for(const s of L.snakes){
         if(!s.alive)continue;
+        drawSnakePts(s.cells.map(c=>[ox+c[0]*cell+cell/2,oy+c[1]*cell+cell/2]),colName(s),1,false);
+      }
+      ctx=keep;stDirty=false;
+    }
+    ctx.drawImage(stCv,0,0);FAST=false;
+  }else if(stCv&&anims.length>0&&hintId<0&&!lastFew&&(ts-lvlT)>=1000){
+    /* HIZLI YOL: sadece ok ucarken -> duran oklari CACHE'ten bas,
+       ucan ok zaten asagida "animasyonlar" bolumunde cizilir.
+       Boylece 140 ok yerine 1 resim + 1 ok cizilir.                    */
+    if(stDirty){
+      const sc=stCv.getContext("2d");
+      sc.clearRect(0,0,stCv.width,stCv.height);
+      if(bgCv)sc.drawImage(bgCv,0,0);
+      const keep=ctx;ctx=sc;FAST=false;
+      for(const s of L.snakes){
+        if(!s.alive||animIds.has(s.id))continue;
         drawSnakePts(s.cells.map(c=>[ox+c[0]*cell+cell/2,oy+c[1]*cell+cell/2]),colName(s),1,false);
       }
       ctx=keep;stDirty=false;
@@ -1799,6 +1800,8 @@ function frame(ts){
     ctx.drawImage(stCv,0,0);
   }else{
     stDirty=true;
+    // ANIMASYON ANI: yogun seviyelerde 3B katmanlari atla (akicilik > detay)
+    FAST=(L.snakes.length>70);
     if(bgCv)ctx.drawImage(bgCv,0,0);
     let hinted=null;
     for(const s of L.snakes){
