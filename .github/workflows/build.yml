@@ -19,8 +19,23 @@ jobs:
           node-version: '22'
       - run: npm install
       - run: npx cap sync android
-      - run: cd android && ./gradlew bundleRelease
-      - uses: actions/upload-artifact@v4
+
+      # --- Play Store icin AAB ---
+      - name: AAB uret
+        run: cd android && ./gradlew bundleRelease
+
+      # --- Cihazda test icin APK (debug: kendi anahtariyla imzali, dogrudan kurulur) ---
+      - name: Test APK uret
+        run: cd android && ./gradlew assembleDebug
+
+      - name: AAB yukle
+        uses: actions/upload-artifact@v4
         with:
           name: oklar-release
           path: android/app/build/outputs/bundle/release/app-release.aab
+
+      - name: Test APK yukle
+        uses: actions/upload-artifact@v4
+        with:
+          name: oklar-test-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
