@@ -1169,9 +1169,7 @@ function drawScene(b,W,H){
   b.restore();
 }
 function layout(){
-  DPR=Math.min(window.devicePixelRatio||1,2);
-  // Yogun seviyelerde cozunurlugu biraz dusur -> akicilik
-  if(L&&L.snakes&&L.snakes.length>110)DPR=Math.min(DPR,1.6);
+  DPR=Math.min(window.devicePixelRatio||1,2.5);
   const r=cv.getBoundingClientRect();
   cv.width=r.width*DPR;cv.height=r.height*DPR;
   if(!L)return;
@@ -1782,22 +1780,6 @@ function frame(ts){
       ctx=keep;stDirty=false;
     }
     ctx.drawImage(stCv,0,0);FAST=false;
-  }else if(stCv&&anims.length>0&&hintId<0&&!lastFew&&(ts-lvlT)>=1000){
-    /* HIZLI YOL: sadece ok ucarken -> duran oklari CACHE'ten bas,
-       ucan ok zaten asagida "animasyonlar" bolumunde cizilir.
-       Boylece 140 ok yerine 1 resim + 1 ok cizilir.                    */
-    if(stDirty){
-      const sc=stCv.getContext("2d");
-      sc.clearRect(0,0,stCv.width,stCv.height);
-      if(bgCv)sc.drawImage(bgCv,0,0);
-      const keep=ctx;ctx=sc;FAST=false;
-      for(const s of L.snakes){
-        if(!s.alive||animIds.has(s.id))continue;
-        drawSnakePts(s.cells.map(c=>[ox+c[0]*cell+cell/2,oy+c[1]*cell+cell/2]),colName(s),1,false);
-      }
-      ctx=keep;stDirty=false;
-    }
-    ctx.drawImage(stCv,0,0);
   }else{
     stDirty=true;
     // ANIMASYON ANI: yogun seviyelerde 3B katmanlari atla (akicilik > detay)
