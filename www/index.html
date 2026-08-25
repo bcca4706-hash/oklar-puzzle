@@ -695,7 +695,7 @@
   <div id="sideL" class="sideBar">
     <button class="rnd sm cGold" id="hintBtn"><span class="em"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg></span><span class="bdg" id="hintBdg">3</span></button>
     <button class="rnd sm cGreen" id="undoBtn"><span class="em"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 6 6v0a6 6 0 0 1-6 6H9"/></svg></span><span class="bdg" id="undoBdg">1</span></button>
-    <button class="rnd sm cRed" id="bombBtn"><span class="em"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="14" r="7"/><path d="M15.5 8.5 18 6"/><path d="M17 4l1.5 1.5L20 4"/></svg></span><span class="bdg" id="bombBdg">1</span></button>
+    <button class="rnd sm cRed" id="bombBtn"><span class="em"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="15" r="6.5"/><path d="M11 8.5c0-2 1.3-3.4 2.8-4"/><path d="M13.3 2.8l1 1.3M15.8 3.2l.6 1.4M12 4.3l1.3.7"/></svg></span><span class="bdg" id="bombBdg">1</span></button>
     <button class="rnd sm cCyan" id="timeBtn"><span class="em"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/><path d="M9 2h6"/></svg></span><span class="bdg" id="timeBdg">1</span></button>
   </div>
   <div id="sideR" class="sideBar">
@@ -1576,7 +1576,8 @@ function layout(){
   cv.width=r.width*DPR;cv.height=r.height*DPR;
   if(!L)return;
   const pad=12*DPR;
-  cell=Math.min((cv.width-pad*2)/L.cols,(cv.height-pad*2)/L.rows);
+  const padX=64*DPR;   // sol/sag sabit butonlarin altinda ok kalmasin diye ekstra yatay pay
+  cell=Math.min((cv.width-padX*2)/L.cols,(cv.height-pad*2)/L.rows);
   ox=(cv.width-cell*L.cols)/2;oy=(cv.height-cell*L.rows)/2;
   bgCv=document.createElement("canvas");
   bgCv.width=cv.width;bgCv.height=cv.height;
