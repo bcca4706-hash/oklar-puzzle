@@ -12,14 +12,39 @@
   html,body{height:100%;overflow:hidden;background:radial-gradient(ellipse at 50% 35%,var(--bg2) 0%,var(--bg) 62%),var(--bg);
     background-attachment:scroll;
     font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--line)}
-  #wrap{position:fixed;inset:0;display:flex;flex-direction:column}
+  #wrap{position:fixed;inset:0;display:flex;flex-direction:column;
+    padding-bottom:calc(env(safe-area-inset-bottom,0px) + 18px)}
   #hud{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:8px;
     padding:calc(env(safe-area-inset-top,0px) + 12px) 12px 8px}
-  /* --- neon panel (gorseldeki cerceveli kapsuller) --- */
-  .pan{display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;
-    background:linear-gradient(180deg,rgba(40,52,92,.92),rgba(16,20,42,.92));
-    border:1px solid rgba(120,190,255,.32);
-    box-shadow:0 0 12px rgba(60,140,255,.22),inset 0 1px 0 rgba(180,220,255,.18)}
+  /* --- PREMIUM HUD panelleri (cam-neon kapsul + madalyon ikon + parlama taramasi) --- */
+  .pan{position:relative;overflow:hidden;display:flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;
+    background:linear-gradient(180deg,rgba(48,62,110,.96) 0%,rgba(16,20,42,.96) 100%);
+    border:1px solid rgba(130,195,255,.38);
+    box-shadow:0 3px 0 rgba(6,10,26,.8),0 6px 14px rgba(0,0,0,.4),
+      inset 0 1px 0 rgba(190,225,255,.28),0 0 16px rgba(70,150,255,.16)}
+  .pan::before{content:"";position:absolute;inset:0;border-radius:999px;pointer-events:none;z-index:1;
+    background:linear-gradient(115deg,transparent 32%,rgba(255,255,255,.22) 46%,transparent 60%);
+    background-size:240% 100%;background-position:130% 0;
+    animation:panShine 4.5s ease-in-out infinite}
+  .pan>*{position:relative;z-index:2}
+  @keyframes panShine{0%,55%{background-position:130% 0}100%{background-position:-50% 0}}
+  .panIc{width:24px;height:24px;border-radius:50%;flex:0 0 24px;display:flex;align-items:center;
+    justify-content:center;color:#fff;
+    background:radial-gradient(circle at 50% 28%,rgba(255,255,255,.4),rgba(255,255,255,0) 55%),
+      radial-gradient(circle at 50% 118%,var(--pc2,#3E7BE0),var(--pc1,#1B3E86) 62%);
+    border:1px solid rgba(255,255,255,.4);
+    box-shadow:0 2px 4px rgba(0,0,0,.5),inset 0 1px 2px rgba(255,255,255,.4)}
+  .panIc svg{width:14px;height:14px;display:block;filter:drop-shadow(0 1px 1px rgba(0,0,0,.5))}
+  .pan.pLvl{--pc1:#1B3E86;--pc2:#3E7BE0}
+  .pan.pTime{--pc1:#0B5566;--pc2:#2ECFE8}
+  .pan.pCoin{--pc1:#7A4A05;--pc2:#F5B723;
+    background:linear-gradient(180deg,rgba(90,68,20,.55) 0%,rgba(16,20,42,.96) 100%);
+    border-color:rgba(255,205,110,.4);box-shadow:0 3px 0 rgba(6,10,26,.8),0 6px 14px rgba(0,0,0,.4),
+      inset 0 1px 0 rgba(255,225,170,.28),0 0 16px rgba(245,180,40,.2)}
+  .pan.pHeart{--pc1:#7A1520;--pc2:#E8455C;
+    background:linear-gradient(180deg,rgba(100,26,38,.55) 0%,rgba(16,20,42,.96) 100%);
+    border-color:rgba(255,140,155,.4);box-shadow:0 3px 0 rgba(6,10,26,.8),0 6px 14px rgba(0,0,0,.4),
+      inset 0 1px 0 rgba(255,190,198,.24),0 0 16px rgba(255,70,95,.18)}
   #lvl{font-size:11px;font-weight:800;letter-spacing:.2em;color:#9FC4E8}
   #lvl b{color:#FFD34D;font-size:17px;letter-spacing:.04em;margin-left:6px;
     text-shadow:0 0 10px rgba(255,200,60,.6)}
@@ -82,8 +107,18 @@
   html.light #timer{color:#1B1B1B;text-shadow:none}
   html.light .rnd .lbl{color:#8A8477}
   #cv{flex:1 1 0;min-height:0;width:100%;touch-action:none;display:block}
-  #foot{flex:0 0 auto;display:flex;justify-content:center;align-items:center;gap:16px;
-    padding:12px 10px calc(env(safe-area-inset-bottom,0px) + 26px)}
+  #foot{display:none}
+  /* ===== OYUN EKRANI: SES kose butonu + SOL/SAG dikey buton yiginlari ===== */
+  .sndCorner{position:fixed;top:calc(env(safe-area-inset-top,0px) + 66px);
+    right:calc(env(safe-area-inset-right,0px) + 12px);z-index:7}
+  .sideBar{position:fixed;top:50%;transform:translateY(-50%);z-index:6;
+    display:flex;flex-direction:column;gap:11px}
+  #sideL{left:calc(env(safe-area-inset-left,0px) + 10px)}
+  #sideR{right:calc(env(safe-area-inset-right,0px) + 10px)}
+  .rnd.sm{width:46px;height:46px;font-size:15px}
+  .rnd.sm .em{width:21px;height:21px}
+  .rnd.sm .bdg{min-width:16px;height:16px;font-size:9px;top:-3px;right:-3px}
+  .rnd.sm .lbl{display:none}
   .btn{background:var(--bg2);border:1px solid var(--dim);color:var(--line);
     border-radius:12px;padding:12px 22px;font-size:14px;font-weight:700;letter-spacing:.08em}
   .btn:active{transform:scale(.96)}
@@ -91,7 +126,9 @@
   .rnd[disabled]{opacity:.4}
   .ov{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;
     justify-content:center;background:rgba(20,20,38,.94);z-index:10;text-align:center;
-    padding:30px;transition:opacity .25s}
+    padding:calc(env(safe-area-inset-top,0px) + 30px) calc(env(safe-area-inset-right,0px) + 30px)
+      calc(env(safe-area-inset-bottom,0px) + 30px) calc(env(safe-area-inset-left,0px) + 30px);
+    transition:opacity .25s}
   .ov.hide{opacity:0;pointer-events:none}
   .logo{font-size:52px;font-weight:900;letter-spacing:.3em;margin-left:.3em}
   .logo .c1{color:#FF5D5D}.logo .c2{color:#FFB347}.logo .c3{color:#5FD68A}
@@ -284,48 +321,80 @@
   .lstars{font-size:8px;letter-spacing:1px;line-height:1;color:#FFD34D}
   .lcell.lock .lstars{display:none}
 
-  /* ===== CANDY CRUSH TARZI SEVIYE PATIKASI ===== */
-  #lvlOv{background:#080b18}
+  /* ===== GUNLUK ODUL TAKVIMI ===== */
+  .dgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:6px}
+  .dcell{aspect-ratio:1;border-radius:13px;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:1px;
+    background:linear-gradient(180deg,rgba(60,85,145,.42),rgba(20,28,58,.68));
+    border:1px solid rgba(120,190,255,.22)}
+  .dcell .dnum{font-size:9px;font-weight:800;letter-spacing:.08em;color:#9FC4E8}
+  .dcell .dic{font-size:19px;margin:1px 0}
+  .dcell .dval{font-size:10.5px;font-weight:900;color:#EAF4FF}
+  .dcell.done{background:linear-gradient(180deg,rgba(47,160,90,.55),rgba(14,70,40,.78));
+    border-color:rgba(120,255,180,.4)}
+  .dcell.done .dnum{color:#9FFFC0}
+  .dcell.cur{background:linear-gradient(180deg,#F5B723,#C87A08);
+    border-color:rgba(255,230,160,.85);box-shadow:0 0 16px rgba(245,180,40,.55);
+    animation:curPulse 1.5s ease-in-out infinite}
+  .dcell.cur .dnum,.dcell.cur .dval{color:#3A2400}
+
+  /* ===== SEVIYE PATIKASI (referans gorsele gore: sade koyu zemin, ince kesikli
+     baglanti cizgisi, duz/flat dugum kartlari, yildizlar dugumun altinda) ===== */
+  #lvlOv{background:#0A0E1C}
   #lvlTop{position:fixed;top:0;left:0;right:0;z-index:5;
     display:flex;align-items:center;justify-content:space-between;
     padding:calc(env(safe-area-inset-top,0px) + 10px) 14px 10px;
     background:linear-gradient(180deg,rgba(8,11,24,.96),rgba(8,11,24,.0))}
   #lvlScroll{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;
-    -webkit-overflow-scrolling:touch}
+    -webkit-overflow-scrolling:touch;
+    background-image:radial-gradient(rgba(120,190,255,.06) 1px,transparent 1px);
+    background-size:26px 26px}
   #lvlPath{position:relative;width:100%}
-  .wband{position:absolute;left:0;right:0;background-size:cover;background-position:center}
-  .wband::after{content:"";position:absolute;inset:0;
-    background:linear-gradient(180deg,rgba(8,11,24,.62),rgba(8,11,24,.78))}
-  .wlabel{position:absolute;left:0;right:0;text-align:center;z-index:3;
-    font-size:12px;font-weight:900;letter-spacing:.22em;color:#FFD34D;
-    text-shadow:0 0 14px rgba(255,200,60,.7),0 2px 6px rgba(0,0,0,.9)}
-  .lnode{position:absolute;width:56px;height:56px;margin:-28px 0 0 -28px;
-    border-radius:50%;z-index:4;display:flex;flex-direction:column;
-    align-items:center;justify-content:center;gap:1px;
-    font-size:17px;font-weight:900;color:#fff;
-    background:radial-gradient(circle at 50% 30%,rgba(255,255,255,.25),rgba(255,255,255,0) 55%),
-      radial-gradient(circle at 50% 115%,#3E7BE0,#1B3E86 62%);
-    border:2px solid rgba(140,205,255,.7);
-    box-shadow:0 0 12px rgba(60,150,255,.4),0 4px 0 rgba(6,10,26,.9),
-      inset 0 2px 4px rgba(255,255,255,.3);
-    text-shadow:0 2px 4px rgba(0,0,0,.7)}
-  .lnode:active{transform:translateY(3px) scale(.96)}
-  .lnode.done{background:radial-gradient(circle at 50% 30%,rgba(255,255,255,.25),rgba(255,255,255,0) 55%),
-      radial-gradient(circle at 50% 115%,#3ACC72,#0E5C2E 62%);
-    border-color:rgba(170,255,205,.75);box-shadow:0 0 12px rgba(50,205,110,.45),0 4px 0 rgba(6,30,16,.9)}
-  .lnode.cur{background:radial-gradient(circle at 50% 30%,rgba(255,255,255,.35),rgba(255,255,255,0) 55%),
-      radial-gradient(circle at 50% 115%,#F5B723,#7A4A05 62%);
+  .wlabel{position:absolute;left:0;right:0;text-align:center;z-index:3;pointer-events:none}
+  .wchip{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:999px;
+    background:linear-gradient(180deg,rgba(40,52,92,.9),rgba(16,20,42,.9));
+    border:1px solid rgba(120,190,255,.3);box-shadow:0 3px 10px rgba(0,0,0,.4)}
+  .wchipName{font-size:11px;font-weight:900;letter-spacing:.16em;color:#EAF4FF}
+  .wchipStars{font-size:9.5px;font-weight:800;letter-spacing:.04em;color:#FFD34D}
+  .lnode{position:absolute;width:50px;height:50px;margin:-25px 0 0 -25px;
+    border-radius:50%;z-index:4;display:flex;align-items:center;justify-content:center;
+    font-size:16px;font-weight:900;color:#fff;
+    background:linear-gradient(180deg,#3E7BE0,#1B3E86);
+    border:1.5px solid rgba(140,205,255,.6);
+    box-shadow:0 3px 8px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.25);
+    text-shadow:0 1px 3px rgba(0,0,0,.7)}
+  .lnode:active{transform:translateY(2px) scale(.96)}
+  .lnode.done{background:linear-gradient(180deg,#3ACC72,#0E5C2E);
+    border-color:rgba(170,255,205,.65)}
+  .lnode.cur{background:linear-gradient(180deg,#F5B723,#C87A08);
     color:#3A2400;border-color:rgba(255,235,170,.9);
-    box-shadow:0 0 26px rgba(245,180,40,.85),0 4px 0 #5C3703;
+    box-shadow:0 0 16px rgba(245,180,40,.7),inset 0 1px 0 rgba(255,255,255,.35);
     animation:nodePulse 1.4s ease-in-out infinite;z-index:5}
-  @keyframes nodePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.10)}}
+  @keyframes nodePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.09)}}
   .lnode.lock{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.12);
     color:#4E5C75;box-shadow:none;text-shadow:none}
-  .nstars{font-size:8px;line-height:1;letter-spacing:1px;color:#FFE9A8}
+  .nstars{position:absolute;left:50%;top:100%;transform:translateX(-50%);margin-top:4px;
+    font-size:9px;line-height:1;letter-spacing:1.5px;color:#FFD34D;white-space:nowrap;
+    text-shadow:0 1px 3px rgba(0,0,0,.8)}
   .lnode.lock .nstars{display:none}
-  .curTag{position:absolute;top:-22px;left:50%;transform:translateX(-50%);
-    font-size:9px;font-weight:900;letter-spacing:.14em;color:#FFD34D;white-space:nowrap;
+  .curTag{position:absolute;top:-20px;left:50%;transform:translateX(-50%);
+    font-size:8.5px;font-weight:900;letter-spacing:.13em;color:#FFD34D;white-space:nowrap;
     text-shadow:0 2px 5px rgba(0,0,0,.9)}
+
+  /* ===== ALT HIZLI GEZINME CUBUGU (gorseldeki DUNYA/SEVIYELER/MARKET/PROFIL) ===== */
+  .qnav{position:fixed;left:0;right:0;bottom:0;z-index:8;display:flex;gap:6px;
+    padding:8px 10px calc(env(safe-area-inset-bottom,0px) + 8px);
+    background:linear-gradient(0deg,rgba(8,11,24,.97) 0%,rgba(8,11,24,.9) 65%,rgba(8,11,24,0) 100%);
+    pointer-events:none}
+  .qnav .qbtn{pointer-events:auto;flex:1;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;gap:2px;padding:8px 4px 7px;border-radius:14px;font-family:inherit;
+    background:rgba(255,255,255,.045);border:1px solid rgba(120,190,255,.16);
+    font-size:9px;font-weight:800;letter-spacing:.05em;color:#9FC4E8}
+  .qnav .qbtn .qic{font-size:19px;line-height:1}
+  .qnav .qbtn.on{background:linear-gradient(180deg,rgba(255,190,60,.22),rgba(10,16,36,.5));
+    border-color:#FFC24D;color:#FFEFC7;box-shadow:0 0 10px rgba(255,190,60,.35)}
+  .qnav .qbtn:active{transform:scale(.94)}
+  #shopOv .card,#achOv .card,#profilOv .card{margin-bottom:60px}
 
   /* ===== iOS / Safari uyumu ===== */
   *{-webkit-tap-highlight-color:transparent}
@@ -351,12 +420,10 @@
     .rnd{width:46px;height:46px;font-size:18px}
     .rnd .em{width:22px;height:22px}
     .rnd .lbl{font-size:7.5px;bottom:-14px}
-    #foot{gap:10px;padding-left:6px;padding-right:6px}
   }
   @media (max-height:480px){
     .rnd{width:40px;height:40px}
     .rnd .lbl{display:none}
-    #foot{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 10px)}
   }
 
   #offBadge{border-color:rgba(255,180,60,.5);box-shadow:0 0 10px rgba(255,180,60,.25)}
@@ -389,26 +456,6 @@
   #mProgTxt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
     font-size:9.5px;font-weight:900;letter-spacing:.14em;color:#fff;
     text-shadow:0 1px 3px rgba(0,0,0,.9)}
-
-  /* ===== DUNYA TABELASI (Candy Crush tarzi levha) ===== */
-  .wlabel{pointer-events:none}
-  .signPost{display:inline-flex;flex-direction:column;align-items:center;gap:3px;
-    padding:9px 26px;border-radius:14px;position:relative;
-    background:linear-gradient(180deg,#7A5A2A 0%,#5A4018 48%,#3E2B0E 100%);
-    border:2px solid #C89A44;
-    box-shadow:0 5px 0 #2A1D09,0 9px 20px rgba(0,0,0,.6),
-      inset 0 2px 0 rgba(255,220,150,.35),inset 0 -3px 8px rgba(0,0,0,.4)}
-  .signPost::before,.signPost::after{content:"";position:absolute;top:50%;width:9px;height:9px;
-    border-radius:50%;background:radial-gradient(circle at 35% 35%,#FFE9A8,#8A6A20);
-    transform:translateY(-50%);box-shadow:0 1px 2px rgba(0,0,0,.6)}
-  .signPost::before{left:8px}.signPost::after{right:8px}
-  .signName{font-size:13px;font-weight:900;letter-spacing:.14em;color:#FFE9A8;
-    text-shadow:0 2px 4px rgba(0,0,0,.85),0 0 12px rgba(255,200,100,.5)}
-  .signStars{font-size:9.5px;font-weight:800;letter-spacing:.06em;color:#FFD34D;
-    text-shadow:0 1px 3px rgba(0,0,0,.8)}
-  /* dugumlere hafif canlilik */
-  .lnode.done::after{content:"";position:absolute;inset:-4px;border-radius:50%;
-    border:1px solid rgba(120,255,180,.25);pointer-events:none}
 
   /* logo: ok bicimli harfler */
   #logoArrows{display:flex;gap:2px;align-items:center;letter-spacing:0;margin-left:0}
@@ -535,14 +582,10 @@
   /* emoji ikonlar stroke'tan etkilenmesin */
   .mbtn .noStroke,.big .noStroke{-webkit-text-stroke:0;color:inherit}
 
-  /* seviye haritasi numaralari da ayni dilde */
-  .lnode>span:first-child{color:rgba(255,255,255,.22);
-    -webkit-text-stroke:1.3px #CFEAFF;text-shadow:0 0 11px rgba(120,200,255,.9)}
-  .lnode.done>span:first-child{-webkit-text-stroke-color:#BFFFD8;
-    text-shadow:0 0 11px rgba(90,240,160,.9)}
-  .lnode.cur>span:first-child{color:rgba(60,36,0,.35);-webkit-text-stroke-color:#FFF0C8;
-    text-shadow:0 0 12px rgba(255,215,120,.95)}
-  .lnode.lock>span:first-child{-webkit-text-stroke:0;color:#4E5C75;text-shadow:none}
+  /* seviye haritasi numaralari: duz dolu (referans gorseldeki gibi) */
+  .lnode>span:first-child{color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.7)}
+  .lnode.cur>span:first-child{color:#3A2400;text-shadow:0 1px 2px rgba(255,255,255,.3)}
+  .lnode.lock>span:first-child{color:#4E5C75;text-shadow:none}
 
   /* ===== KART SAG UST KAPAT (✕) ===== */
   .xBtn{position:absolute;z-index:6;
@@ -635,22 +678,27 @@
 <body>
 <div id="wrap">
   <div id="hud">
-    <div class="pan"><div id="lvl"><span id="lvlLbl">SEVİYE</span><b id="lvlNum">1</b></div></div>
-    <div class="pan"><span style="font-size:13px">⏱</span><div id="timer"><span id="timerVal">1:10</span></div></div>
-    <div class="pan"><div id="hearts"><div class="heart"></div><div class="heart"></div><div class="heart"></div><div class="heart"></div><div class="heart"></div></div></div>
+    <div class="pan pLvl"><span class="panIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v4a5 5 0 0 1-10 0V4z"/><path d="M7 5H4.5a2 2 0 0 0 0 4H6"/><path d="M17 5h2.5a2 2 0 0 1 0 4H18"/></svg></span><div id="lvl"><span id="lvlLbl">SEVİYE</span><b id="lvlNum">1</b></div></div>
+    <div class="pan pTime"><span class="panIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/><path d="M9 2h6"/></svg></span><div id="timer"><span id="timerVal">1:10</span></div></div>
+    <div class="pan pHeart"><span class="panIc"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7-4.4-9.5-8.9C.7 8.7 2 5 5.8 5c2 0 3.4 1.1 4.2 2.4C10.8 6.1 12.2 5 14.2 5 18 5 19.3 8.7 17.5 12.1 15 16.6 12 21 12 21z"/></svg></span><div id="hearts"><div class="heart"></div><div class="heart"></div><div class="heart"></div><div class="heart"></div><div class="heart"></div></div></div>
     <div class="pan" id="offBadge" style="display:none"><span style="font-size:12px">📶</span></div>
-    <div class="pan"><div id="coin"><span style="font-size:13px">🪙</span><span id="coinVal">0</span></div></div>
+    <div class="pan pCoin"><span class="panIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.8" stroke-width="1.4"/></svg></span><div id="coin"><span id="coinVal">0</span></div></div>
   </div>
   <div id="progWrap"><div id="progFill"></div></div>
   <canvas id="cv"></canvas>
   <div id="comboBox"></div>
-  <div id="foot">
-    <button class="rnd cGold" id="hintBtn"><span class="em"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg></span><span class="bdg" id="hintBdg">3</span><span class="lbl">İPUCU</span></button>
-    <button class="rnd cCyan" id="zoomBtn"><span class="em"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/><path d="M8 11h6M11 8v6"/></svg></span><span class="bdg amb" id="zoomBdg">2×</span><span class="lbl">YAKINLAŞTIR</span></button>
-    <button class="rnd cGreen" id="resetBtn"><span class="em"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg></span><span class="lbl">BAŞTAN</span></button>
-    <button class="rnd cRed" id="pauseBtn"><span class="em"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4.2" height="16" rx="1.6"/><rect x="13.8" y="4" width="4.2" height="16" rx="1.6"/></svg></span><span class="lbl">DURAKLAT</span></button>
-    <button class="rnd cPurple" id="thmBtn"><span class="em"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor" stroke="none"/></svg></span><span class="lbl">TEMA</span></button>
-    <button class="rnd" id="sndBtn"><span class="em"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M17 8.5a5 5 0 0 1 0 7"/><path d="M20 6a9 9 0 0 1 0 12"/></svg></span><span class="lbl">SES</span></button>
+<button class="rnd sndCorner" id="sndBtn"><span class="em"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M17 8.5a5 5 0 0 1 0 7"/><path d="M20 6a9 9 0 0 1 0 12"/></svg></span></button>
+  <div id="sideL" class="sideBar">
+    <button class="rnd sm cGold" id="hintBtn"><span class="em"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg></span><span class="bdg" id="hintBdg">3</span></button>
+    <button class="rnd sm cGreen" id="undoBtn"><span class="em"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 6 6v0a6 6 0 0 1-6 6H9"/></svg></span><span class="bdg" id="undoBdg">1</span></button>
+    <button class="rnd sm cRed" id="bombBtn"><span class="em"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="14" r="7"/><path d="M15.5 8.5 18 6"/><path d="M17 4l1.5 1.5L20 4"/></svg></span><span class="bdg" id="bombBdg">1</span></button>
+    <button class="rnd sm cCyan" id="timeBtn"><span class="em"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/><path d="M9 2h6"/></svg></span><span class="bdg" id="timeBdg">1</span></button>
+  </div>
+  <div id="sideR" class="sideBar">
+    <button class="rnd sm cCyan" id="zoomBtn"><span class="em"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/><path d="M8 11h6M11 8v6"/></svg></span><span class="bdg amb" id="zoomBdg">2×</span></button>
+    <button class="rnd sm cGreen" id="resetBtn"><span class="em"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg></span></button>
+    <button class="rnd sm cRed" id="pauseBtn"><span class="em"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4.2" height="16" rx="1.6"/><rect x="13.8" y="4" width="4.2" height="16" rx="1.6"/></svg></span></button>
+    <button class="rnd sm cPurple" id="thmBtn"><span class="em"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor" stroke="none"/></svg></span></button>
   </div>
 </div>
 
@@ -673,6 +721,7 @@
     <button class="mbtn" id="mLvlBtn">🗺️ SEVİYELER</button>
     <button class="mbtn o" id="mShopBtn">🛒 MARKET</button>
     <button class="mbtn ghost" id="mAchBtn">🏆 BAŞARIMLAR</button>
+    <button class="mbtn ghost" id="mProfilBtn">👤 PROFİL</button>
     <button class="mbtn ghost" id="mSetBtn">⚙️ AYARLAR</button>
   </div>
 </div>
@@ -776,6 +825,24 @@
   </div>
 </div>
 
+<div class="ov hide" id="dailyOv">
+  <div class="card">
+    <div class="cardT" style="text-align:center" id="dailyT">🎁 GÜNLÜK ÖDÜL</div>
+    <div class="ovSmall" style="margin:2px 0 14px;text-align:center" id="dailySub">Her gün gir, ödülünü topla!</div>
+    <div id="dailyGrid" class="dgrid"></div>
+    <button class="mbtn g" id="dailyClaimBtn" style="margin-top:16px">TOPLA</button>
+    <button class="mbtn ghost" id="dailyX2" style="display:none;margin-top:8px">🎬 ÖDÜLÜ 2 KATINA ÇIKAR</button>
+  </div>
+</div>
+
+<div class="ov hide" id="profilOv">
+  <button class="xBtn" id="profilClose" aria-label="Kapat"><span class="em">✕</span></button>
+  <div class="card">
+    <div class="cardT" style="text-align:center" id="profilT">👤 PROFİL</div>
+    <div id="profilList" style="margin-top:10px"></div>
+  </div>
+</div>
+
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
@@ -817,6 +884,10 @@ if(mem.hints===undefined)mem.hints=3;
 if(mem.theme===undefined)mem.theme="ancient";
 if(mem.coins===undefined)mem.coins=0;
 if(mem.haptic===undefined)mem.haptic=1;
+if(mem.undos===undefined)mem.undos=1;
+if(mem.bombs===undefined)mem.bombs=1;
+if(mem.timeBoosts===undefined)mem.timeBoosts=1;
+if(mem.lifetimeCoins===undefined)mem.lifetimeCoins=mem.coins||0;
 /* Kayit dogrulama: yanlis tipte gelen alanlari guvenle sifirla */
 const _obj=v=>(v&&typeof v==="object"&&!Array.isArray(v))?v:{};
 const _num=(v,d)=>(typeof v==="number"&&isFinite(v)&&v>=0)?v:d;
@@ -826,6 +897,10 @@ mem.owned=_obj(mem.owned);       // altinla acilan temalar {tema:1}
 mem.seenWorld=_obj(mem.seenWorld);
 mem.coins=Math.min(_num(mem.coins,0),9e12);
 mem.hints=Math.min(_num(mem.hints,3),9999);
+mem.undos=Math.min(_num(mem.undos,1),9999);
+mem.bombs=Math.min(_num(mem.bombs,1),9999);
+mem.timeBoosts=Math.min(_num(mem.timeBoosts,1),9999);
+mem.lifetimeCoins=Math.min(_num(mem.lifetimeCoins,0),9e12);
 mem.total=Math.min(_num(mem.total,0),9e12);
 mem.level=Math.max(1,Math.min(Math.round(_num(mem.level,1)),999999));
 mem.maxLevel=Math.max(1,Math.min(Math.round(_num(mem.maxLevel,mem.level)),999999));
@@ -1346,8 +1421,20 @@ function updateHintBtn(){
   const b=$("hintBdg");
   if(b){b.textContent=mem.hints>0?mem.hints:"📺";b.classList.toggle("amb",mem.hints<=0);}
 }
+function updateUndoBtn(){
+  const b=$("undoBdg");
+  if(b){b.textContent=mem.undos>0?mem.undos:"🛒";b.classList.toggle("amb",mem.undos<=0);}
+}
+function updateBombBtn(){
+  const b=$("bombBdg");
+  if(b){b.textContent=mem.bombs>0?mem.bombs:"🛒";b.classList.toggle("amb",mem.bombs<=0);}
+}
+function updateTimeBtn(){
+  const b=$("timeBdg");
+  if(b){b.textContent=mem.timeBoosts>0?mem.timeBoosts:"🛒";b.classList.toggle("amb",mem.timeBoosts<=0);}
+}
 function updateCoin(){const c=$("coinVal");if(c)c.textContent=(mem.coins|0);}
-function addCoin(n){mem.coins=(mem.coins|0)+n;save();updateCoin();}
+function addCoin(n){mem.coins=(mem.coins|0)+n;if(n>0)mem.lifetimeCoins=(mem.lifetimeCoins|0)+n;save();updateCoin();}
 /* --- haptic: hafif/orta/guclu (destek yoksa sessizce gecer) --- */
 function haptic(kind){
   if(mem.haptic===0)return;
@@ -1530,7 +1617,7 @@ function startLevel(n){
   const tEl=$("timer");if(tEl){tEl.classList.remove("low");$("timerVal").textContent=fmtTime(timeLimit);}
   view.s=1;view.tx=0;view.ty=0;updateZoomBtn();
   combo=0;levelScore=0;levelStart=Date.now();reviveUsed=false;floaters=[];hintUsed=false;
-  $("lvlNum").textContent=n;updateHintBtn();updateCoin();updateNeonFx();
+  $("lvlNum").textContent=n;updateHintBtn();updateUndoBtn();updateBombBtn();updateTimeBtn();updateCoin();updateNeonFx();
   try{checkAchs({});}catch(e){}
   $("winOv").classList.add("hide");
   $("reviveBtn").style.display="";$("reviveBtn").textContent=TX.revive;$("reviveBtn").dataset.mode="";
@@ -1658,7 +1745,7 @@ function winLevel(){
   if(lost===0)levelScore+=100;
   mem.total=(mem.total||0)+levelScore;
   const reward=5+stars*3;   // dengelendi: altin artik bol degil
-  mem.coins=(mem.coins|0)+reward;
+  mem.coins=(mem.coins|0)+reward;mem.lifetimeCoins=(mem.lifetimeCoins|0)+reward;
   const sec=Math.round((Date.now()-levelStart)/1000);
   // ipucusuz seri
   if(hintUsed)mem.noHintRun=0; else mem.noHintRun=(mem.noHintRun|0)+1;
@@ -1743,6 +1830,48 @@ function useHint(){
   hintId=free[Math.floor(Math.random()*free.length)].id;
   sfx.tick();
   setTimeout(()=>{hintId=-1;},2600);
+}
+/* Geri Al: son kalp kaybini iptal eder (guvenli - oyun durumuna dokunmaz) */
+function useUndo(){
+  if(locked||paused||!L)return;
+  if(mem.undos<=0){
+    // stok bitti: ipucu ile ayni desen -> odullu reklamla +1 doldur
+    tryRewarded(()=>{mem.undos+=1;save();updateUndoBtn();sfx.win();},'geri_al');
+    return;
+  }
+  if(hearts>=maxH){
+    floaters.push({x:cv.width/2,y:cv.height*.4,txt:LANG==="tr"?"Kalpler zaten dolu":"Hearts already full",c:"#9FC4E8",t:-.1});
+    return;
+  }
+  mem.undos--;save();updateUndoBtn();
+  hearts=Math.min(maxH,hearts+1);updateHearts();
+  floaters.push({x:cv.width/2,y:cv.height*.4,txt:(LANG==="tr"?"❤️ Hata geri alındı":"❤️ Mistake undone"),c:"#5FD68A",t:-.15,big:true});
+  sfx.win();haptic("win");
+}
+/* Bomba: yolu acik bir oku otomatik temizler (tapSnake'i tekrar kullanir, guvenli) */
+function useBomb(){
+  if(locked||paused||!L)return;
+  if(mem.bombs<=0){
+    tryRewarded(()=>{mem.bombs+=1;save();updateBombBtn();sfx.win();},'bomba');
+    return;
+  }
+  const free=L.snakes.filter(s=>s.alive&&!blockerOf(s));
+  if(!free.length)return;
+  mem.bombs--;save();updateBombBtn();
+  sfx.tick();haptic("ok");
+  tapSnake(free[Math.floor(Math.random()*free.length)]);
+}
+/* +30sn Sure: aktif seviyede sureyi aninda uzatir */
+function useTimeBoost(){
+  if(locked||paused||!L||timeUp)return;
+  if(mem.timeBoosts<=0){
+    tryRewarded(()=>{mem.timeBoosts+=1;save();updateTimeBtn();sfx.win();},'sure_boost');
+    return;
+  }
+  mem.timeBoosts--;save();updateTimeBtn();
+  timeLeft+=30;
+  floaters.push({x:cv.width/2,y:cv.height*.4,txt:"⏱️ +30"+TX.sn,c:"#5FD8FF",t:-.15,big:true});
+  sfx.win();haptic("ok");
 }
 
 /* ---- girdi ---- */
@@ -1836,6 +1965,9 @@ $("zoomBtn").onclick=()=>{
   updateZoomBtn();sfx.tick();
 };
 $("hintBtn").onclick=useHint;
+$("undoBtn").onclick=useUndo;
+$("bombBtn").onclick=useBomb;
+$("timeBtn").onclick=useTimeBoost;
 /* ---- duraklat / devam ---- */
 function pauseGame(){
   // Sadece aktif oyunda calis: bitmis/kilitli/zaten duraklamis degilken
@@ -1860,23 +1992,78 @@ $("resetBtn").onclick=()=>{sfx.tick();startLevel(mem.level);};
 $("sndBtn").onclick=()=>{mem.sound=mem.sound?0:1;save();
   setIcon("sndBtn",mem.sound?"sound":"soundOff");
   if(mem.sound){startMusic();sfx.tick();}else stopMusic();};
+/* 7 gunluk odul takvimi (dongu halinde tekrarlar) */
+const DAILY_REWARDS=[
+  {ic:"🪙",coins:30},
+  {ic:"💡",hints:1},
+  {ic:"🪙",coins:50},
+  {ic:"💡",hints:2},
+  {ic:"🪙",coins:80},
+  {ic:"💡",hints:3},
+  {ic:"🎁",coins:150,hints:3}
+];
+/* Tarih/seri kontrolunu yapar; bugun ilk giris ise takvimdeki gun index'ini (0-6) dondurur, yoksa -1 */
 function checkDailyStreak(){
   const today=new Date().toISOString().slice(0,10);
-  if(mem.lastDay===today)return; // bugun zaten oynadi
+  if(mem.lastDay===today)return -1; // bugun zaten oynadi
   const y=new Date(Date.now()-864e5).toISOString().slice(0,10);
   mem.streak=(mem.lastDay===y)?((mem.streak||0)+1):1;
   mem.lastDay=today;
-  mem.hints=(mem.hints||0)+2; // gunluk bonus
-  save();updateHintBtn();
-  return true; // bonus verildi
+  save();
+  return (mem.streak-1)%DAILY_REWARDS.length;
+}
+function renderDaily(dayIdx){
+  const w=$("dailyGrid"); if(!w)return;
+  const T2=LANG==="tr";
+  w.innerHTML="";
+  DAILY_REWARDS.forEach((r,i)=>{
+    const d=document.createElement("div");
+    d.className="dcell"+(i<dayIdx?" done":"")+(i===dayIdx?" cur":"");
+    const val=(r.coins?"🪙"+r.coins:"")+(r.coins&&r.hints?" ":"")+(r.hints?"💡"+r.hints:"");
+    d.innerHTML='<span class="dnum">'+(T2?"GÜN ":"DAY ")+(i+1)+'</span><span class="dic">'+r.ic+'</span><span class="dval">'+val+'</span>';
+    w.appendChild(d);
+  });
+  $("dailySub").textContent=T2?"Her gün gir, ödülünü topla!":"Come back daily to claim!";
+  $("dailyClaimBtn").textContent=T2?"TOPLA":"CLAIM";
+}
+function openDaily(dayIdx,after){
+  renderDaily(dayIdx);
+  $("dailyOv").classList.remove("hide");
+  const T2=LANG==="tr";
+  const x2=$("dailyX2");
+  if(x2){x2.style.display="none";x2.disabled=false;x2.textContent=T2?"🎬 ÖDÜLÜ 2 KATINA ÇIKAR":"🎬 DOUBLE THE REWARD";}
+  $("dailyClaimBtn").textContent=T2?"TOPLA":"CLAIM";
+  $("dailyClaimBtn").onclick=()=>{
+    const r=DAILY_REWARDS[dayIdx];
+    if(r.coins)addCoin(r.coins);
+    if(r.hints){mem.hints=(mem.hints|0)+r.hints;save();updateHintBtn();}
+    save();
+    sfx.win();haptic("win");fireworkShow(2);
+    // Topladiktan sonra: devam et + istege bagli reklamla 2x katina cikar (sandik ile ayni desen)
+    $("dailyClaimBtn").textContent=T2?"DEVAM ET":"CONTINUE";
+    $("dailyClaimBtn").onclick=()=>{$("dailyOv").classList.add("hide");sfx.tick();after();};
+    if(x2){
+      x2.style.display="";
+      x2.onclick=()=>{
+        x2.disabled=true;x2.textContent="...";
+        tryRewarded(()=>{
+          if(r.coins)addCoin(r.coins);
+          if(r.hints){mem.hints=(mem.hints|0)+r.hints;save();updateHintBtn();}
+          x2.style.display="none";
+          sfx.win();haptic("win");fireworkShow(3);
+        },"gunluk_2x");
+        setTimeout(()=>{if(x2.disabled){x2.disabled=false;
+          x2.textContent=T2?"🎬 ÖDÜLÜ 2 KATINA ÇIKAR":"🎬 DOUBLE THE REWARD";}},2500);
+      };
+    }
+  };
 }
 $("playBtn").onclick=()=>{
   if(!mem.tutDone&&(mem.maxLevel||1)<=1){ sfx.tick(); tutAc(); return; }
-  const gotBonus=checkDailyStreak();
-  sfx.tick();$("startOv").classList.add("hide");startLevel(mem.level);startMusic();
-  if(gotBonus){
-    setTimeout(()=>floaters.push({x:cv.width/2,y:cv.height*0.46,txt:TX.dailyBonus,c:"#5FD68A",t:-.5,big:true}),400);
-  }
+  sfx.tick();
+  const dayIdx=checkDailyStreak();
+  const startNow=()=>{$("startOv").classList.add("hide");startLevel(mem.level);startMusic();};
+  if(dayIdx>=0){ openDaily(dayIdx,startNow); } else { startNow(); }
 };
 $("retryBtn").onclick=()=>{sfx.tick();$("failOv").classList.add("hide");startLevel(mem.level);};
 $("contInfo").textContent=mem.level>1?TX.contL+" "+mem.level+" • "+TX.contS+" "+(mem.total||0):"";
@@ -1910,7 +2097,7 @@ $("thmBtn").onclick=()=>{
   applyTheme(mem.level);layout();stDirty=true;ambient=[];sfx.tick();updateNeonFx();haptic("tap");
   if(L){colorSnakes(L.snakes,mem.level,Math.random);}  // yeni temanin renkleri hemen uygulansin
 };
-updateHintBtn();
+updateHintBtn();updateUndoBtn();updateBombBtn();updateTimeBtn();
 if(LANG!=="tr"){
   document.title="ARROWS — Knot Puzzle";
   $("lvlLbl").textContent=TX.level;$("subT").textContent=TX.sub;
@@ -1919,7 +2106,7 @@ if(LANG!=="tr"){
   $("retryBtn").textContent=TX.retry;$("winT").textContent=TX.winT;
   $("nextBtn").textContent=TX.next;
   // ikon butonlarin alt etiketleri (EN)
-  const LBL={hintBtn:"HINT",zoomBtn:"ZOOM",resetBtn:"RESTART",pauseBtn:"PAUSE",thmBtn:"THEME",sndBtn:"SOUND"};
+  const LBL={hintBtn:"HINT",undoBtn:"UNDO",bombBtn:"BOMB",timeBtn:"+30s",zoomBtn:"ZOOM",resetBtn:"RESTART",pauseBtn:"PAUSE",thmBtn:"THEME",sndBtn:"SOUND"};
   for(const id in LBL){const e=$(id);const s2=e&&e.querySelector(".lbl");if(s2)s2.textContent=LBL[id];}
   $("pauseT").textContent=TX.pauseT;$("resumeBtn").textContent=TX.resume;
   $("winT").textContent=TX.winT;
@@ -1928,6 +2115,9 @@ if(LANG!=="tr"){
   $("mShopBtn").textContent="🛒 SHOP";$("mAchBtn").textContent="🏆 ACHIEVEMENTS";
   $("shopT").textContent="SHOP";$("achT").textContent="ACHIEVEMENTS";
   $("mLvlBtn").textContent="🗺️ LEVELS";
+  $("mProfilBtn").textContent="👤 PROFILE";
+  $("profilT").textContent="👤 PROFILE";
+  $("dailyT").textContent="🎁 DAILY REWARD";
   $("mSetBtn").textContent="⚙️ SETTINGS";
   $("lvlMapT").textContent="LEVELS";
   $("chestT").textContent="TREASURE CHEST";
@@ -2229,7 +2419,7 @@ function chestReward(lvl){
 }
 function openChest(){
   const r=chestReward(mem.level);
-  mem.coins=(mem.coins|0)+r.coins;
+  mem.coins=(mem.coins|0)+r.coins;mem.lifetimeCoins=(mem.lifetimeCoins|0)+r.coins;
   mem.hints=(mem.hints|0)+r.hints;
   save();updateCoin();updateHintBtn();
   const img=$("chestImg");
@@ -2247,7 +2437,7 @@ function openChest(){
     dbl.onclick=()=>{
       dbl.disabled=true;dbl.textContent="...";
       tryRewarded(()=>{
-        mem.coins=(mem.coins|0)+r.coins;
+        mem.coins=(mem.coins|0)+r.coins;mem.lifetimeCoins=(mem.lifetimeCoins|0)+r.coins;
         mem.hints=(mem.hints|0)+r.hints;
         save();updateCoin();updateHintBtn();
         $("chestReward").innerHTML='<div class="rw on">🪙 +'+(r.coins*2)+'</div>'+
@@ -2324,7 +2514,7 @@ function achDesc(a){return (LANG==="tr"?a.tr:a.en)[1];}
 function grantAch(id){
   if(mem.ach[id])return;
   const ACH_REWARD=40;
-  mem.ach[id]=1; mem.coins=(mem.coins|0)+ACH_REWARD; save(); updateCoin();
+  mem.ach[id]=1; mem.coins=(mem.coins|0)+ACH_REWARD; mem.lifetimeCoins=(mem.lifetimeCoins|0)+ACH_REWARD; save(); updateCoin();
   const a=ACHS.find(x=>x.id===id); if(!a)return;
   floaters.push({x:cv.width/2,y:cv.height*.28,txt:"🏆 "+achName(a)+"  +"+ACH_REWARD+"🪙",c:"#FFD34D",t:-.1,big:true});
   sfx.tick(); haptic("win");
@@ -2359,7 +2549,8 @@ function renderAch(){
   });
 }
 /* ---- MARKET ---- */
-const PRICE={hint:150, hint5:600, theme:400, premium:750, life:80};
+const PRICE={hint:150, hint5:600, theme:400, premium:750, life:80,
+  undo:120, undo3:300, bomb:180, bomb3:450, time:100, time3:250};
 function renderShop(){
   const w=$("shopList"); if(!w)return;
   $("shopCoin").textContent=(mem.coins|0);
@@ -2405,7 +2596,32 @@ function renderShop(){
     PRICE.hint,()=>{mem.hints=(mem.hints|0)+1;updateHintBtn();});
   item("💡",T2?"5 İPUCU":"5 HINTS",T2?"Paket indirimi":"Bundle discount",
     PRICE.hint5,()=>{mem.hints=(mem.hints|0)+5;updateHintBtn();});
+  // ---- GUCLENDIRICILER (Geri Al / Bomba / Sure) ----
+  (function(){
+    const h=document.createElement("div");
+    h.className="wgrpT";h.style.margin="16px 2px 8px";
+    h.innerHTML=(T2?"GÜÇLENDİRİCİLER":"BOOSTERS")+"<i></i>";
+    w.appendChild(h);
+  })();
+  item("↩️",T2?"1 GERİ AL":"1 UNDO",T2?"Son kalp kaybını iptal eder":"Cancels your last heart loss",
+    PRICE.undo,()=>{mem.undos=(mem.undos|0)+1;updateUndoBtn();});
+  item("↩️",T2?"3 GERİ AL":"3 UNDO",T2?"Paket indirimi":"Bundle discount",
+    PRICE.undo3,()=>{mem.undos=(mem.undos|0)+3;updateUndoBtn();});
+  item("💣",T2?"1 BOMBA":"1 BOMB",T2?"Yolu açık bir oku otomatik temizler":"Auto-clears one open arrow",
+    PRICE.bomb,()=>{mem.bombs=(mem.bombs|0)+1;updateBombBtn();});
+  item("💣",T2?"3 BOMBA":"3 BOMBS",T2?"Paket indirimi":"Bundle discount",
+    PRICE.bomb3,()=>{mem.bombs=(mem.bombs|0)+3;updateBombBtn();});
+  item("⏱️",T2?"+30SN SÜRE":"+30s TIME",T2?"Süreye anında 30 saniye ekler":"Instantly adds 30 seconds",
+    PRICE.time,()=>{mem.timeBoosts=(mem.timeBoosts|0)+1;updateTimeBtn();});
+  item("⏱️",T2?"3x +30SN SÜRE":"3x +30s TIME",T2?"Paket indirimi":"Bundle discount",
+    PRICE.time3,()=>{mem.timeBoosts=(mem.timeBoosts|0)+3;updateTimeBtn();});
   // Kilitli dunyalari altinla ac
+  (function(){
+    const h=document.createElement("div");
+    h.className="wgrpT";h.style.margin="16px 2px 8px";
+    h.innerHTML=(T2?"DÜNYALAR":"WORLDS")+"<i></i>";
+    w.appendChild(h);
+  })();
   THEME_ORDER.forEach(k=>{
     if(themeUnlocked(k))return;
     const th=THEMES[k];if(!th)return;
@@ -2422,6 +2638,59 @@ function openShop(){renderShop();$("shopOv").classList.remove("hide");}
 function closeShop(){$("shopOv").classList.add("hide");}
 function openAch(){renderAch();$("achOv").classList.remove("hide");}
 function closeAch(){$("achOv").classList.add("hide");}
+/* ---- PROFIL ---- */
+function renderProfil(){
+  const w=$("profilList"); if(!w)return;
+  const T2=LANG==="tr";
+  let yildiz=0; for(const k in mem.best){const b=mem.best[k]; if(b&&b.s)yildiz+=b.s;}
+  const achCount=Object.keys(mem.ach||{}).length;
+  const row=(lbl,val)=>'<div class="rowStat"><span>'+lbl+'</span><b>'+val+'</b></div>';
+  w.innerHTML=
+    row(T2?"En Yüksek Seviye":"Highest Level", mem.maxLevel||1)+
+    row(T2?"Toplam Skor":"Total Score", (mem.total||0))+
+    row(T2?"Toplam Yıldız":"Total Stars", "⭐ "+yildiz)+
+    row(T2?"Başarımlar":"Achievements", achCount+"/"+ACHS.length)+
+    row(T2?"Gün Serisi":"Day Streak", (mem.streak||0)+" 🔥")+
+    row(T2?"Ömür Boyu Altın":"Lifetime Gold", "🪙 "+(mem.lifetimeCoins|0));
+}
+function openProfil(){renderProfil();$("profilOv").classList.remove("hide");}
+function closeProfil(){$("profilOv").classList.add("hide");}
+$("mProfilBtn").onclick=()=>{openProfil();sfx.tick();};
+$("profilClose").onclick=()=>{closeProfil();sfx.tick();};
+
+/* ===== ALT HIZLI GEZINME CUBUGU (Seviyeler/Market/Basarimlar/Profil ekranlari) ===== */
+(function(){
+  const T2=LANG==="tr";
+  const ITEMS=[
+    {key:"home",ic:"🏠",lbl:T2?"ANA MENÜ":"HOME"},
+    {key:"levels",ic:"🗺️",lbl:T2?"SEVİYELER":"LEVELS"},
+    {key:"market",ic:"🛒",lbl:T2?"MARKET":"SHOP"},
+    {key:"profil",ic:"👤",lbl:T2?"PROFİL":"PROFILE"}
+  ];
+  function qnavHtml(active){
+    return '<div class="qnav">'+ITEMS.map(function(it){
+      return '<button class="qbtn'+(it.key===active?" on":"")+'" data-go="'+it.key+'">'+
+        '<span class="qic">'+it.ic+'</span>'+it.lbl+'</button>';
+    }).join("")+'</div>';
+  }
+  function goScreen(name){
+    ["lvlOv","shopOv","achOv","profilOv"].forEach(function(id){const e=$(id);if(e)e.classList.add("hide");});
+    sfx.tick();haptic("tap");
+    if(name==="home"){try{menuGuncelle();}catch(e){}}
+    else if(name==="levels")openLevels();
+    else if(name==="market")openShop();
+    else if(name==="profil")openProfil();
+  }
+  // [ekranId, aktif-sekme-anahtari] - achOv'un kendi sekmesi yok, gezinme icin dahil
+  const MOUNTS=[["lvlOv","levels"],["shopOv","market"],["achOv",""],["profilOv","profil"]];
+  MOUNTS.forEach(function(m){
+    const host=$(m[0]); if(!host)return;
+    host.insertAdjacentHTML("beforeend",qnavHtml(m[1]));
+  });
+  document.querySelectorAll(".qnav .qbtn").forEach(function(b){
+    b.addEventListener("click",function(){goScreen(b.dataset.go);});
+  });
+})();
 $("shopClose").onclick=()=>{closeShop();sfx.tick();};
 $("achClose").onclick=()=>{closeAch();sfx.tick();};
 $("mShopBtn").onclick=()=>{openShop();sfx.tick();};
@@ -2622,21 +2891,22 @@ function renderLevels(){
   const maxL=Math.max(1,mem.maxLevel||1);
   const son=Math.max(24,Math.ceil((maxL+8)/6)*6);
   const W=wrap.clientWidth||window.innerWidth;
-  const GAP=104;                       // dugumler arasi dikey mesafe
-  const PADTOP=90, PADBOT=120;
+  const GAP=92;                        // dugumler arasi dikey mesafe (referans: daha sik/toplu)
+  const PADTOP=90, PADBOT=170;         // PADBOT: alt hizli gezinme cubugu icin ekstra bosluk
   const H=PADTOP+son*GAP+PADBOT;
   wrap.style.height=H+"px";
 
-  // Dugum konumlari: yilan gibi kivrilan patika (sinus)
+  // Dugum konumlari: referans gorseldeki gibi sag-sol zikzak (sinus tabanli, hafif rastgele)
   const pos=[];
   for(let n=1;n<=son;n++){
     const t=(son-n);                                   // asagidan yukari: 1 en altta
     const y=PADTOP+t*GAP;
-    const x=W/2+Math.sin(n*0.85)*(W*0.27);
+    const jit=(Math.sin(n*7.13)*0.06);                  // hafif organik sapma
+    const x=W/2+Math.sin(n*0.78)*(W*0.30)+jit*W;
     pos.push({n,x,y});
   }
 
-  // --- dunya bantlari: her dunyanin y araligini bul ---
+  // --- dunya rozetleri: her dunyanin y araligi basina ince bir ayrac chip ---
   const bands={};
   pos.forEach(function(p){
     const k=worldOfLevel(p.n);
@@ -2645,16 +2915,10 @@ function renderLevels(){
   });
   Object.keys(bands).forEach(function(k){
     const b=bands[k];
-    const top=Math.max(0,b.min-GAP*0.6), bot=Math.min(H,b.max+GAP*0.6);
-    const band=document.createElement("div");
-    band.className="wband";
-    band.style.top=top+"px";
-    band.style.height=(bot-top)+"px";
-    band.style.backgroundImage='url("assets/bg/'+k+'.jpg")';
-    wrap.appendChild(band);
+    const top=Math.max(0,b.min-GAP*0.6);
     const lab=document.createElement("div");
     lab.className="wlabel";
-    lab.style.top=(top+14)+"px";
+    lab.style.top=(top+6)+"px";
     const th=THEMES[k];
     // Bu dunyada kac yildiz toplandi
     let ty=0,tm=0;
@@ -2662,23 +2926,18 @@ function renderLevels(){
       if(worldOfLevel(q.n)!==k)return;
       tm+=3; const bb=mem.best[String(q.n)]; if(bb&&bb.s)ty+=bb.s;
     });
-    lab.innerHTML='<span class="signPost">'+
-      '<span class="signName">'+(th?th.name:"")+'</span>'+
-      '<span class="signStars">⭐ '+ty+' / '+tm+'</span></span>';
+    lab.innerHTML='<span class="wchip"><span class="wchipName">'+(th?th.name:"")+
+      '</span><span class="wchipStars">⭐ '+ty+'/'+tm+'</span></span>';
     wrap.appendChild(lab);
   });
 
-  // --- patika cizgisi (SVG) ---
+  // --- patika cizgisi: referans gorseldeki gibi ince, duz-segmentli kesikli cizgi ---
   const ns="http://www.w3.org/2000/svg";
   const svg=document.createElementNS(ns,"svg");
   svg.setAttribute("width",W);svg.setAttribute("height",H);
   svg.style.cssText="position:absolute;left:0;top:0;z-index:2;pointer-events:none";
   let d="M "+pos[0].x+" "+pos[0].y;
-  for(let i=1;i<pos.length;i++){
-    const a=pos[i-1],b=pos[i];
-    const my=(a.y+b.y)/2;
-    d+=" C "+a.x+" "+my+", "+b.x+" "+my+", "+b.x+" "+b.y;
-  }
+  for(let i=1;i<pos.length;i++)d+=" L "+pos[i].x+" "+pos[i].y;
   const mk=(w,col,dash)=>{
     const q=document.createElementNS(ns,"path");
     q.setAttribute("d",d);q.setAttribute("fill","none");
@@ -2687,12 +2946,10 @@ function renderLevels(){
     if(dash)q.setAttribute("stroke-dasharray",dash);
     svg.appendChild(q);
   };
-  mk(16,"rgba(0,0,0,.45)");            // golge
-  mk(11,"rgba(150,200,255,.30)");      // govde
-  mk(3,"rgba(220,240,255,.55)","2 12");// noktali orta cizgi
+  mk(2.5,"rgba(140,190,255,.5)","1 10");   // tek ince noktali/kesikli cizgi
   wrap.appendChild(svg);
 
-  // --- dugumler ---
+  // --- dugumler: sade duz rozet, yildizlar altta ---
   pos.forEach(function(p){
     const n=p.n, b=mem.best[String(n)], kilitli=n>maxL, mevcut=(n===maxL);
     const el=document.createElement("div");
