@@ -13,7 +13,7 @@
     background-attachment:scroll;
     font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--line)}
   #wrap{position:fixed;inset:0;display:flex;flex-direction:column;
-    padding-bottom:calc(env(safe-area-inset-bottom,0px) + 18px)}
+    padding-bottom:calc(env(safe-area-inset-bottom,0px) + 26px)}
   #hud{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:8px;
     padding:calc(env(safe-area-inset-top,0px) + 12px) 12px 8px}
   /* --- PREMIUM HUD panelleri (cam-neon kapsul + madalyon ikon + parlama taramasi) --- */
@@ -130,6 +130,10 @@
       calc(env(safe-area-inset-bottom,0px) + 30px) calc(env(safe-area-inset-left,0px) + 30px);
     transition:opacity .25s}
   .ov.hide{opacity:0;pointer-events:none}
+  /* onemli: qnav .qbtn kendi pointer-events:auto'sunu ov.hide'in none'una karsi
+     ezebiliyordu -> ekran gizliyken bile alttaki gezinme cubugu tiklanabiliyordu.
+     Oyun ekraninda "alt taraf baska yere atiyor" hatasinin kok nedeni buydu. */
+  .ov.hide .qnav,.ov.hide .qnav .qbtn{pointer-events:none}
   .logo{font-size:52px;font-weight:900;letter-spacing:.3em;margin-left:.3em}
   .logo .c1{color:#FF5D5D}.logo .c2{color:#FFB347}.logo .c3{color:#5FD68A}
   .logo .c4{color:#4FC3F7}.logo .c5{color:#C77DFF}
@@ -383,7 +387,7 @@
 
   /* ===== ALT HIZLI GEZINME CUBUGU (gorseldeki DUNYA/SEVIYELER/MARKET/PROFIL) ===== */
   .qnav{position:fixed;left:0;right:0;bottom:0;z-index:8;display:flex;gap:6px;
-    padding:8px 10px calc(env(safe-area-inset-bottom,0px) + 8px);
+    padding:8px 10px calc(env(safe-area-inset-bottom,0px) + 22px);
     background:linear-gradient(0deg,rgba(8,11,24,.97) 0%,rgba(8,11,24,.9) 65%,rgba(8,11,24,0) 100%);
     pointer-events:none}
   .qnav .qbtn{pointer-events:auto;flex:1;display:flex;flex-direction:column;align-items:center;
@@ -394,7 +398,7 @@
   .qnav .qbtn.on{background:linear-gradient(180deg,rgba(255,190,60,.22),rgba(10,16,36,.5));
     border-color:#FFC24D;color:#FFEFC7;box-shadow:0 0 10px rgba(255,190,60,.35)}
   .qnav .qbtn:active{transform:scale(.94)}
-  #shopOv .card,#achOv .card,#profilOv .card{margin-bottom:60px}
+  #shopOv .card,#achOv .card,#profilOv .card{margin-bottom:74px}
 
   /* ===== iOS / Safari uyumu ===== */
   *{-webkit-tap-highlight-color:transparent}
