@@ -282,6 +282,33 @@
   .chest.open{animation:chestPop .5s cubic-bezier(.2,1.6,.4,1) forwards}
   @keyframes chestIdle{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-7px) scale(1.03)}}
   @keyframes chestPop{0%{transform:scale(1)}45%{transform:scale(1.28) rotate(-4deg)}100%{transform:scale(1.1)}}
+
+  /* --- SANSLI CARK: gercek donen carkin --- */
+  #wheelWrap{position:relative;width:min(84vw,300px);height:min(84vw,300px);margin:10px auto 8px}
+  #wheelPointer{position:absolute;top:-16px;left:50%;transform:translateX(-50%);
+    font-size:30px;color:#FFD34D;z-index:4;text-shadow:0 2px 5px rgba(0,0,0,.8);
+    filter:drop-shadow(0 0 6px rgba(255,200,60,.6))}
+  #wheelDisk{position:absolute;inset:0;border-radius:50%;cursor:pointer;
+    border:6px solid rgba(255,215,120,.65);
+    box-shadow:0 0 30px rgba(255,190,60,.4),0 12px 32px rgba(0,0,0,.55),
+      inset 0 2px 8px rgba(255,255,255,.25);
+    transform:rotate(0deg)}
+  #wheelDisk.spinning{cursor:default}
+  #wheelDisk .seg{position:absolute;left:50%;top:50%;
+    display:flex;flex-direction:column;align-items:center;gap:2px;
+    pointer-events:none;white-space:nowrap}
+  #wheelDisk .seg b{font-size:13px;font-weight:900;color:#fff;
+    text-shadow:0 1px 3px rgba(0,0,0,.8)}
+  #wheelDisk .seg span{font-size:19px;line-height:1;
+    filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}
+  #wheelHub{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:62px;height:62px;border-radius:50%;z-index:3;
+    display:flex;align-items:center;justify-content:center;font-size:26px;
+    background:radial-gradient(circle at 40% 30%,#3E7BE0,#1B3E86);
+    border:3px solid rgba(255,255,255,.55);
+    box-shadow:0 3px 12px rgba(0,0,0,.55),inset 0 1px 3px rgba(255,255,255,.4)}
+  #wheelWrap.spin #wheelHub{animation:hubGlow .5s ease-in-out infinite}
+  @keyframes hubGlow{0%,100%{filter:brightness(1)}50%{filter:brightness(1.4)}}
   /* --- dunya sinemasi --- */
   #worldOv{background-size:cover;background-position:center;background-color:#080b18}
   .wcard{display:flex;flex-direction:column;align-items:center;gap:6px;
@@ -775,6 +802,21 @@
   </div>
 </div>
 
+<div class="ov hide" id="luckyOv">
+  <button class="xBtn" id="luckyClose" aria-label="Kapat"><span class="em">✕</span></button>
+  <div class="card" style="text-align:center;background:none;border:none;box-shadow:none">
+    <div class="cardT" id="luckyT">🎰 ŞANSLI ÇARK</div>
+    <div id="wheelWrap">
+      <div id="wheelPointer">▼</div>
+      <div id="wheelDisk"></div>
+      <div id="wheelHub">🎰</div>
+    </div>
+    <div class="ovSmall" id="luckyHint">Çevirmek için çarka dokun 🪙150</div>
+    <div class="rewardRow" id="luckyReward"></div>
+    <button class="mbtn o" id="luckyBtn" style="display:none">KAPAT</button>
+  </div>
+</div>
+
 <div class="ov hide" id="worldOv">
   <div class="wcard">
     <div class="wsub" id="worldSub">YENİ DÜNYA AÇILDI</div>
@@ -782,6 +824,7 @@
     <button class="mbtn g" id="worldBtn" style="max-width:260px">KEŞFET</button>
   </div>
 </div>
+
 <div class="ov hide" id="lvlOv" style="padding:0;justify-content:flex-start">
   <div id="lvlTop">
     <div class="cardT" id="lvlMapT" style="margin:0;font-size:16px">SEVİYELER</div>
@@ -949,9 +992,13 @@ const THEMES={
   metro:{name:"NEON METROPOLIS",bg:"#080614",bg2:"#120C26",dot:"#191230",outline:"#080614",text:"#F0E8FF",mono:null,
     pal:["#ff2384","#00ffec","#fff22e","#c349ff","#17fdff","#ff673b","#8fff4b","#ff44dd","#46c2ff","#ffb20a"]},
   solar:{name:"SOLAR CORE",bg:"#1A0F02",bg2:"#2C1B05",dot:"#36230A",outline:"#1A0F02",text:"#FFEECB",mono:null,
-    pal:["#ffca00","#ff9700","#ffed48","#ff7100","#fffb93","#ffb00b","#ff5700","#ffdf30","#ff8900","#fff472"]}
+    pal:["#ffca00","#ff9700","#ffed48","#ff7100","#fffb93","#ffb00b","#ff5700","#ffdf30","#ff8900","#fff472"]},
+  noir:{name:"NOIR",bg:"#0A0A0A",bg2:"#1C1C1C",dot:"#292929",outline:"#0A0A0A",text:"#F4F4F4",mono:"#F0F0F0",
+    pal:["#F5F5F5","#E6E6E6","#D9D9D9","#CCCCCC","#BFBFBF","#B2B2B2","#ECECEC","#DFDFDF","#D2D2D2","#C5C5C5"]},
+  pearl:{name:"PEARL",bg:"#F5F3EE",bg2:"#FFFFFF",dot:"#E3DFD3",outline:"#F5F3EE",text:"#1C1A16",mono:"#221E18",
+    pal:["#1C1A16","#2A2620","#332F27","#3D382E","#463F35","#4F473C","#241F19","#2E2820","#37312A","#403A31"]}
 };
-const THEME_ORDER=["ancient","void_","frozen","magma","bio","cyber","thunder","temple","abyss","cosmic","steam","dark","crystal","metro","solar"];
+const THEME_ORDER=["ancient","void_","frozen","magma","bio","cyber","thunder","temple","abyss","cosmic","steam","dark","crystal","metro","solar","noir","pearl"];
 if(!THEMES[mem.theme])mem.theme="ancient";   // eski kayitlar icin guvenli gecis
 let T=THEMES[mem.theme];
 const colName=s=>T.mono||s.color;
@@ -1150,9 +1197,10 @@ function packWorms(cols,rows,rnd,mask){
     const j=Math.floor(rnd()*(i+1));[order[i],order[j]]=[order[j],order[i]];
   }
   const wLen=()=>{const r=rnd();
-    if(r<.32)return 2+Math.floor(rnd()*2);
-    if(r<.70)return 4+Math.floor(rnd()*3);
-    return 7+Math.floor(rnd()*4);};
+    if(r<.20)return 2+Math.floor(rnd()*2);       // 2-3 (az)
+    if(r<.48)return 4+Math.floor(rnd()*4);        // 4-7
+    return 8+Math.floor(rnd()*7);                 // 8-14 (daha uzun, yilan gibi)
+  };
   for(const ci of order){
     if(owner[ci]!==-1)continue;
     const path=[[ci%cols,Math.floor(ci/cols)]];
@@ -1166,12 +1214,24 @@ function packWorms(cols,rows,rnd,mask){
         if(inM(nx,ny)&&owner[idxOf(nx,ny)]===-1)opts.push([nx,ny]);
       }
       if(!opts.length)break;
+      // her adayin ozgurluk skoru: kendi komsularindan kac tanesi hala bos
+      // (erken tikanmayi azaltir -> hedeflenen uzun oklara daha sik ulasilir)
+      const scored=opts.map(o=>{
+        let free=0;
+        for(const d of [0,1,2,3]){
+          const nx=o[0]+DIRS[d][0], ny=o[1]+DIRS[d][1];
+          if(inM(nx,ny)&&owner[idxOf(nx,ny)]===-1)free++;
+        }
+        return [o,free];
+      });
+      const topFree=Math.max(...scored.map(s=>s[1]));
+      const cands=scored.filter(s=>s[1]>=Math.max(0,topFree-1)).map(s=>s[0]);
       let p;
-      if(path.length>1&&rnd()<.45){
+      if(path.length>1&&rnd()<.30){    // duz devam egilimi azaltildi -> daha cok yilan gibi kivrilma
         const [px,py]=path[path.length-2];
         const sx=lx+(lx-px),sy=ly+(ly-py);
-        p=opts.find(o=>o[0]===sx&&o[1]===sy)||opts[Math.floor(rnd()*opts.length)];
-      }else p=opts[Math.floor(rnd()*opts.length)];
+        p=cands.find(o=>o[0]===sx&&o[1]===sy)||cands[Math.floor(rnd()*cands.length)];
+      }else p=cands[Math.floor(rnd()*cands.length)];
       owner[idxOf(p[0],p[1])]=worms.length;
       path.push(p);
     }
@@ -1186,7 +1246,7 @@ function packWorms(cols,rows,rnd,mask){
       if(!inM(nx,ny))continue;
       const oi=owner[idxOf(nx,ny)];
       const o=worms[oi];
-      if(!o||o.dead||o===w||o.cells.length>=10)continue;
+      if(!o||o.dead||o===w||o.cells.length>=15)continue;
       const h=o.cells[o.cells.length-1],t=o.cells[0];
       if(h[0]===nx&&h[1]===ny){o.cells.push([x,y]);owner[idxOf(x,y)]=oi;ok=true;break;}
       if(t[0]===nx&&t[1]===ny){o.cells.unshift([x,y]);owner[idxOf(x,y)]=oi;ok=true;break;}
@@ -1253,21 +1313,21 @@ function diffFor(n){
   let cols,rows,fill;
   if(n<=30){                       // kolay: izgara 11x17 -> 15x25
     const t=(n-10)/20;
-    cols=11+Math.round(t*4); rows=17+Math.round(t*8); fill=0.60+t*0.10;
+    cols=11+Math.round(t*4); rows=17+Math.round(t*8); fill=0.72+t*0.09;
   }else if(n<=60){                 // orta: 15x25 -> 18x30
     const t=(n-30)/30;
-    cols=15+Math.round(t*3); rows=25+Math.round(t*5); fill=0.70+t*0.10;
+    cols=15+Math.round(t*3); rows=25+Math.round(t*5); fill=0.81+t*0.07;
   }else if(n<=100){                // zor: 18x30 -> 20x34
     const t=(n-60)/40;
-    cols=18+Math.round(t*2); rows=30+Math.round(t*4); fill=0.80+t*0.08;
+    cols=18+Math.round(t*2); rows=30+Math.round(t*4); fill=0.88+t*0.05;
   }else{                           // uzman: tam izgara, en yogun
-    cols=20; rows=34; fill=0.93;
+    cols=20; rows=34; fill=0.97;
   }
   return {cols,rows,fill};
 }
 function genLevel(n){
   const rnd=mulberry32(n*2654435761+1299709);
-  const RAMP=[[5,7,6],[6,9,10],[7,11,15],[8,13,20],[9,15,26],[10,16,32]];
+  const RAMP=[[5,7,8],[6,9,13],[7,11,19],[8,13,25],[9,15,32],[10,16,38]];
   let cols,rows,nSnakes;
   if(n<=6){[cols,rows,nSnakes]=RAMP[n-1];}
   else{
@@ -1297,12 +1357,12 @@ function genLevel(n){
     colorSnakes(snakes,n,rnd);
     return {cols,rows,snakes,mask};
   }
-  // karışık uzunluk: çoğunluk kısa (2-3), orta (4-6), az sayıda uzun (7-10)
+  // karışık uzunluk: uzun oklar agirlikta, az sayida kisa/orta (yilan gibi kivrilabilir)
   function pickLen(){
     const r=rnd();
-    if(r<.45)return 2+Math.floor(rnd()*2);      // 2-3
-    if(r<.82)return 4+Math.floor(rnd()*3);      // 4-6
-    return 7+Math.floor(rnd()*4);               // 7-10
+    if(r<.22)return 2+Math.floor(rnd()*2);      // 2-3 (az)
+    if(r<.50)return 4+Math.floor(rnd()*4);      // 4-7
+    return 8+Math.floor(rnd()*6);               // 8-13 (uzun)
   }
   const occ=new Map(); // "x,y" -> snake index
   const snakes=[];
@@ -2078,8 +2138,8 @@ setIcon("sndBtn",mem.sound?"sound":"soundOff");
 /* Seviyeyle acilanlar (ilerleme odulu) */
 const THEME_UNLOCK={ancient:1,void_:1,frozen:1,magma:6,bio:10,cyber:15,thunder:20,temple:26,abyss:32,steam:40,
 /* PREMIUM: seviyeyle ASLA acilmaz -> sadece altinla (altinin asil hedefi) */
-  cosmic:9999,dark:9999,crystal:9999,metro:9999,solar:9999};
-const PREMIUM_THEMES=["cosmic","dark","crystal","metro","solar"];
+  cosmic:9999,dark:9999,crystal:9999,metro:9999,solar:9999,noir:9999,pearl:9999};
+const PREMIUM_THEMES=["cosmic","dark","crystal","metro","solar","noir","pearl"];
 const isPremium=k=>PREMIUM_THEMES.indexOf(k)>=0;
 function themeUnlocked(t){return (mem.owned&&mem.owned[t])||((mem.maxLevel||mem.level||1)>=THEME_UNLOCK[t]);}
 $("thmBtn").onclick=()=>{
@@ -2160,63 +2220,56 @@ function drawSnakePts(pts,color,alpha,glow,ws=1){
   if(glow){
     ctx.save();
     ctx.globalAlpha=(typeof glow==="number"?glow:1);
-    ctx.strokeStyle="#FFB347";ctx.lineWidth=cell*.75;
-    ctx.shadowColor="#FFB347";ctx.shadowBlur=cell*1.2;
+    ctx.strokeStyle="#FFB347";ctx.lineWidth=cell*.4;
+    ctx.shadowColor="#FFB347";ctx.shadowBlur=cell*.9;
     path();ctx.stroke();ctx.restore();
   }
-  // dış hat (zemin rengi) -> iç içe geçen yollar ayrışsın
-  ctx.strokeStyle=T.outline;ctx.lineWidth=cell*.5*ws;
-  path();ctx.stroke();
-  // NEON: shadowBlur PAHALI -> yerine kalin yari saydam katmanlar (cok daha hizli)
+  // NEON: shadowBlur PAHALI -> yerine ince yari saydam parlama katmanlari (renkli, siyah/beyaz yok)
   if(NEONFX){
     ctx.save();
     ctx.strokeStyle=color;
-    ctx.globalAlpha=alpha*.13; ctx.lineWidth=cell*.72*ws; path();ctx.stroke();
-    ctx.globalAlpha=alpha*.22; ctx.lineWidth=cell*.52*ws; path();ctx.stroke();
+    ctx.globalAlpha=alpha*.14; ctx.lineWidth=cell*.30*ws; path();ctx.stroke();
+    ctx.globalAlpha=alpha*.24; ctx.lineWidth=cell*.20*ws; path();ctx.stroke();
     ctx.restore();
   }
-  /* --- 3B TUP GOVDE: koyu taban -> ana renk -> ust isik -> parlama cizgisi --- */
+  /* --- IP GIBI INCE GOVDE: sadece okun kendi renginin tonlari (siyah dis hat / beyaz parlama yok) --- */
   if(NEONFX){
-    // 1) koyu taban (hacim/govde alt kismi)
-    ctx.strokeStyle=shade(color,-0.45);ctx.lineWidth=cell*.34*ws;
+    // 1) hafif koyu kenar (rengin kendi tonu, siyah degil) -> ince hacim hissi
+    ctx.strokeStyle=shade(color,-0.28);ctx.lineWidth=cell*.155*ws;
     path();ctx.stroke();
-    // 2) ana renk, biraz daha ince -> alt kenarda koyu serit kalir
-    ctx.strokeStyle=color;ctx.lineWidth=cell*.27*ws;
+    // 2) ana renk cekirdek -> ipin govdesi
+    ctx.strokeStyle=color;ctx.lineWidth=cell*.105*ws;
     path();ctx.stroke();
-    // 3) ust yari: acik ton (silindir isigi)
-    ctx.save();ctx.globalAlpha=alpha*.85;
-    ctx.strokeStyle=shade(color,0.42);ctx.lineWidth=cell*.16*ws;
-    path();ctx.stroke();ctx.restore();
-    // 4) en ustte ince beyaz parlama (cam yansimasi)
-    ctx.save();ctx.globalAlpha=alpha*.75;
-    ctx.strokeStyle=shade(color,0.85);ctx.lineWidth=cell*.07*ws;
+    // 3) cok ince, hafif acik parlama (rengin kendi tonu, beyaza yaklasmiyor)
+    ctx.save();ctx.globalAlpha=alpha*.65;
+    ctx.strokeStyle=shade(color,0.30);ctx.lineWidth=cell*.045*ws;
     path();ctx.stroke();ctx.restore();
   }else{
-    ctx.strokeStyle=color;ctx.lineWidth=cell*.32*ws;
+    ctx.strokeStyle=color;ctx.lineWidth=cell*.13*ws;
     path();ctx.stroke();
   }
   ctx.shadowBlur=0;
-  // kuyruk noktası
-  ctx.fillStyle=T.outline;
-  ctx.beginPath();ctx.arc(pts[0][0],pts[0][1],cell*.065,0,7);ctx.fill();
+  // kuyruk noktası (okun kendi rengi, siyah degil)
+  ctx.fillStyle=shade(color,-0.28);
+  ctx.beginPath();ctx.arc(pts[0][0],pts[0][1],cell*.05,0,7);ctx.fill();
   // kafa (ok ucu)
   const n=pts.length,h=pts[n-1],p2=pts[n-2];
   const ang=Math.atan2(h[1]-p2[1],h[0]-p2[0]);
   ctx.translate(h[0],h[1]);ctx.rotate(ang);
-  // ok ucu: koyu taban + ana renk + ust isik (govdeyle ayni hacim dili)
+  // ok ucu: ince, ipin devami gibi -> govdeyle ayni renk dili (siyah/beyaz yok)
   const tri=(k,col)=>{
     ctx.fillStyle=col;ctx.beginPath();
-    ctx.moveTo(cell*.38*ws*k,0);
-    ctx.lineTo(-cell*.05*ws*k,-cell*.23*ws*k);
-    ctx.lineTo(-cell*.05*ws*k,cell*.23*ws*k);
+    ctx.moveTo(cell*.30*ws*k,0);
+    ctx.lineTo(-cell*.03*ws*k,-cell*.17*ws*k);
+    ctx.lineTo(-cell*.03*ws*k,cell*.17*ws*k);
     ctx.closePath();ctx.fill();
   };
   if(NEONFX){
-    tri(1.0,shade(color,-0.45));
-    tri(0.86,color);
-    ctx.save();ctx.globalAlpha=alpha*.8;
-    ctx.translate(0,-cell*.045*ws);
-    tri(0.52,shade(color,0.5));
+    tri(1.0,shade(color,-0.28));
+    tri(0.82,color);
+    ctx.save();ctx.globalAlpha=alpha*.7;
+    ctx.translate(0,-cell*.03*ws);
+    tri(0.46,shade(color,0.28));
     ctx.restore();
   }else{
     tri(1.0,color);
@@ -2457,6 +2510,110 @@ function openChest(){
   sfx.win();haptic("win");
   fireworkShow(5);
 }
+/* ===== SANSLI CARK: yeni altin harcama alani, agirlikli rastgele odul, gercek donen carkin ===== */
+const LUCKY_TABLE=[
+  {w:30,type:"coins",amt:60,ic:"🪙",col:"#7A4A05"},
+  {w:22,type:"coins",amt:120,ic:"🪙",col:"#C87A08"},
+  {w:18,type:"hints",amt:2,ic:"💡",col:"#1B3E86"},
+  {w:12,type:"undos",amt:2,ic:"↩️",col:"#0E5C2E"},
+  {w:10,type:"bombs",amt:2,ic:"💣",col:"#7A1520"},
+  {w:5,type:"timeBoosts",amt:3,ic:"⏱️",col:"#0B5566"},
+  {w:3,type:"coins",amt:400,ic:"🪙",col:"#5C2D8A"}
+];
+function pickLucky(){
+  const total=LUCKY_TABLE.reduce((a,r)=>a+r.w,0);
+  let r=Math.random()*total;
+  for(const it of LUCKY_TABLE){ if(r<it.w)return it; r-=it.w; }
+  return LUCKY_TABLE[0];
+}
+function luckyLabel(it){
+  const T2=LANG==="tr";
+  if(it.type==="coins")return it.amt+(T2?" Altın":" Gold")+(it.amt>=300?" — JACKPOT! 🎉":"");
+  if(it.type==="hints")return it.amt+(T2?" İpucu":" Hints");
+  if(it.type==="undos")return it.amt+(T2?" Geri Al":" Undo");
+  if(it.type==="bombs")return it.amt+(T2?" Bomba":" Bombs");
+  if(it.type==="timeBoosts")return it.amt+(T2?"x +30sn":"x +30s");
+  return "";
+}
+/* Carkin renkli dilimlerini + ikon/etiketlerini kur (bir kere yeter, DOM'a gomulu kalir) */
+function buildWheel(){
+  const disk=$("wheelDisk"); if(!disk||disk.dataset.built)return;
+  const n=LUCKY_TABLE.length, seg=360/n;
+  disk.style.background="conic-gradient(from 0deg,"+LUCKY_TABLE.map((it,i)=>
+    it.col+" "+(i*seg).toFixed(2)+"deg "+((i+1)*seg).toFixed(2)+"deg").join(",")+")";
+  LUCKY_TABLE.forEach((it,i)=>{
+    const mid=(i+0.5)*seg, rad=(mid-90)*Math.PI/180, radPct=31;   // merkezden %31 uzaklikta
+    const el=document.createElement("div");
+    el.className="seg";
+    el.style.left=(50+Math.cos(rad)*radPct)+"%";
+    el.style.top=(50+Math.sin(rad)*radPct)+"%";
+    el.style.transform="translate(-50%,-50%)";
+    el.innerHTML="<span>"+it.ic+"</span><b>"+(it.type==="coins"?it.amt:it.amt+"x")+"</b>";
+    disk.appendChild(el);
+  });
+  disk.dataset.built="1";
+}
+let wheelRot=0, spinning=false;
+function openLuckyScreen(){
+  buildWheel();
+  $("luckyReward").innerHTML="";
+  $("luckyBtn").style.display="none";
+  $("luckyHint").style.display="";
+  $("shopOv").classList.add("hide");   // market DOM'da sonra geldigi icin ustte kalip carki ortuyordu
+  $("luckyOv").classList.remove("hide");
+  sfx.tick();haptic("tap");
+}
+function spinWheel(){
+  if(spinning)return;
+  if((mem.coins|0)<PRICE.lucky){
+    $("luckyHint").textContent=LANG==="tr"?"Yetersiz altın — markete dön":"Not enough gold — go back to market";
+    sfx.bump();haptic("err");
+    return;
+  }
+  spinning=true;
+  mem.coins-=PRICE.lucky;save();updateCoin();
+  $("luckyReward").innerHTML="";
+  $("luckyHint").style.display="none";
+  $("luckyBtn").style.display="none";
+  $("wheelDisk").classList.add("spinning");
+  $("wheelWrap").classList.add("spin");
+  sfx.tick();haptic("tap");
+
+  const prize=pickLucky();
+  const idx=LUCKY_TABLE.indexOf(prize);
+  const seg=360/LUCKY_TABLE.length;
+  const jitter=(Math.random()-0.5)*seg*0.6;              // dilim icinde hafif rastgelelik
+  const targetCenter=(idx+0.5)*seg+jitter;
+  const need=((360-(targetCenter%360))%360);
+  const spins=5+Math.floor(Math.random()*3);              // 5-7 tam tur
+  const prevMod=((wheelRot%360)+360)%360;
+  let addToReach=need-prevMod; if(addToReach<0)addToReach+=360;
+  const DUR=3400+Math.random()*1400;                       // 3.4-4.8 sn
+  wheelRot+=spins*360+addToReach;
+  const disk=$("wheelDisk");
+  disk.style.transition="transform "+(DUR/1000).toFixed(2)+"s cubic-bezier(.12,.72,.1,1)";
+  disk.style.transform="rotate("+wheelRot+"deg)";
+
+  setTimeout(()=>{
+    spinning=false;
+    $("wheelDisk").classList.remove("spinning");
+    $("wheelWrap").classList.remove("spin");
+    if(prize.type==="coins")addCoin(prize.amt);
+    else if(prize.type==="hints"){mem.hints=(mem.hints|0)+prize.amt;save();updateHintBtn();}
+    else if(prize.type==="undos"){mem.undos=(mem.undos|0)+prize.amt;save();updateUndoBtn();}
+    else if(prize.type==="bombs"){mem.bombs=(mem.bombs|0)+prize.amt;save();updateBombBtn();}
+    else if(prize.type==="timeBoosts"){mem.timeBoosts=(mem.timeBoosts|0)+prize.amt;save();updateTimeBtn();}
+    $("luckyReward").innerHTML='<div class="rw on">'+prize.ic+" "+luckyLabel(prize)+"</div>";
+    $("luckyBtn").style.display="";
+    $("luckyHint").style.display="";
+    $("luckyHint").textContent=LANG==="tr"?"Tekrar çevirmek için çarka dokun 🪙150":"Tap the wheel to spin again 🪙150";
+    sfx.win();haptic("win");fireworkShow(prize.amt>=300?6:2);
+  },DUR+60);
+}
+$("wheelDisk").addEventListener("click",spinWheel);
+function closeLucky(){$("luckyOv").classList.add("hide");$("shopOv").classList.remove("hide");renderShop();sfx.tick();}
+$("luckyBtn").onclick=closeLucky;
+$("luckyClose").onclick=closeLucky;
 function showChest(){
   $("chestReward").innerHTML="";
   const img=$("chestImg");if(img)img.classList.remove("open");
@@ -2555,7 +2712,7 @@ function renderAch(){
 }
 /* ---- MARKET ---- */
 const PRICE={hint:150, hint5:600, theme:400, premium:750, life:80,
-  undo:120, undo3:300, bomb:180, bomb3:450, time:100, time3:250};
+  undo:120, undo3:300, bomb:180, bomb3:450, time:100, time3:250, lucky:150};
 function renderShop(){
   const w=$("shopList"); if(!w)return;
   $("shopCoin").textContent=(mem.coins|0);
@@ -2595,6 +2752,46 @@ function renderShop(){
       },"ipucu");
       setTimeout(()=>{b.disabled=false;b.textContent=T2?"BEDAVA":"FREE";},2500);
     };
+    d.appendChild(b);w.appendChild(d);
+  })();
+  // ---- BEDAVA: odullu reklam -> ALTIN (eksik olan asil parca) ----
+  (function(){
+    const d=document.createElement("div");
+    d.className="shopItem free";
+    d.innerHTML='<div class="ic">🎬</div><div class="tx"><b>'+
+      (T2?"REKLAM İZLE → +40 ALTIN":"WATCH AD → +40 GOLD")+'</b><span>'+
+      (T2?"Ücretsiz, istediğin kadar":"Free, as often as you like")+'</span></div>';
+    const b=document.createElement("button");
+    b.className="buy freeBtn";
+    b.textContent=ONLINE?(T2?"BEDAVA":"FREE"):(T2?"📶 ÇEVRİMDIŞI":"📶 OFFLINE");
+    b.disabled=!ONLINE;
+    if(!ONLINE)d.style.opacity=".5";
+    b.onclick=()=>{
+      if(!ONLINE)return;
+      b.disabled=true;b.textContent="...";
+      tryRewarded(()=>{
+        addCoin(40);
+        sfx.win();haptic("win");fireworkShow(2);renderShop();
+      },"altin");
+      setTimeout(()=>{b.disabled=false;b.textContent=T2?"BEDAVA":"FREE";},2500);
+    };
+    d.appendChild(b);w.appendChild(d);
+  })();
+  // ---- SANSLI CARK (yeni altin harcama alani) ----
+  (function(){
+    const h=document.createElement("div");
+    h.className="wgrpT";h.style.margin="16px 2px 8px";
+    h.innerHTML=(T2?"ŞANS":"LUCKY")+"<i></i>";
+    w.appendChild(h);
+    const d=document.createElement("div");
+    d.className="shopItem prem";
+    d.innerHTML='<div class="ic">🎰</div><div class="tx"><b>'+
+      (T2?"ŞANSLI ÇARK":"LUCKY WHEEL")+'</b><span>'+
+      (T2?"Elle çevir, rastgele ödül — bazen büyük kazanç!":"Spin by hand, random reward — sometimes a big win!")+'</span></div>';
+    const b=document.createElement("button");
+    b.className="buy";
+    b.textContent=T2?"AÇ":"OPEN";
+    b.onclick=()=>{ openLuckyScreen(); };
     d.appendChild(b);w.appendChild(d);
   })();
   item("💡",T2?"1 İPUCU":"1 HINT",T2?"Takıldığında yol gösterir":"Shows the right arrow",
