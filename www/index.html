@@ -993,6 +993,7 @@ if(mem.undos===undefined)mem.undos=1;
 if(mem.bombs===undefined)mem.bombs=1;
 if(mem.timeBoosts===undefined)mem.timeBoosts=1;
 if(mem.lifetimeCoins===undefined)mem.lifetimeCoins=mem.coins||0;
+if(mem.reviewAsked===undefined)mem.reviewAsked=false;
 if(!mem.playerId)mem.playerId="p_"+Date.now().toString(36)+Math.random().toString(36).slice(2,8);
 if(mem.nick===undefined)mem.nick="";
 /* Kayit dogrulama: yanlis tipte gelen alanlari guvenle sifirla */
@@ -2042,6 +2043,17 @@ $("mLigBtn").onclick=openLig;
 $("ligClose").onclick=()=>{$("ligOv").classList.add("hide");sfx.tick();};
 $("ligNickBtn").onclick=()=>{openNick(()=>{renderLig();});};
 
+/* ---- UYGULAMA ICI DEGERLENDIRME: 3 yildizli bolum + en az 5. seviye + hic sorulmamis ---- */
+function maybeAskReview(){
+  if(mem.reviewAsked)return;
+  if((mem.maxLevel||1)<5)return;
+  try{
+    if(window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.InAppReview){
+      mem.reviewAsked=true; save();
+      window.Capacitor.Plugins.InAppReview.requestReview();
+    }
+  }catch(e){}
+}
 function winLevel(){
   sfx.win();
   for(let i=0;i<70;i++){
@@ -2051,6 +2063,7 @@ function winLevel(){
   }
   const lost=maxH-hearts;
   const stars=lost===0?3:(lost<=Math.ceil(maxH*.4)?2:1);
+  if(stars===3)setTimeout(maybeAskReview,1600);
   if(lost===0)levelScore+=100;
   mem.total=(mem.total||0)+levelScore;
   const reward=5+stars*3;   // dengelendi: altin artik bol degil
