@@ -716,6 +716,7 @@
 </style>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-remote-config-compat.js"></script>
 </head>
 <body>
 <div id="wrap">
@@ -921,6 +922,29 @@
   <div class="card">
     <div class="cardT" style="text-align:center" id="profilT">👤 PROFİL</div>
     <div id="profilList" style="margin-top:10px"></div>
+    <div class="ovSmall" style="margin-top:14px;text-align:left">☁️ Kurtarma Kodun (kaydet, telefon değişirse lazım olur):</div>
+    <div style="display:flex;gap:8px;margin-top:6px">
+      <input type="text" id="recoveryCodeShow" readonly
+        style="flex:1;min-width:0;padding:10px 12px;border-radius:10px;
+        background:rgba(255,255,255,.06);border:1px solid rgba(120,190,255,.3);
+        color:#9FC4E8;font-size:11px;font-family:inherit">
+      <button class="buy" id="copyCodeBtn" style="flex:0 0 auto">Kopyala</button>
+    </div>
+    <button class="mbtn ghost" id="restoreBtn" style="margin-top:10px">📥 Başka Koddan Geri Yükle</button>
+  </div>
+</div>
+
+<div class="ov hide" id="restoreOv">
+  <div class="card" style="text-align:center">
+    <div class="cardT" id="restoreT">📥 İLERLEMEYİ GERİ YÜKLE</div>
+    <div class="ovSmall" style="margin:2px 0 16px">Kurtarma kodunu yapıştır</div>
+    <input type="text" id="restoreInput" placeholder="p_xxxxxxxxxxxx"
+      style="width:100%;box-sizing:border-box;padding:14px 16px;border-radius:12px;
+      background:rgba(255,255,255,.06);border:1px solid rgba(120,190,255,.3);
+      color:#EAF4FF;font-size:14px;font-family:inherit;text-align:center;outline:none">
+    <div class="ovSmall" id="restoreMsg" style="margin-top:10px;min-height:16px"></div>
+    <button class="mbtn g" id="restoreGoBtn" style="margin-top:8px">GERİ YÜKLE</button>
+    <button class="mbtn ghost" id="restoreCancelBtn" style="margin-top:8px">Vazgeç</button>
   </div>
 </div>
 
@@ -1039,7 +1063,7 @@ if(!THEMES[mem.theme])mem.theme="ancient";   // eski kayitlar icin guvenli gecis
 let T=THEMES[mem.theme];
 const colName=s=>T.mono||s.color;
 
-const save=()=>{try{localStorage.setItem("oklar2",JSON.stringify(mem));}catch(e){}};
+const save=()=>{try{localStorage.setItem("oklar2",JSON.stringify(mem));}catch(e){}cloudSaveThrottled();};
 
 /* ---- ses ---- */
 let AC=null;
@@ -1851,7 +1875,7 @@ const firebaseConfig = {
   messagingSenderId: "1069528695250",
   appId: "1:1069528695250:web:9cff659fba64d51bbfc80b"
 };
-let fbDB=null, fbReady=false;
+let fbDB=null, fbReady=false, fbRC=null;
 try{
   if(typeof firebase!=="undefined"){
     firebase.initializeApp(firebaseConfig);
@@ -1859,6 +1883,85 @@ try{
     fbReady=true;
   }
 }catch(e){ fbReady=false; }
+
+/* ---- UZAKTAN AYAR (Remote Config): fiyatlari yeni surum cikmadan degistirebilmek icin ---- */
+try{
+  if(fbReady && firebase.remoteConfig){
+    fbRC=firebase.remoteConfig();
+    fbRC.settings.minimumFetchIntervalMillis=3600000;   // saatte bir kontrol yeter
+    fbRC.defaultConfig={
+      price_hint:150, price_hint5:600, price_theme:400, price_premium:750, price_life:80,
+      price_undo:120, price_undo3:300, price_bomb:180, price_bomb3:450, price_time:100,
+      price_time3:250, price_lucky:150
+    };
+    fbRC.fetchAndActivate().then(()=>{
+      const g=(k,d)=>{const v=Number(fbRC.getValue(k).asString());return isFinite(v)&&v>0?v:d;};
+      PRICE.hint=g("price_hint",PRICE.hint);
+      PRICE.hint5=g("price_hint5",PRICE.hint5);
+      PRICE.theme=g("price_theme",PRICE.theme);
+      PRICE.premium=g("price_premium",PRICE.premium);
+      PRICE.life=g("price_life",PRICE.life);
+      PRICE.undo=g("price_undo",PRICE.undo);
+      PRICE.undo3=g("price_undo3",PRICE.undo3);
+      PRICE.bomb=g("price_bomb",PRICE.bomb);
+      PRICE.bomb3=g("price_bomb3",PRICE.bomb3);
+      PRICE.time=g("price_time",PRICE.time);
+      PRICE.time3=g("price_time3",PRICE.time3);
+      PRICE.lucky=g("price_lucky",PRICE.lucky);
+    }).catch(()=>{});
+  }
+}catch(e){}
+
+/* ---- HATA GUNLUGU (Crashlytics'in web/Capacitor karsiligi): JS hatalarini Firestore'a yazar ---- */
+try{
+  window.addEventListener("error",e=>{
+    if(!fbReady||!ONLINE)return;
+    try{
+      fbDB.collection("errors").add({
+        playerId:mem.playerId||"?", msg:String(e.message||"").slice(0,300),
+        src:String(e.filename||"").slice(0,120), line:e.lineno||0,
+        level:mem.level||0, ts:Date.now()
+      }).catch(()=>{});
+    }catch(e2){}
+  });
+  window.addEventListener("unhandledrejection",e=>{
+    if(!fbReady||!ONLINE)return;
+    try{
+      fbDB.collection("errors").add({
+        playerId:mem.playerId||"?", msg:"promise: "+String((e.reason&&e.reason.message)||e.reason||"").slice(0,300),
+        level:mem.level||0, ts:Date.now()
+      }).catch(()=>{});
+    }catch(e2){}
+  });
+}catch(e){}
+
+/* ---- BULUT KAYIT: ilerleme yedegi, telefon degisince/silinince kurtarma icin ---- */
+let lastCloudSave=0;
+function cloudSaveThrottled(){
+  if(!fbReady||!ONLINE)return;
+  const now=Date.now();
+  if(now-lastCloudSave<30000)return;   // en fazla 30 saniyede bir yaz
+  lastCloudSave=now;
+  try{
+    fbDB.collection("saves").doc(mem.playerId).set({
+      data: JSON.stringify(mem), nick: mem.nick||"", updatedAt: now
+    }).catch(()=>{});
+  }catch(e){}
+}
+function restoreFromCode(code,onDone){
+  if(!fbReady||!ONLINE){onDone(false,"internet");return;}
+  const id=(code||"").trim();
+  if(!id){onDone(false,"bos");return;}
+  fbDB.collection("saves").doc(id).get().then(doc=>{
+    if(!doc.exists){onDone(false,"yok");return;}
+    try{
+      const d=JSON.parse(doc.data().data);
+      d.playerId=id;    // ayni kimlikle devam et, yeni kayit olusmasin
+      localStorage.setItem("oklar2",JSON.stringify(d));
+      onDone(true,"");
+    }catch(e){onDone(false,"bozuk");}
+  }).catch(()=>{onDone(false,"hata");});
+}
 
 function submitScore(){
   if(!fbReady||!mem.nick||!ONLINE)return;
@@ -1887,8 +1990,12 @@ function openNick(afterFn){
 function renderLig(){
   const w=$("ligList"); if(!w)return;
   w.innerHTML='<div class="ovSmall">Yükleniyor...</div>';
-  if(!fbReady||!ONLINE){
-    w.innerHTML='<div class="ovSmall">📶 Bağlantı gerekli</div>';
+  if(!ONLINE){
+    w.innerHTML='<div class="ovSmall">📶 İnternet bağlantısı gerekli</div>';
+    return;
+  }
+  if(!fbReady){
+    w.innerHTML='<div class="ovSmall">⚠️ Lig şu an kullanılamıyor<br>(bağlantı sorunu, birazdan tekrar dene)</div>';
     return;
   }
   fbDB.collection("leaderboard").orderBy("score","desc").limit(50).get().then(snap=>{
@@ -2992,11 +3099,46 @@ function renderProfil(){
     row(T2?"Başarımlar":"Achievements", achCount+"/"+ACHS.length)+
     row(T2?"Gün Serisi":"Day Streak", (mem.streak||0)+" 🔥")+
     row(T2?"Ömür Boyu Altın":"Lifetime Gold", "🪙 "+(mem.lifetimeCoins|0));
+  const rc=$("recoveryCodeShow"); if(rc)rc.value=mem.playerId||"";
 }
 function openProfil(){renderProfil();$("profilOv").classList.remove("hide");}
 function closeProfil(){$("profilOv").classList.add("hide");}
 $("mProfilBtn").onclick=()=>{openProfil();sfx.tick();};
 $("profilClose").onclick=()=>{closeProfil();sfx.tick();};
+$("copyCodeBtn").onclick=()=>{
+  const el=$("recoveryCodeShow"); if(!el)return;
+  el.select();
+  try{
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(el.value);
+    else document.execCommand("copy");
+    sfx.tick();haptic("ok");
+  }catch(e){}
+};
+$("restoreBtn").onclick=()=>{
+  $("restoreInput").value="";$("restoreMsg").textContent="";
+  $("restoreOv").classList.remove("hide");sfx.tick();
+};
+$("restoreCancelBtn").onclick=()=>{$("restoreOv").classList.add("hide");sfx.tick();};
+$("restoreGoBtn").onclick=()=>{
+  const T2=LANG==="tr";
+  const code=$("restoreInput").value;
+  $("restoreMsg").textContent=T2?"Aranıyor...":"Searching...";
+  restoreFromCode(code,(ok,why)=>{
+    if(ok){
+      $("restoreMsg").textContent=T2?"✅ Bulundu! Yeniden başlatılıyor...":"✅ Found! Restarting...";
+      sfx.win();haptic("win");
+      setTimeout(()=>{location.reload();},900);
+    }else{
+      const msgs={internet:T2?"📶 İnternet gerekli":"📶 Internet required",
+        bos:T2?"Kod boş olamaz":"Code can't be empty",
+        yok:T2?"Bu kodla kayıt bulunamadı":"No save found with this code",
+        bozuk:T2?"Kayıt okunamadı":"Save could not be read",
+        hata:T2?"Bir hata oluştu":"An error occurred"};
+      $("restoreMsg").textContent="❌ "+(msgs[why]||why);
+      sfx.bump();haptic("err");
+    }
+  });
+};
 
 /* ===== ALT HIZLI GEZINME CUBUGU (Seviyeler/Market/Basarimlar/Profil ekranlari) ===== */
 (function(){
