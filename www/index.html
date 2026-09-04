@@ -2043,6 +2043,50 @@ $("mLigBtn").onclick=openLig;
 $("ligClose").onclick=()=>{$("ligOv").classList.add("hide");sfx.tick();};
 $("ligNickBtn").onclick=()=>{openNick(()=>{renderLig();});};
 
+/* ---- UYGULAMA GUNCELLEME KONTROLU (Play In-App Update, @capawesome/capacitor-app-update) ----
+   Esnek (flexible) akis: arka planda indirir, bitince kucuk bir "Yeniden Baslat" cubugu gosterir.
+   Oyuncuyu bolum ortasinda zorla kesmiyor. */
+function checkAppUpdate(){
+  try{
+    const AU=window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.AppUpdate;
+    if(!AU||!AU.getAppUpdateInfo)return;
+    AU.getAppUpdateInfo().then(info=>{
+      if(!info||info.updateAvailability!==2)return;      // 2 = UPDATE_AVAILABLE
+      if(!info.flexibleUpdateAllowed)return;
+      if(AU.addListener){
+        const p=AU.addListener("onFlexibleUpdateStateChange",state=>{
+          if(state&&state.installStatus===11)showUpdateReadyBar();   // 11 = DOWNLOADED
+        });
+        if(p&&p.catch)p.catch(()=>{});
+      }
+      AU.startFlexibleUpdate().catch(()=>{});
+    }).catch(()=>{});
+  }catch(e){}
+}
+function showUpdateReadyBar(){
+  if($("updateReadyBar"))return;
+  const T2=LANG==="tr";
+  const bar=document.createElement("div");
+  bar.id="updateReadyBar";
+  bar.style.cssText="position:fixed;left:0;right:0;bottom:0;z-index:9999;"+
+    "background:linear-gradient(180deg,#2FBF5B,#1E9A46);color:#fff;"+
+    "padding:12px 16px calc(env(safe-area-inset-bottom,0px) + 12px);"+
+    "display:flex;align-items:center;justify-content:space-between;gap:10px;"+
+    "font-weight:800;font-size:13px;font-family:inherit;box-shadow:0 -4px 14px rgba(0,0,0,.35)";
+  bar.innerHTML='<span>🆕 '+(T2?"Güncelleme hazır!":"Update ready!")+'</span>'+
+    '<button id="updateReadyBtn" style="background:#fff;color:#1E9A46;border:none;'+
+    'border-radius:9px;padding:9px 16px;font-weight:900;font-family:inherit;font-size:12px">'+
+    (T2?"YENİDEN BAŞLAT":"RESTART")+'</button>';
+  document.body.appendChild(bar);
+  $("updateReadyBtn").onclick=()=>{
+    try{
+      const AU=window.Capacitor.Plugins.AppUpdate;
+      if(AU&&AU.completeFlexibleUpdate)AU.completeFlexibleUpdate().catch(()=>{});
+    }catch(e){}
+  };
+}
+setTimeout(checkAppUpdate,2500);   // acilista, arayuz yerlesince kontrol et
+
 /* ---- UYGULAMA ICI DEGERLENDIRME: 3 yildizli bolum + en az 5. seviye + hic sorulmamis ---- */
 function maybeAskReview(){
   if(mem.reviewAsked)return;
