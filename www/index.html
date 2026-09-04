@@ -839,6 +839,7 @@
       background:rgba(255,255,255,.06);border:1px solid rgba(120,190,255,.3);
       color:#EAF4FF;font-size:16px;font-family:inherit;text-align:center;outline:none">
     <button class="mbtn g" id="nickSaveBtn" style="margin-top:16px">KAYDET</button>
+    <button class="mbtn ghost" id="nickSkipBtn" style="margin-top:8px">Şimdi Değil</button>
   </div>
 </div>
 
@@ -1987,6 +1988,15 @@ function openNick(afterFn){
     sfx.win();haptic("win");
     if(afterFn)afterFn();
   };
+  $("nickSkipBtn").onclick=()=>{
+    if(!mem.nick){
+      mem.nick="Oyuncu"+Math.floor(1000+Math.random()*9000);   // jenerik ad, tekrar sorulmasin
+      save();
+    }
+    $("nickOv").classList.add("hide");
+    sfx.tick();
+    if(afterFn)afterFn();
+  };
 }
 function renderLig(){
   const w=$("ligList"); if(!w)return;
@@ -2428,9 +2438,13 @@ function openDaily(dayIdx,after){
 $("playBtn").onclick=()=>{
   if(!mem.tutDone&&(mem.maxLevel||1)<=1){ sfx.tick(); tutAc(); return; }
   sfx.tick();
-  const dayIdx=checkDailyStreak();
-  const startNow=()=>{$("startOv").classList.add("hide");startLevel(mem.level);startMusic();};
-  if(dayIdx>=0){ openDaily(dayIdx,startNow); } else { startNow(); }
+  const proceedToDaily=()=>{
+    const dayIdx=checkDailyStreak();
+    const startNow=()=>{$("startOv").classList.add("hide");startLevel(mem.level);startMusic();};
+    if(dayIdx>=0){ openDaily(dayIdx,startNow); } else { startNow(); }
+  };
+  if(!mem.nick){ openNick(proceedToDaily); return; }
+  proceedToDaily();
 };
 $("retryBtn").onclick=()=>{sfx.tick();$("failOv").classList.add("hide");startLevel(mem.level);};
 $("contInfo").textContent=mem.level>1?TX.contL+" "+mem.level+" • "+TX.contS+" "+(mem.total||0):"";
