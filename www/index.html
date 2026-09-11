@@ -717,6 +717,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-remote-config-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
 </head>
 <body>
 <div id="wrap">
@@ -1835,6 +1836,7 @@ function layout(){
 window.addEventListener("resize",layout);
 
 function startLevel(n){
+  ev("level_start",{level:n});
   mem.level=n;if(!mem.maxLevel||n>mem.maxLevel)mem.maxLevel=n;save();
   L=(nextCache&&nextCache.n===n)?nextCache.L:genLevel(n);
   nextCache=null;
@@ -1961,7 +1963,7 @@ function tapSnake(s){
     const gap=Math.abs(blk.x-s.head[0])+Math.abs(blk.y-s.head[1])-1;
     anims.push({type:"bump",s,track:buildTrack(s),t:0,dur:.5,gap:gap+.35});
     hearts--;updateHearts();
-    if(hearts<=0){locked=true;setTimeout(()=>{sfx.fail();$("failT").textContent=TX.failT;$("reviveBtn").textContent=TX.revive;$("reviveBtn").dataset.mode="";$("reviveBtn").style.display="";updateCoinRevive();guncelleReklamButonlari();$("failOv").classList.remove("hide");
+    if(hearts<=0){ev("level_fail",{level:mem.level});locked=true;setTimeout(()=>{sfx.fail();$("failT").textContent=TX.failT;$("reviveBtn").textContent=TX.revive;$("reviveBtn").dataset.mode="";$("reviveBtn").style.display="";updateCoinRevive();guncelleReklamButonlari();$("failOv").classList.remove("hide");
       setTimeout(()=>{if(!nextCache)nextCache={n:mem.level,L:genLevel(mem.level)};},700);},550);}
   }
 }
@@ -1972,14 +1974,18 @@ const firebaseConfig = {
   projectId: "oklar--lig",
   storageBucket: "oklar--lig.firebasestorage.app",
   messagingSenderId: "1069528695250",
-  appId: "1:1069528695250:web:9cff659fba64d51bbfc80b"
+  appId: "1:1069528695250:web:9cff659fba64d51bbfc80b",
+  measurementId: "G-QHELLYG3Q4"
 };
+let fbAN=null;
+function ev(ad,par){ try{ if(fbAN) fbAN.logEvent(ad, par||{}); }catch(e){} }
 let fbDB=null, fbReady=false, fbRC=null;
 try{
   if(typeof firebase!=="undefined"){
     firebase.initializeApp(firebaseConfig);
     fbDB=firebase.firestore();
     fbReady=true;
+    try{ if(firebase.analytics) fbAN=firebase.analytics(); }catch(e){}
   }
 }catch(e){ fbReady=false; }
 
@@ -2206,6 +2212,7 @@ function maybeAskReview(){
   }catch(e){}
 }
 function winLevel(){
+  ev("level_complete",{level:mem.level});
   sfx.win();
   for(let i=0;i<70;i++){
     particles.push({x:cv.width/2,y:cv.height/2.4,
@@ -2274,6 +2281,7 @@ function tryRewarded(onOk,type){
     try{sfx.bump();haptic("err");}catch(e){}
     return;
   }
+  ev("rewarded_click",{type:type||""});
   if(window.showRewarded){try{window.showRewarded(onOk,type);}catch(e){}}
   else setTimeout(onOk,600);
 }
