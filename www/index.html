@@ -3884,5 +3884,26 @@ function comboGoster(n){
   comboPop=setTimeout(function(){el.classList.remove("on");},900);
 }
 </script>
+
+<script>
+/* Yandex A/B - %30 Yandex, kalan + bos donen AdMob */
+(function(){
+  var C = window.Capacitor;
+  var Y = C && C.Plugins && C.Plugins.YandexAds;
+  if (!Y) return;
+  var YANDEX_ORANI = 0.3;
+  try { Y.init(); } catch(e) {}
+  var admob = window.showInterstitial;
+  window.showInterstitial = function(){
+    if (Math.random() < YANDEX_ORANI) {
+      Y.show().then(function(r){
+        if (!r || !r.shown) { if (admob) admob(); }
+      }).catch(function(){ if (admob) admob(); });
+      return;
+    }
+    if (admob) admob();
+  };
+})();
+</script>
 </body>
 </html>
