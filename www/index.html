@@ -3913,5 +3913,36 @@ function comboGoster(n){
   });
 })();
 </script>
+
+<script>
+/* Yandex odullu - %50 */
+(function(){
+  var C=window.Capacitor, Y=C&&C.Plugins&&C.Plugins.YandexAds;
+  if(!Y) return;
+  var ORAN=0.5;
+  var inner=null;
+  try{ Y.init(); }catch(e){}
+  function log(t){try{var d=document.createElement('div');d.textContent=t;
+    d.style.cssText='position:fixed;top:8px;left:8px;right:8px;z-index:99999;background:#000;color:#0f0;padding:6px;font:12px monospace;word-break:break-all';
+    document.body.appendChild(d);setTimeout(function(){d.remove();},5000);}catch(e){}}
+  function gate(onOk, type){
+    if(Math.random()<ORAN){
+      Y.showRewarded().then(function(r){
+        log('YX shown='+(r&&r.shown)+' rw='+(r&&r.rewarded)+' e='+((r&&r.error)||'-'));
+        if(r&&r.shown){ if(r.rewarded&&onOk) onOk(); return; }
+        if(inner) inner(onOk,type);
+      }).catch(function(e){ log('YX catch'); if(inner) inner(onOk,type); });
+      return;
+    }
+    log('ADMOB');
+    if(inner) inner(onOk,type);
+  }
+  Object.defineProperty(window,'showRewarded',{
+    configurable:true,
+    get:function(){ return gate; },
+    set:function(v){ inner=v; }
+  });
+})();
+</script>
 </body>
 </html>
