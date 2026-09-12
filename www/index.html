@@ -3897,6 +3897,7 @@ function comboGoster(n){
   window.showInterstitial = function(){
     if (Math.random() < YANDEX_ORANI) {
       Y.show().then(function(r){
+        try{var d=document.createElement('div');d.textContent='YANDEX:'+((r&&r.shown)?'OK':'BOS');d.style.cssText='position:fixed;top:8px;left:8px;z-index:99999;background:#000;color:#0f0;padding:6px 10px;font:14px monospace';document.body.appendChild(d);setTimeout(function(){d.remove();},3000);}catch(e){}
         if (!r || !r.shown) { if (admob) admob(); }
       }).catch(function(){ if (admob) admob(); });
       return;
