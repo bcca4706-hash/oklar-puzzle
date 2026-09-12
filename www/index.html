@@ -3922,9 +3922,7 @@ function comboGoster(n){
   var ORAN=0.5;
   var inner=null;
   try{ Y.init(); }catch(e){}
-  function log(t){try{var d=document.createElement('div');d.textContent=t;
-    d.style.cssText='position:fixed;top:8px;left:8px;right:8px;z-index:99999;background:#000;color:#0f0;padding:6px;font:12px monospace;word-break:break-all';
-    document.body.appendChild(d);setTimeout(function(){d.remove();},5000);}catch(e){}}
+  function log(t){}
   function gate(onOk, type){
     if(Math.random()<ORAN){
       Y.showRewarded().then(function(r){
