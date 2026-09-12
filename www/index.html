@@ -3892,7 +3892,7 @@ function comboGoster(n){
   var C=window.Capacitor, Y=C&&C.Plugins&&C.Plugins.YandexAds;
   if(!Y) return;
   try{ Y.init(); }catch(e){}
-  var YANDEX_ORANI=1.0;
+  var YANDEX_ORANI=0.3;
   var inner=null;
   function log(t){try{var d=document.createElement('div');d.textContent=t;
     d.style.cssText='position:fixed;top:8px;left:8px;z-index:99999;background:#000;color:#0f0;padding:6px 10px;font:13px monospace';
