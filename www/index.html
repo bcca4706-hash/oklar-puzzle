@@ -2262,7 +2262,7 @@ function winLevel(){
 /* Sonraki seviyeye gecis (sandik/dunya ekranlari bittikten sonra cagrilir) */
 function nextLevel(){
   const next=mem.level+1;
-  if(next%3===1&&window.showInterstitial){try{window.showInterstitial();}catch(e){}}
+  if(next%2===1&&window.showInterstitial){try{window.showInterstitial();}catch(e){}}
   startLevel(next);
 }
 $("nextBtn").onclick=()=>{
