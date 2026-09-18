@@ -733,7 +733,7 @@
 <div id="oklarSplash"><div class="lg"><span style="color:#00e5ff">O</span><span style="color:#ff2bd6">K</span><span style="color:#ffe600">L</span><span style="color:#39ff14">A</span><span style="color:#ff7a00">R</span></div><div class="bar"><i></i></div><div class="alt">YÜKLENİYOR</div></div>
 <script>
 function hideSplash(){var s=document.getElementById('oklarSplash');if(!s||s.classList.contains('gizle'))return;s.classList.add('gizle');setTimeout(function(){s.remove()},500);}
-setTimeout(hideSplash,6000);
+setTimeout(hideSplash,12000);
 </script>
 <div id="wrap">
   <div id="hud">
@@ -3941,7 +3941,7 @@ let _lastOpen=0;
 async function showAppOpen(){
   if(Date.now()-_lastOpen<4*3600e3)return;
   _lastOpen=Date.now();
-  try{await Capacitor.Plugins.AppOpen.show({adId:APP_OPEN_ID});}catch(e){}
+  var r;try{r=await Capacitor.Plugins.AppOpen.show({adId:APP_OPEN_ID});}catch(e){r={hata:'eklenti: '+e.message};}if(r&&r.hata){var a=document.querySelector('#oklarSplash .alt');if(a){a.textContent=r.hata;a.style.color='#ff5c5c';}await new Promise(function(z){setTimeout(z,5000)});}
 }
 document.addEventListener('DOMContentLoaded',()=>{
   var _t0=Date.now();showAppOpen().finally(function(){setTimeout(hideSplash,Math.max(0,900-(Date.now()-_t0)))});
