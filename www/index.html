@@ -3920,5 +3920,18 @@ function comboGoster(n){
   });
 })();
 </script>
+<script>
+const APP_OPEN_ID='ca-app-pub-2288995098594728/5395589998';
+let _lastOpen=0;
+async function showAppOpen(){
+  if(Date.now()-_lastOpen<4*3600e3)return;
+  _lastOpen=Date.now();
+  try{await Capacitor.Plugins.AppOpen.show({adId:APP_OPEN_ID});}catch(e){}
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  showAppOpen();
+  try{Capacitor.Plugins.App.addListener('resume',showAppOpen);}catch(e){}
+});
+</script>
 </body>
 </html>
