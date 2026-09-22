@@ -3907,35 +3907,6 @@ function comboGoster(n){
 
 
 <script>
-/* Yandex odullu tek blok */
-(function(){
-  var C=window.Capacitor, Y=C&&C.Plugins&&C.Plugins.YandexAds;
-  if(!Y) return;
-  var ORAN=0.5;
-  var admobFn=(typeof window.showRewarded==='function')?window.showRewarded:null;
-  try{ Y.init(); }catch(e){}
-  function fallback(onOk,type){
-    if(admobFn){ try{ admobFn(onOk,type); return; }catch(e){} }
-    if(onOk) onOk();
-  }
-  function gate(onOk,type){
-    if(Math.random()<ORAN){
-      Y.showRewarded().then(function(r){
-        if(r&&r.shown){ if(r.rewarded&&onOk) onOk(); return; }
-        fallback(onOk,type);
-      }).catch(function(){ fallback(onOk,type); });
-      return;
-    }
-    fallback(onOk,type);
-  }
-  Object.defineProperty(window,'showRewarded',{
-    configurable:true,
-    get:function(){ return gate; },
-    set:function(v){ admobFn=v; }
-  });
-})();
-</script>
-<script>
 const APP_OPEN_ID='ca-app-pub-2288995098594728/6633398472';
 let _lastOpen=0;
 async function showAppOpen(){
