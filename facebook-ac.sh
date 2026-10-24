@@ -12,6 +12,7 @@ fi
 if ! grep -q com.facebook.sdk.ApplicationId "$M"; then
   sed -i "s#</application>#        <meta-data android:name=\"com.facebook.sdk.ApplicationId\" android:value=\"@string/facebook_app_id\"/>\n        <meta-data android:name=\"com.facebook.sdk.ClientToken\" android:value=\"@string/facebook_client_token\"/>\n        <activity android:name=\"com.facebook.FacebookActivity\" android:configChanges=\"keyboard|keyboardHidden|screenLayout|screenSize|orientation\" android:label=\"@string/app_name\" />\n        <activity android:name=\"com.facebook.CustomTabActivity\" android:exported=\"true\">\n            <intent-filter>\n                <action android:name=\"android.intent.action.VIEW\" />\n                <category android:name=\"android.intent.category.DEFAULT\" />\n                <category android:name=\"android.intent.category.BROWSABLE\" />\n                <data android:scheme=\"@string/fb_login_protocol_scheme\" />\n            </intent-filter>\n        </activity>\n    </application>#" "$M"
 fi
+sed -i "s/\"google.com\"$/\"google.com\",\n      \"facebook.com\"/" capacitor.config.json
 sed -i 's/rgcfaIncludeFacebook = false/rgcfaIncludeFacebook = true/' android/variables.gradle
 sed -i 's/const FB_GIRIS=false;/const FB_GIRIS=true;/' www/index.html
 echo "Facebook girisi acildi. Simdi: git add -A && git commit -m 'facebook giris' && git push"
