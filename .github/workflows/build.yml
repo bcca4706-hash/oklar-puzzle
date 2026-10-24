@@ -17,6 +17,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: google-services.json kontrol
+        run: |
+          if [ ! -f android/app/google-services.json ]; then
+            echo "::error::android/app/google-services.json yok! Firebase konsolundan indirip repoya ekle (Google giris icin sart)."
+            exit 1
+          fi
       - run: npm install
       - run: npx cap sync android
 
