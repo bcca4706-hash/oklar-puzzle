@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1069528695250",
+    "project_id": "oklar--lig",
+    "storage_bucket": "oklar--lig.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1069528695250:android:a7984d136c69f75bbfc80b",
+        "android_client_info": {
+          "package_name": "com.bbm.oklar"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1069528695250-oeo92qgg728d43nfd407m1ip1a6rdka3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.bbm.oklar",
+            "certificate_hash": "7f2d9c2541d6b7b525e8845140d79e313323d21e"
+          }
+        },
+        {
+          "client_id": "1069528695250-su0rbnklakl4fuap500et2j0mtgd1qm6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.bbm.oklar",
+            "certificate_hash": "272272a5abd343b2305d9167ec35bad5422c7b5d"
+          }
+        },
+        {
+          "client_id": "1069528695250-2vf3rb0hduk71gunq12hvk5ommerinob.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBuXG0Js8wY1aj-W_KTET2Bxvaxequ5kto"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1069528695250-2vf3rb0hduk71gunq12hvk5ommerinob.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
