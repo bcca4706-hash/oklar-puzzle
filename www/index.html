@@ -4266,33 +4266,47 @@ $("pHomeBtn").onclick=()=>{
 $("replayBtn").onclick=()=>{$("winOv").classList.add("hide");playLevel(mem.level);sfx.tick();};
 </script>
 <script>
-/* AdMob koprusu - yalniz Capacitor icinde etkinlesir */
+/* Yandex reklam koprusu - yalniz Capacitor icinde etkinlesir */
 (function(){
   const C=window.Capacitor;
   if(!C||!C.isNativePlatform||!C.isNativePlatform())return;
-  const A=C.Plugins&&C.Plugins.AdMob;
-  if(!A)return;
+  const Y=C.Plugins&&C.Plugins.YandexAds;
+  if(!Y)return;
+  /* Yandex Mobile Ads blok ID'leri */
   const IDS={
-    int:"ca-app-pub-2288995098594728/3108241578",
-    can:"ca-app-pub-2288995098594728/7981982665",
-    ipucu:"ca-app-pub-2288995098594728/1412016529"
+    int:"R-M-20031432-2",
+    can:"R-M-20031432-1",
+    ipucu:"R-M-20031432-3"
   };
-  let rewardOk=null,rewardGiven=false;
-  A.initialize({}).then(()=>{A.prepareInterstitial({adId:IDS.int}).catch(()=>{});}).catch(()=>{});
-  A.addListener("onRewardedVideoAdReward",()=>{rewardGiven=true;});
-  A.addListener("onRewardedVideoAdDismissed",()=>{
-    if(rewardGiven&&rewardOk){const f=rewardOk;rewardOk=null;rewardGiven=false;f();}
-    else{rewardOk=null;rewardGiven=false;}
-  });
+  const FMT={int:"interstitial",can:"rewarded",ipucu:"rewarded"};
+  const fails={int:0,can:0,ipucu:0};
+  function load(k){
+    return Y.load({key:k,adId:IDS[k],format:FMT[k]})
+      .then(function(r){if(r&&r.loaded)fails[k]=0;})
+      .catch(function(){setTimeout(function(){load(k);},Math.min(60000,5000*Math.pow(2,fails[k]++)));});
+  }
+  async function waitLoaded(k,ms){
+    const t0=Date.now();
+    while(Date.now()-t0<ms){
+      try{const r=await Y.isLoaded({key:k});if(r&&r.loaded)return true;}catch(e){}
+      await new Promise(function(r){setTimeout(r,300);});
+    }
+    return false;
+  }
+  window.__yInit=Y.init().catch(function(){}).then(function(){load("int");load("can");load("ipucu");});
   window.showInterstitial=function(){
-    A.showInterstitial().catch(()=>{}).finally(()=>{A.prepareInterstitial({adId:IDS.int}).catch(()=>{});});
+    Y.show({key:"int"}).catch(function(){}).finally(function(){load("int");});
   };
   window.showRewarded=async function(cb,type){
-    rewardOk=cb;rewardGiven=false;
+    const k=type==="can"?"can":"ipucu";
     try{
-      await A.prepareRewardVideoAd({adId:type==="can"?IDS.can:IDS.ipucu});
-      await A.showRewardVideoAd();
-    }catch(e){rewardOk=null;}
+      await window.__yInit;
+      load(k);
+      if(!(await waitLoaded(k,8000)))return;
+      const r=await Y.show({key:k});
+      if(r&&r.rewarded&&cb)cb();
+    }catch(e){}
+    finally{load(k);}
   };
 })();
 </script>
@@ -4806,12 +4820,20 @@ function comboGoster(n){
 
 
 <script>
-const APP_OPEN_ID='ca-app-pub-2288995098594728/6633398472';
+const APP_OPEN_ID='R-M-20031432-4';
 let _lastOpen=0;
 async function showAppOpen(){
   if(Date.now()-_lastOpen<4*3600e3)return;
   _lastOpen=Date.now();
-  var r;try{r=await Capacitor.Plugins.AppOpen.show({adId:APP_OPEN_ID});}catch(e){r={hata:'eklenti: '+e.message};}
+  try{
+    const Y=Capacitor.Plugins.YandexAds;
+    await Y.init();
+    const r=await Promise.race([
+      Y.load({key:'acilis',adId:APP_OPEN_ID,format:'appopen'}),
+      new Promise(function(res){setTimeout(function(){res(null);},4000);})
+    ]);
+    if(r&&r.loaded)await Y.show({key:'acilis'});
+  }catch(e){}
 }
 document.addEventListener('DOMContentLoaded',()=>{
   var _t0=Date.now();showAppOpen().finally(function(){setTimeout(hideSplash,Math.max(0,900-(Date.now()-_t0)))});
