@@ -4266,47 +4266,47 @@ $("pHomeBtn").onclick=()=>{
 $("replayBtn").onclick=()=>{$("winOv").classList.add("hide");playLevel(mem.level);sfx.tick();};
 </script>
 <script>
-/* Yandex reklam koprusu - yalniz Capacitor icinde etkinlesir */
+/* Unity Ads koprusu - yalniz Capacitor icinde etkinlesir */
 (function(){
   const C=window.Capacitor;
   if(!C||!C.isNativePlatform||!C.isNativePlatform())return;
-  const Y=C.Plugins&&C.Plugins.YandexAds;
-  if(!Y)return;
-  /* Yandex Mobile Ads blok ID'leri */
-  const IDS={
-    int:"R-M-20031432-2",
-    can:"R-M-20031432-1",
-    ipucu:"R-M-20031432-3"
-  };
-  const FMT={int:"interstitial",can:"rewarded",ipucu:"rewarded"};
-  const fails={int:0,can:0,ipucu:0};
+  const U=C.Plugins&&C.Plugins.UnityAds;
+  if(!U)return;
+  const GAME_ID="800442645";
+  const TEST=false;            // kendi telefonunda test ederken true yap
+  const PL={int:"Interstitial_Android",odul:"Rewarded_Android"};
+  const ready={int:false,odul:false}, fails={int:0,odul:0}, busy={int:false,odul:false};
   function load(k){
-    return Y.load({key:k,adId:IDS[k],format:FMT[k]})
-      .then(function(r){if(r&&r.loaded)fails[k]=0;})
-      .catch(function(){setTimeout(function(){load(k);},Math.min(60000,5000*Math.pow(2,fails[k]++)));});
+    if(ready[k]||busy[k])return;
+    busy[k]=true;
+    U.load({placementId:PL[k]})
+      .then(function(){ready[k]=true;fails[k]=0;})
+      .catch(function(){setTimeout(function(){load(k);},Math.min(60000,5000*Math.pow(2,fails[k]++)));})
+      .finally(function(){busy[k]=false;});
   }
-  async function waitLoaded(k,ms){
+  async function waitReady(k,ms){
     const t0=Date.now();
-    while(Date.now()-t0<ms){
-      try{const r=await Y.isLoaded({key:k});if(r&&r.loaded)return true;}catch(e){}
-      await new Promise(function(r){setTimeout(r,300);});
-    }
-    return false;
+    while(!ready[k]&&Date.now()-t0<ms){load(k);await new Promise(function(r){setTimeout(r,300);});}
+    return ready[k];
   }
-  window.__yInit=Y.init().catch(function(){}).then(function(){load("int");load("can");load("ipucu");});
-  window.showInterstitial=function(){
-    Y.show({key:"int"}).catch(function(){}).finally(function(){load("int");});
+  window.__uInit=U.init({gameId:GAME_ID,testMode:TEST}).catch(function(){}).then(function(){load("int");load("odul");});
+  let lastInt=0;
+  window.showInterstitial=async function(){
+    await window.__uInit;
+    if(!ready.int||Date.now()-lastInt<60000)return;   // en az 60 sn arayla
+    ready.int=false;lastInt=Date.now();
+    try{await U.show({placementId:PL.int});}catch(e){}
+    load("int");
   };
-  window.showRewarded=async function(cb,type){
-    const k=type==="can"?"can":"ipucu";
+  window.showRewarded=async function(cb){
     try{
-      await window.__yInit;
-      load(k);
-      if(!(await waitLoaded(k,8000)))return;
-      const r=await Y.show({key:k});
+      await window.__uInit;
+      if(!(await waitReady("odul",8000)))return;
+      ready.odul=false;
+      const r=await U.show({placementId:PL.odul});
       if(r&&r.rewarded&&cb)cb();
     }catch(e){}
-    finally{load(k);}
+    finally{load("odul");}
   };
 })();
 </script>
@@ -4820,24 +4820,9 @@ function comboGoster(n){
 
 
 <script>
-const APP_OPEN_ID='R-M-20031432-4';
-let _lastOpen=0;
-async function showAppOpen(){
-  if(Date.now()-_lastOpen<4*3600e3)return;
-  _lastOpen=Date.now();
-  try{
-    const Y=Capacitor.Plugins.YandexAds;
-    await Y.init();
-    const r=await Promise.race([
-      Y.load({key:'acilis',adId:APP_OPEN_ID,format:'appopen'}),
-      new Promise(function(res){setTimeout(function(){res(null);},4000);})
-    ]);
-    if(r&&r.loaded)await Y.show({key:'acilis'});
-  }catch(e){}
-}
+async function showAppOpen(){}
 document.addEventListener('DOMContentLoaded',()=>{
   var _t0=Date.now();showAppOpen().finally(function(){setTimeout(hideSplash,Math.max(0,900-(Date.now()-_t0)))});
-  try{Capacitor.Plugins.App.addListener('resume',showAppOpen);}catch(e){}
 });
 </script>
 <script>
