@@ -4271,17 +4271,27 @@ $("replayBtn").onclick=()=>{$("winOv").classList.add("hide");playLevel(mem.level
   const C=window.Capacitor;
   if(!C||!C.isNativePlatform||!C.isNativePlatform())return;
   const U=C.Plugins&&C.Plugins.UnityAds;
-  if(!U)return;
+  if(!U){document.addEventListener("DOMContentLoaded",function(){const d=document.createElement("div");d.style.cssText="position:fixed;top:40px;left:4px;z-index:99999;background:red;color:#fff;font:12px monospace;padding:4px";d.textContent="UnityAds plugin YOK";document.body.appendChild(d);});return;}
   const GAME_ID="800442645";
-  const TEST=false;            // kendi telefonunda test ederken true yap
+  const TEST=true;             // TESHIS: yayin oncesi false yap
+  const DEBUG=true;            // TESHIS: ekranda reklam gunlugu
+  function dbg(m){
+    if(!DEBUG)return;
+    let d=document.getElementById("adDbg");
+    if(!d){d=document.createElement("div");d.id="adDbg";
+      d.style.cssText="position:fixed;left:4px;right:4px;top:40px;z-index:99999;background:rgba(0,0,0,.8);color:#0f0;font:11px monospace;padding:4px;max-height:40vh;overflow:auto;pointer-events:none;white-space:pre-wrap";
+      document.body.appendChild(d);}
+    d.textContent+=new Date().toTimeString().slice(0,8)+" "+m+"\n";
+  }
   const PL={int:"Interstitial_Android",odul:"Rewarded_Android"};
   const ready={int:false,odul:false}, fails={int:0,odul:0}, busy={int:false,odul:false};
   function load(k){
     if(ready[k]||busy[k])return;
     busy[k]=true;
+    dbg("load "+PL[k]);
     U.load({placementId:PL[k]})
-      .then(function(){ready[k]=true;fails[k]=0;})
-      .catch(function(){setTimeout(function(){load(k);},Math.min(60000,5000*Math.pow(2,fails[k]++)));})
+      .then(function(){ready[k]=true;fails[k]=0;dbg("HAZIR "+PL[k]);})
+      .catch(function(e){dbg("LOAD HATA "+PL[k]+": "+((e&&e.message)||e));setTimeout(function(){load(k);},Math.min(60000,5000*Math.pow(2,fails[k]++)));})
       .finally(function(){busy[k]=false;});
   }
   async function waitReady(k,ms){
@@ -4289,7 +4299,8 @@ $("replayBtn").onclick=()=>{$("winOv").classList.add("hide");playLevel(mem.level
     while(!ready[k]&&Date.now()-t0<ms){load(k);await new Promise(function(r){setTimeout(r,300);});}
     return ready[k];
   }
-  window.__uInit=U.init({gameId:GAME_ID,testMode:TEST}).catch(function(){}).then(function(){load("int");load("odul");});
+  dbg("init basliyor test="+TEST);
+  window.__uInit=U.init({gameId:GAME_ID,testMode:TEST}).then(function(){dbg("init OK");}).catch(function(e){dbg("INIT HATA: "+((e&&e.message)||e));}).then(function(){load("int");load("odul");});
   let lastInt=0;
   window.showInterstitial=async function(){
     await window.__uInit;
@@ -4301,11 +4312,12 @@ $("replayBtn").onclick=()=>{$("winOv").classList.add("hide");playLevel(mem.level
   window.showRewarded=async function(cb){
     try{
       await window.__uInit;
-      if(!(await waitReady("odul",8000)))return;
+      dbg("odullu istendi");
+      if(!(await waitReady("odul",8000))){dbg("odullu hazir degil (8sn)");return;}
       ready.odul=false;
-      const r=await U.show({placementId:PL.odul});
+      const r=await U.show({placementId:PL.odul});dbg("gosterildi rewarded="+(r&&r.rewarded));
       if(r&&r.rewarded&&cb)cb();
-    }catch(e){}
+    }catch(e){dbg("SHOW HATA: "+((e&&e.message)||e));}
     finally{load("odul");}
   };
 })();
