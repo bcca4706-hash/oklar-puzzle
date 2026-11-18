@@ -4273,8 +4273,8 @@ $("replayBtn").onclick=()=>{$("winOv").classList.add("hide");playLevel(mem.level
   const U=C.Plugins&&C.Plugins.UnityAds;
   if(!U){document.addEventListener("DOMContentLoaded",function(){const d=document.createElement("div");d.style.cssText="position:fixed;top:40px;left:4px;z-index:99999;background:red;color:#fff;font:12px monospace;padding:4px";d.textContent="UnityAds plugin YOK";document.body.appendChild(d);});return;}
   const GAME_ID="800442645";
-  const TEST=true;             // TESHIS: yayin oncesi false yap
-  const DEBUG=true;            // TESHIS: ekranda reklam gunlugu
+  const TEST=false;            // test cihazi panelden: Monetization > Testing
+  const DEBUG=false;           // true: ekranda reklam gunlugu
   function dbg(m){
     if(!DEBUG)return;
     let d=document.getElementById("adDbg");
