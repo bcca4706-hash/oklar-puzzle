@@ -4283,7 +4283,10 @@ $("replayBtn").onclick=()=>{$("winOv").classList.add("hide");playLevel(mem.level
       document.body.appendChild(d);}
     d.textContent+=new Date().toTimeString().slice(0,8)+" "+m+"\n";
   }
-  const PL={int:"Interstitial_Android",odul:"Rewarded_Android"};
+  /* Panelde gorulen desen: BP_Banner_Android -> once BP_ adlari denenir */
+  const ADAY={int:["BP_Interstitial_Android","Interstitial_Android"],odul:["BP_Rewarded_Android","Rewarded_Android"]};
+  const sec={int:0,odul:0};
+  const PL={int:ADAY.int[0],odul:ADAY.odul[0]};
   const ready={int:false,odul:false}, fails={int:0,odul:0}, busy={int:false,odul:false};
   function load(k){
     if(ready[k]||busy[k])return;
@@ -4291,7 +4294,8 @@ $("replayBtn").onclick=()=>{$("winOv").classList.add("hide");playLevel(mem.level
     dbg("load "+PL[k]);
     U.load({placementId:PL[k]})
       .then(function(){ready[k]=true;fails[k]=0;dbg("HAZIR "+PL[k]);})
-      .catch(function(e){dbg("LOAD HATA "+PL[k]+": "+((e&&e.message)||e));setTimeout(function(){load(k);},Math.min(60000,5000*Math.pow(2,fails[k]++)));})
+      .catch(function(e){const em=String((e&&e.message)||e);dbg("LOAD HATA "+PL[k]+": "+em);
+        if(/not found/i.test(em)&&sec[k]<ADAY[k].length-1){sec[k]++;PL[k]=ADAY[k][sec[k]];fails[k]=0;busy[k]=false;dbg("deneniyor: "+PL[k]);load(k);return;}setTimeout(function(){load(k);},Math.min(60000,5000*Math.pow(2,fails[k]++)));})
       .finally(function(){busy[k]=false;});
   }
   async function waitReady(k,ms){
