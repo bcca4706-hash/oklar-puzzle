@@ -4266,47 +4266,63 @@ $("pHomeBtn").onclick=()=>{
 $("replayBtn").onclick=()=>{$("winOv").classList.add("hide");playLevel(mem.level);sfx.tick();};
 </script>
 <script>
-/* Yandex reklam koprusu - yalniz Capacitor icinde etkinlesir */
+/* Unity Ads koprusu - yalniz Capacitor icinde etkinlesir */
 (function(){
   const C=window.Capacitor;
   if(!C||!C.isNativePlatform||!C.isNativePlatform())return;
-  const Y=C.Plugins&&C.Plugins.YandexAds;
-  if(!Y)return;
-  /* Yandex Mobile Ads blok ID'leri */
-  const IDS={
-    int:"R-M-20031432-2",
-    can:"R-M-20031432-1",
-    ipucu:"R-M-20031432-3"
-  };
-  const FMT={int:"interstitial",can:"rewarded",ipucu:"rewarded"};
-  const fails={int:0,can:0,ipucu:0};
+  const U=C.Plugins&&C.Plugins.UnityAds;
+  if(!U){document.addEventListener("DOMContentLoaded",function(){const d=document.createElement("div");d.style.cssText="position:fixed;top:40px;left:4px;z-index:99999;background:red;color:#fff;font:12px monospace;padding:4px";d.textContent="UnityAds plugin YOK";document.body.appendChild(d);});return;}
+  const GAME_ID="800442645";
+  const TEST=false;            // test cihazi panelden: Monetization > Testing
+  const DEBUG=false;           // true: ekranda reklam gunlugu
+  function dbg(m){
+    if(!DEBUG)return;
+    let d=document.getElementById("adDbg");
+    if(!d){d=document.createElement("div");d.id="adDbg";
+      d.style.cssText="position:fixed;left:4px;right:4px;top:40px;z-index:99999;background:rgba(0,0,0,.8);color:#0f0;font:11px monospace;padding:4px;max-height:40vh;overflow:auto;pointer-events:none;white-space:pre-wrap";
+      document.body.appendChild(d);}
+    d.textContent+=new Date().toTimeString().slice(0,8)+" "+m+"\n";
+  }
+  /* Panelde gorulen desen: BP_Banner_Android -> once BP_ adlari denenir */
+  const ADAY={int:["BP_Interstitial_Android","Interstitial_Android"],odul:["BP_Rewarded_Android","Rewarded_Android"]};
+  const sec={int:0,odul:0};
+  const PL={int:ADAY.int[0],odul:ADAY.odul[0]};
+  const ready={int:false,odul:false}, fails={int:0,odul:0}, busy={int:false,odul:false};
   function load(k){
-    return Y.load({key:k,adId:IDS[k],format:FMT[k]})
-      .then(function(r){if(r&&r.loaded)fails[k]=0;})
-      .catch(function(){setTimeout(function(){load(k);},Math.min(60000,5000*Math.pow(2,fails[k]++)));});
+    if(ready[k]||busy[k])return;
+    busy[k]=true;
+    dbg("load "+PL[k]);
+    U.load({placementId:PL[k]})
+      .then(function(){ready[k]=true;fails[k]=0;dbg("HAZIR "+PL[k]);})
+      .catch(function(e){const em=String((e&&e.message)||e);dbg("LOAD HATA "+PL[k]+": "+em);
+        if(/not found/i.test(em)&&sec[k]<ADAY[k].length-1){sec[k]++;PL[k]=ADAY[k][sec[k]];fails[k]=0;busy[k]=false;dbg("deneniyor: "+PL[k]);load(k);return;}setTimeout(function(){load(k);},Math.min(60000,5000*Math.pow(2,fails[k]++)));})
+      .finally(function(){busy[k]=false;});
   }
-  async function waitLoaded(k,ms){
+  async function waitReady(k,ms){
     const t0=Date.now();
-    while(Date.now()-t0<ms){
-      try{const r=await Y.isLoaded({key:k});if(r&&r.loaded)return true;}catch(e){}
-      await new Promise(function(r){setTimeout(r,300);});
-    }
-    return false;
+    while(!ready[k]&&Date.now()-t0<ms){load(k);await new Promise(function(r){setTimeout(r,300);});}
+    return ready[k];
   }
-  window.__yInit=Y.init().catch(function(){}).then(function(){load("int");load("can");load("ipucu");});
-  window.showInterstitial=function(){
-    Y.show({key:"int"}).catch(function(){}).finally(function(){load("int");});
+  dbg("init basliyor test="+TEST);
+  window.__uInit=U.init({gameId:GAME_ID,testMode:TEST}).then(function(){dbg("init OK");}).catch(function(e){dbg("INIT HATA: "+((e&&e.message)||e));}).then(function(){load("int");load("odul");});
+  let lastInt=0;
+  window.showInterstitial=async function(){
+    await window.__uInit;
+    if(!ready.int||Date.now()-lastInt<60000)return;   // en az 60 sn arayla
+    ready.int=false;lastInt=Date.now();
+    try{await U.show({placementId:PL.int});}catch(e){}
+    load("int");
   };
-  window.showRewarded=async function(cb,type){
-    const k=type==="can"?"can":"ipucu";
+  window.showRewarded=async function(cb){
     try{
-      await window.__yInit;
-      load(k);
-      if(!(await waitLoaded(k,8000)))return;
-      const r=await Y.show({key:k});
+      await window.__uInit;
+      dbg("odullu istendi");
+      if(!(await waitReady("odul",8000))){dbg("odullu hazir degil (8sn)");return;}
+      ready.odul=false;
+      const r=await U.show({placementId:PL.odul});dbg("gosterildi rewarded="+(r&&r.rewarded));
       if(r&&r.rewarded&&cb)cb();
-    }catch(e){}
-    finally{load(k);}
+    }catch(e){dbg("SHOW HATA: "+((e&&e.message)||e));}
+    finally{load("odul");}
   };
 })();
 </script>
@@ -4820,24 +4836,9 @@ function comboGoster(n){
 
 
 <script>
-const APP_OPEN_ID='R-M-20031432-4';
-let _lastOpen=0;
-async function showAppOpen(){
-  if(Date.now()-_lastOpen<4*3600e3)return;
-  _lastOpen=Date.now();
-  try{
-    const Y=Capacitor.Plugins.YandexAds;
-    await Y.init();
-    const r=await Promise.race([
-      Y.load({key:'acilis',adId:APP_OPEN_ID,format:'appopen'}),
-      new Promise(function(res){setTimeout(function(){res(null);},4000);})
-    ]);
-    if(r&&r.loaded)await Y.show({key:'acilis'});
-  }catch(e){}
-}
+async function showAppOpen(){}
 document.addEventListener('DOMContentLoaded',()=>{
   var _t0=Date.now();showAppOpen().finally(function(){setTimeout(hideSplash,Math.max(0,900-(Date.now()-_t0)))});
-  try{Capacitor.Plugins.App.addListener('resume',showAppOpen);}catch(e){}
 });
 </script>
 <script>

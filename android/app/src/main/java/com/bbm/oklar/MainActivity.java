@@ -7,7 +7,7 @@ public class MainActivity extends BridgeActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         
-        registerPlugin(YandexAdsPlugin.class);
+        registerPlugin(UnityAdsPlugin.class);
         super.onCreate(savedInstanceState);
     }
 }
